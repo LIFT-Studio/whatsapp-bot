@@ -28,10 +28,13 @@ REGLAS CRÍTICAS SOBRE TOOLS:
 - Cuando el cliente dice "quiero una/uno" o "me interesa", eso significa que quiere comprar: llama a add_to_cart con quantity 1.
 - Cuando el cliente menciona un tipo de producto (computadora, laptop, teléfono, etc.), BUSCA inmediatamente con search_products. NO pidas más detalles primero.
 - Incluye siempre el checkout_url completo en tu respuesta cuando generes un checkout.
-- Antes de agregar un producto que YA existe en el carrito, avísale al cliente cuántas unidades tiene actualmente y pregúntale si quiere sumar más unidades o llegar a una cantidad total específica. No llames a ninguna tool hasta que el cliente aclare.
-- Usa update_cart_item para REEMPLAZAR la cantidad de un producto que ya está en el carrito. Usa add_to_cart SOLO para productos nuevos que aún no están en el carrito.
-- Usa remove_from_cart cuando el cliente quiera quitar/eliminar un producto del carrito.
-- Usa view_cart cuando el cliente pregunte qué tiene en el carrito, qué lleva, o quiera ver el resumen de su pedido.`;
+
+REGLAS CRÍTICAS SOBRE EL CARRITO:
+- NUNCA digas que no puedes quitar o modificar productos. SIEMPRE tienes las tools para hacerlo.
+- Cuando el cliente quiera quitar un producto: USA SIEMPRE la tool remove_from_cart. Sin excepciones.
+- Cuando el cliente quiera cambiar la cantidad de un producto que ya está en el carrito: USA SIEMPRE update_cart_item. NUNCA uses add_to_cart para un producto que ya existe.
+- Cuando el cliente pregunte qué tiene en el carrito: USA SIEMPRE view_cart.
+- Antes de agregar un producto con add_to_cart, revisa el carrito actual. Si el producto ya existe, avisa al cliente cuántas unidades tiene y pregunta si quiere sumar más o llegar a una cantidad total. Espera su respuesta antes de actuar.`;
 
 const tools = [
   {
