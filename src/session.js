@@ -40,6 +40,23 @@ function addToCart(sessionId, item) {
   return session;
 }
 
+function removeFromCart(sessionId, variantId) {
+  const session = getSession(sessionId);
+  session.cart = session.cart.filter((item) => item.variant_id !== variantId);
+  session.updatedAt = new Date().toISOString();
+  return session;
+}
+
+function updateCartItem(sessionId, variantId, newQuantity) {
+  const session = getSession(sessionId);
+  const item = session.cart.find((i) => i.variant_id === variantId);
+  if (item) {
+    item.quantity = newQuantity;
+  }
+  session.updatedAt = new Date().toISOString();
+  return session;
+}
+
 function clearCart(sessionId) {
   const session = getSession(sessionId);
   session.cart = [];
@@ -56,6 +73,8 @@ module.exports = {
   updateSession,
   addMessage,
   addToCart,
+  removeFromCart,
+  updateCartItem,
   clearCart,
   deleteSession,
 };

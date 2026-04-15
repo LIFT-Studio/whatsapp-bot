@@ -2,7 +2,14 @@
 require("dotenv").config();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { searchProducts, createCheckoutUrl } = require("./shopify");
-const { getSession, addMessage, addToCart, clearCart } = require("./session");
+const {
+  getSession,
+  addMessage,
+  addToCart,
+  removeFromCart,
+  updateCartItem,
+  clearCart,
+} = require("./session");
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -20,7 +27,11 @@ REGLAS CRÍTICAS SOBRE TOOLS:
 - Responde SIEMPRE en español, de forma conversacional, amigable y concisa.
 - Cuando el cliente dice "quiero una/uno" o "me interesa", eso significa que quiere comprar: llama a add_to_cart con quantity 1.
 - Cuando el cliente menciona un tipo de producto (computadora, laptop, teléfono, etc.), BUSCA inmediatamente con search_products. NO pidas más detalles primero.
-- Incluye siempre el checkout_url completo en tu respuesta cuando generes un checkout.`;
+- Incluye siempre el checkout_url completo en tu respuesta cuando generes un checkout.
+- Antes de agregar un producto que YA existe en el carrito, avísale al cliente cuántas unidades tiene actualmente y pregúntale si quiere sumar más unidades o llegar a una cantidad total específica. No llames a ninguna tool hasta que el cliente aclare.
+- Usa update_cart_item para REEMPLAZAR la cantidad de un producto que ya está en el carrito. Usa add_to_cart SOLO para productos nuevos que aún no están en el carrito.
+- Usa remove_from_cart cuando el cliente quiera quitar/eliminar un producto del carrito.
+- Usa view_cart cuando el cliente pregunte qué tiene en el carrito, qué lleva, o quiera ver el resumen de su pedido.`;
 
 const tools = [
   {
@@ -56,6 +67,57 @@ const tools = [
         },
       },
       {
+        name: "remove_from_cart",
+        description:
+          "Elimina un producto del carrito por su variant_id. Usa esto cuando el cliente quiera quitar o eliminar un producto.",
+        parameters: {
+          type: "OBJECT",
+          properties: {
+            variant_id: {
+              type: "STRING",
+              description: "ID de la variante a eliminar",
+            },
+            title: {
+              type: "STRING",
+              description: "Nombre del producto a eliminar",
+            },
+          },
+          required: ["variant_id", "title"],
+        },
+      },
+      {
+        name: "update_cart_item",
+        description:
+          "Reemplaza la cantidad de un producto que ya está en el carrito. Usa esto cuando el cliente quiera cambiar la cantidad de un producto existente.",
+        parameters: {
+          type: "OBJECT",
+          properties: {
+            variant_id: {
+              type: "STRING",
+              description: "ID de la variante a actualizar",
+            },
+            new_quantity: {
+              type: "NUMBER",
+              description: "Nueva cantidad total (reemplaza la anterior)",
+            },
+            title: {
+              type: "STRING",
+              description: "Nombre del producto",
+            },
+          },
+          required: ["variant_id", "new_quantity", "title"],
+        },
+      },
+      {
+        name: "view_cart",
+        description:
+          "Devuelve el estado actual del carrito del cliente. Usa esto cuando el cliente pregunte qué tiene en el carrito.",
+        parameters: {
+          type: "OBJECT",
+          properties: {},
+        },
+      },
+      {
         name: "create_checkout",
         description:
           "Genera un link de checkout con los productos del carrito actual. Usa esto cuando el cliente confirme que quiere proceder con la compra. Incluye el checkout_url en tu respuesta.",
@@ -82,6 +144,22 @@ async function executeTool(toolName, toolInput, sessionId) {
         price: toolInput.price,
       });
       return { success: true, cart: session.cart };
+    }
+    case "remove_from_cart": {
+      const session = removeFromCart(sessionId, toolInput.variant_id);
+      return { success: true, cart: session.cart };
+    }
+    case "update_cart_item": {
+      const session = updateCartItem(
+        sessionId,
+        toolInput.variant_id,
+        toolInput.new_quantity
+      );
+      return { success: true, cart: session.cart };
+    }
+    case "view_cart": {
+      const session = getSession(sessionId);
+      return { cart: session.cart };
     }
     case "create_checkout": {
       const session = getSession(sessionId);
