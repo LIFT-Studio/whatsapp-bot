@@ -1,0 +1,59 @@
+// Express server
+require("dotenv").config();
+const path = require("path");
+const crypto = require("crypto");
+const express = require("express");
+const { processMessage } = require("./ai");
+const { getSession } = require("./session");
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "..", "public")));
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  if (req.method === "OPTIONS") return res.sendStatus(204);
+  next();
+});
+
+app.post("/api/chat", async (req, res) => {
+  try {
+    const sessionId = req.body.sessionId || crypto.randomUUID();
+    const { message } = req.body;
+
+    if (!message) {
+      return res.status(400).json({ error: "message is required" });
+    }
+
+    const result = await processMessage(sessionId, message);
+
+    res.json({
+      sessionId,
+      response: result.response,
+      state: result.state,
+      cart: result.cart,
+    });
+  } catch (error) {
+    console.error("POST /api/chat error:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/api/session/:sessionId", (req, res) => {
+  const session = getSession(req.params.sessionId);
+  res.json({ id: session.id, state: session.state, cart: session.cart });
+});
+
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
+
+module.exports = app;
