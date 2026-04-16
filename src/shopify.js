@@ -11,8 +11,12 @@ const headers = {
   "X-Shopify-Access-Token": TOKEN,
 };
 
-async function searchProducts(query) {
+async function searchProducts(terms) {
   try {
+    // terms es un array de términos (ej: ["bulto", "mochila", "morral"])
+    // Convertir a string con OR para Shopify
+    const query = Array.isArray(terms) ? terms.join(" OR ") : terms;
+
     const graphqlUrl = `https://${SHOP}/admin/api/${API_VERSION}/graphql.json`;
     const gqlQuery = `
       query searchProducts($query: String!) {

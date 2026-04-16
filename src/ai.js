@@ -2,6 +2,7 @@
 require("dotenv").config();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { searchProducts, createCheckoutUrl } = require("./shopify");
+const { expandSearchTerms } = require("./search-strategy");
 const {
   getSession,
   addMessage,
@@ -28,6 +29,15 @@ REGLAS CRÍTICAS SOBRE TOOLS:
 - Cuando el cliente dice "quiero una/uno", "dame una", "me interesa" o similar: es una SOLICITUD DIRECTA DE COMPRA. Llama a add_to_cart INMEDIATAMENTE con quantity 1. NUNCA describes el producto sin agregarlo primero. NO hagas preguntas.
 - Cuando el cliente menciona un tipo de producto (computadora, laptop, teléfono, iMac, etc.) O dice "agrega X", "quiero X" refiriéndose a un producto: BUSCA INMEDIATAMENTE con search_products. NO importa si dice "agrega 2 imacs" o "quiero una laptop", SIEMPRE busca primero. NO pidas más detalles primero.
 - Incluye siempre el checkout_url completo en tu respuesta cuando generes un checkout.
+
+REGLAS CRÍTICAS SOBRE BÚSQUEDA Y SINÓNIMOS:
+- El parámetro "terms" en search_products es un ARRAY de términos que reflejan la INTENCIÓN del cliente.
+- Interpreta la intención y manda 1-3 términos relevantes. Ejemplos:
+  * Cliente: "Busco una bolsa de viaje" → terms: ["bolsa"] o ["viaje"]
+  * Cliente: "¿Tienes cosas para el camping?" → terms: ["camping"]
+  * Cliente: "Quiero mochilas y tenis deportivos" → terms: ["mochila", "tenis"]
+- El sistema expande automáticamente cada término con sinónimos relevantes.
+- NO es tu responsabilidad pensar en sinónimos. Tú identificas el TÉRMINO PRINCIPAL y el servidor lo expande.
 
 REGLAS CRÍTICAS SOBRE EL CARRITO:
 - NUNCA digas que no puedes quitar o modificar productos. SIEMPRE tienes las tools para hacerlo.
@@ -57,16 +67,19 @@ const tools = [
       {
         name: "search_products",
         description:
-          "Busca productos en la tienda por nombre o descripción. Usa esto cuando el cliente pregunte por un producto.",
+          "Busca productos en la tienda usando uno o más términos. El sistema expande automáticamente cada término con sinónimos relevantes. Manda 1-3 términos que reflejen la intención del cliente.",
         parameters: {
           type: "OBJECT",
           properties: {
-            query: {
-              type: "STRING",
-              description: "Término de búsqueda del producto",
+            terms: {
+              type: "ARRAY",
+              items: {
+                type: "STRING",
+              },
+              description: "Array de 1-3 términos de búsqueda (ej: ['bulto'] o ['mochila', 'laptop']). El sistema los expande automáticamente con sinónimos.",
             },
           },
-          required: ["query"],
+          required: ["terms"],
         },
       },
       {
@@ -160,7 +173,22 @@ const tools = [
 async function executeTool(toolName, toolInput, sessionId) {
   switch (toolName) {
     case "search_products": {
-      const products = await searchProducts(toolInput.query);
+      // toolInput.terms es un array de términos (ej: ["bulto", "mochila"])
+      // Si por algún motivo es string, convertir a array
+      let terms = Array.isArray(toolInput.terms)
+        ? toolInput.terms
+        : [toolInput.terms];
+
+      // Expandir cada término con sinónimos y combinar resultados únicos
+      const expandedTerms = new Set();
+      for (const term of terms) {
+        const expanded = expandSearchTerms(term);
+        expanded.forEach((t) => expandedTerms.add(t));
+      }
+
+      // Convertir a array para enviar a Shopify
+      const allTerms = Array.from(expandedTerms);
+      const products = await searchProducts(allTerms);
       return products;
     }
     case "add_to_cart": {
