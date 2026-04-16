@@ -1,0 +1,20 @@
+{
+  "bulto": ["mochila", "morral", "bolso", "backpack"],
+  "bolso": ["mochila", "cartera", "bolsa", "morral"],
+  "camping": ["campamento", "acampar", "outdoor", "tienda"],
+  "tenis": ["zapatillas", "sneakers", "deportivos", "zapatos"],
+  "laptop": ["laptop", "portátil", "computadora", "pc", "notebook"],
+  "mochila": ["bolso", "morral", "cartera", "backpack"],
+  "cartera": ["bolso", "mochila", "monedero", "billetera"],
+  "computadora": ["laptop", "pc", "portátil", "notebook"],
+  "zapatos": ["tenis", "zapatillas", "deportivos", "calzado"],
+  "bolsa": ["bolso", "mochila", "cartera", "morral"],
+  "tienda": ["camping", "carpa", "toldo"],
+  "carpa": ["tienda", "camping", "toldo"],
+  "morral": ["mochila", "bolso", "backpack", "morral"],
+  "accesorio": ["complemento", "detalle", "adorno"],
+  "ropa": ["prendas", "vestimenta", "atuendo"],
+  "deporte": ["actividad física", "ejercicio", "fitness"],
+  "outdoor": ["camping", "montaña", "naturaleza", "exterior"],
+  "viaje": ["excursión", "aventura", "turismo", "expedición"]
+}
