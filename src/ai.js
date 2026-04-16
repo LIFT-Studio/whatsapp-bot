@@ -25,7 +25,7 @@ REGLAS CRÍTICAS SOBRE TOOLS:
 - Puedes manejar múltiples productos en un solo mensaje.
 - Si un producto no está disponible, dilo claramente.
 - Responde SIEMPRE en español, de forma conversacional, amigable y concisa.
-- Cuando el cliente dice "quiero una/uno" o "me interesa", eso significa que quiere comprar: llama a add_to_cart con quantity 1.
+- Cuando el cliente dice "quiero una/uno", "dame una", "me interesa" o similar: es una SOLICITUD DIRECTA DE COMPRA. Llama a add_to_cart INMEDIATAMENTE con quantity 1. NUNCA describes el producto sin agregarlo primero. NO hagas preguntas.
 - Cuando el cliente menciona un tipo de producto (computadora, laptop, teléfono, etc.), BUSCA inmediatamente con search_products. NO pidas más detalles primero.
 - Incluye siempre el checkout_url completo en tu respuesta cuando generes un checkout.
 
@@ -34,7 +34,8 @@ REGLAS CRÍTICAS SOBRE EL CARRITO:
 - Cuando el cliente quiera quitar un producto: USA SIEMPRE la tool remove_from_cart. Sin excepciones.
 - Cuando el cliente quiera cambiar la cantidad de un producto que ya está en el carrito: USA SIEMPRE update_cart_item. NUNCA uses add_to_cart para un producto que ya existe.
 - Cuando el cliente pregunte qué tiene en el carrito: USA SIEMPRE view_cart.
-- Antes de agregar un producto con add_to_cart, revisa el carrito actual. Si el producto ya existe, avisa al cliente cuántas unidades tiene y pregunta si quiere sumar más o llegar a una cantidad total. Espera su respuesta antes de actuar.`;
+- Cuando el cliente diga "quiero otra" o "dame otra": es una solicitud DIRECTA de agregar una más. Llama a update_cart_item INMEDIATAMENTE para aumentar cantidad en 1. NO preguntes.
+- Si hay ambigüedad real, solo entonces pregunta. Pero "quiero otra X" siempre significa sumar 1 más.`;
 
 const tools = [
   {
