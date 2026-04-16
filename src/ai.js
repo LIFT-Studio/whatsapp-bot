@@ -121,6 +121,15 @@ const tools = [
         },
       },
       {
+        name: "clear_cart",
+        description:
+          "Vacía completamente el carrito del cliente. Usa esto cuando el cliente quiera vaciar/limpiar su carrito.",
+        parameters: {
+          type: "OBJECT",
+          properties: {},
+        },
+      },
+      {
         name: "create_checkout",
         description:
           "Genera un link de checkout con los productos del carrito actual. Usa esto cuando el cliente confirme que quiere proceder con la compra. Incluye el checkout_url en tu respuesta.",
@@ -163,6 +172,10 @@ async function executeTool(toolName, toolInput, sessionId) {
     case "view_cart": {
       const session = getSession(sessionId);
       return { cart: session.cart };
+    }
+    case "clear_cart": {
+      const session = clearCart(sessionId);
+      return { success: true, cart: session.cart };
     }
     case "create_checkout": {
       const session = getSession(sessionId);
