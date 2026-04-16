@@ -7,7 +7,14 @@
       "Edit",
       "Bash",
       "Glob",
-      "Grep"
+      "Grep",
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)",
+      "Bash(*)",
+      "Bash(npm:*)",
+      "Bash(git:*)",
+      "Bash(node:*)"
     ]
   }
 }
