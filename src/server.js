@@ -4,7 +4,7 @@ const path = require("path");
 const crypto = require("crypto");
 const express = require("express");
 const { processMessage } = require("./ai");
-const { getSession } = require("./session");
+const { getSession, startCleanupJob } = require("./session");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -54,6 +54,9 @@ app.get("/health", (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
+
+  // Start session cleanup job
+  startCleanupJob();
 });
 
 module.exports = app;

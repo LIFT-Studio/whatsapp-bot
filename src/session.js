@@ -119,6 +119,57 @@ function deleteSession(sessionId) {
   sessions.delete(sessionId);
 }
 
+/**
+ * Clean expired sessions based on TTL (Time To Live)
+ * Removes sessions that haven't been updated in more than SESSION_TTL_HOURS
+ * @returns {object} Cleanup stats {sessionsDeleted, totalSessions}
+ */
+function cleanExpiredSessions() {
+  const ttlHours = parseInt(process.env.SESSION_TTL_HOURS || "24", 10);
+  const ttlMs = ttlHours * 60 * 60 * 1000;
+  const now = new Date();
+  let sessionsDeleted = 0;
+  const totalBefore = sessions.size;
+
+  for (const [sessionId, session] of sessions.entries()) {
+    const lastUpdated = new Date(session.updatedAt);
+    const ageMs = now - lastUpdated;
+
+    if (ageMs > ttlMs) {
+      sessions.delete(sessionId);
+      sessionsDeleted++;
+    }
+  }
+
+  const totalAfter = sessions.size;
+  console.log(
+    `[SESSION] Cleanup completed: Deleted ${sessionsDeleted} expired sessions (${ttlHours}h TTL). Total: ${totalBefore} → ${totalAfter}`
+  );
+
+  return { sessionsDeleted, totalSessions: totalAfter };
+}
+
+/**
+ * Start automatic session cleanup job
+ * Runs cleanup every hour by default
+ * Interval can be customized via CLEANUP_INTERVAL_MS environment variable
+ */
+function startCleanupJob() {
+  const intervalMs = parseInt(process.env.CLEANUP_INTERVAL_MS || "3600000", 10); // 1 hour default
+  const intervalHours = intervalMs / (60 * 60 * 1000);
+
+  console.log(
+    `[SESSION] Starting cleanup job: runs every ${intervalHours.toFixed(2)} hours`
+  );
+
+  const cleanupInterval = setInterval(() => {
+    cleanExpiredSessions();
+  }, intervalMs);
+
+  // Optional: Store reference for graceful shutdown
+  return cleanupInterval;
+}
+
 module.exports = {
   getSession,
   updateSession,
@@ -130,4 +181,6 @@ module.exports = {
   updateCartItem,
   clearCart,
   deleteSession,
+  cleanExpiredSessions,
+  startCleanupJob,
 };
