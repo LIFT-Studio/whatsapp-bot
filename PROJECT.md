@@ -16,7 +16,7 @@ Bot conversacional integrado con Shopify para búsqueda de productos, gestión d
 - **Respuestas a políticas** ✅ — Via Storefront MCP (`search_shop_policies_and_faqs`)
 
 ### Fase Actual
-**Fase 3** — Limpieza de archivos obsoletos y validación final antes de producción
+**Estable** — En desarrollo iterativo
 
 ---
 
@@ -181,13 +181,13 @@ curl -X POST http://localhost:3000/api/chat \
 
 ---
 
-## Fase 3: Pendiente
+## Fase 3: Completada ✅
 
 ### Limpieza de Código
-- [ ] Eliminar `src/search-strategy.js` (obsoleto)
-- [ ] Eliminar `synonyms.json` (obsoleto)
-- [ ] Limpiar archivos de debug (mcp-test.js, debug-prices.js)
-- [ ] Actualizar .gitignore si es necesario
+- ✅ `src/synonyms.json` — eliminado
+- ✅ `debug-search-variant.js` — eliminado
+- ✅ `diagnose-images.js` — eliminado
+- ✅ Servidor arranca limpio
 
 ### Validaciones
 - [ ] Ejecutar test-e2e.js completo
