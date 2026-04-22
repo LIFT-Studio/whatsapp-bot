@@ -135,7 +135,7 @@ Gemini responde: "Aquí tu link: https://... ¡Gracias!"
 
 ---
 
-## Problemas Resueltos en Fase 2
+## Problemas Resueltos en Fase 2-3
 
 ### Problema 1: Response Vacío en answer_policy_question
 - **Síntoma:** Mensaje 3 retornaba `"response": ""`
@@ -148,6 +148,18 @@ Gemini responde: "Aquí tu link: https://... ¡Gracias!"
 - **Causa:** MCP retorna precio en centavos (4999) sin dividir por 100
 - **Fix:** `variant_price` normaliza: `(amount / 100).toFixed(2)`
 - **Status:** ✅ RESUELTO
+
+### Problema 3: Imágenes no se renderizan en chat (Fase 3.1)
+- **Síntoma:** Código con instrucciones de imágenes estaba en main/Railway, pero Gemini no incluía imágenes en respuestas
+- **Causa:** SYSTEM_PROMPT asumía estructura incorrecta de campo `media` (objeto simple vs ARRAY)
+- **Investigación:**
+  - Confirmado: `media` es un ARRAY: `[{type: "image", url: "...", alt_text: "..."(opcional)}]`
+  - Problema: Instrucción original no especificaba que era un array, confundiendo a Gemini
+- **Fix:**
+  1. Actualizar SYSTEM_PROMPT con estructura REAL del array media
+  2. Extraer primer imagen al nivel superior: `image_url`, `image_alt` en simplifiedProduct
+  3. Gemini ahora ve los campos claramente y los usa: `![image_alt](image_url)`
+- **Status:** ✅ RESUELTO - Verificado en Railway
 
 ---
 
@@ -189,7 +201,15 @@ curl -X POST http://localhost:3000/api/chat \
 - ✅ `diagnose-images.js` — eliminado
 - ✅ Servidor arranca limpio
 
-### Validaciones
+### Corrección de Renderizado de Imágenes (Fase 3.1)
+- ✅ Identificado: campo `media` es un ARRAY de objetos, no un objeto simple
+- ✅ Estructura real: `media: [{type: "image", url: "...", alt_text: "..."(opcional)}]`
+- ✅ Actualizado SYSTEM_PROMPT con instrucción precisa sobre estructura media
+- ✅ Extracción de imagen al nivel superior: `image_url`, `image_alt` en producto simplificado
+- ✅ Gemini ahora incluye markdown `![alt](url)` en respuestas
+- ✅ Desplegado en Railway y verificado en producción
+
+### Validaciones Pendientes
 - [ ] Ejecutar test-e2e.js completo
 - [ ] Validar con múltiples productos/categorías
 - [ ] Pruebas de error handling
