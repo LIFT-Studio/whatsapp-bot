@@ -1,6 +1,6 @@
 {
   "permissions": {
-    "defaultMode": "dontAsk",
+    "defaultMode": "bypassPermissions",
     "allow": [
       "Read",
       "Write",
@@ -15,6 +15,9 @@
       "Bash(npm:*)",
       "Bash(git:*)",
       "Bash(node:*)"
+    ],
+    "additionalDirectories": [
+      "/Users/djaguero/AI Projects/Claude/whatsapp-bot"
     ]
   }
 }

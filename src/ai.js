@@ -1,14 +1,17 @@
 // AI Engine module
 require("dotenv").config();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const { searchProducts, createCheckoutUrl } = require("./shopify");
-const { expandSearchTerms } = require("./search-strategy");
+const {
+  searchProducts,
+  searchPolicies,
+  getCart,
+  updateCart,
+} = require("./shopify/mcp-client");
 const {
   getSession,
   addMessage,
-  addToCart,
-  removeFromCart,
-  updateCartItem,
+  syncCartFromMCP,
+  setCartId,
   clearCart,
 } = require("./session");
 
@@ -21,6 +24,7 @@ const SYSTEM_PROMPT = `Eres un asistente de compras para una tienda online. Tu t
 REGLAS CRÍTICAS SOBRE TOOLS:
 - SIEMPRE usa la tool search_products para buscar productos. NUNCA inventes productos, precios ni disponibilidad.
 - SIEMPRE usa la tool add_to_cart para agregar productos al carrito. NUNCA digas que agregaste algo sin llamar a add_to_cart primero. El carrito solo se actualiza cuando llamas a esta tool.
+- SIEMPRE usa la tool answer_policy_question para responder preguntas sobre políticas, devoluciones, envíos, etc. No inventes políticas.
 - SIEMPRE usa la tool create_checkout para generar el link de pago cuando el cliente confirme la compra. NUNCA generes URLs tú mismo.
 - Infiere variantes del mensaje del cliente (talla, color, cantidad). Solo pregunta si hay ambigüedad real.
 - Puedes manejar múltiples productos en un solo mensaje.
@@ -30,14 +34,13 @@ REGLAS CRÍTICAS SOBRE TOOLS:
 - Cuando el cliente menciona un tipo de producto (computadora, laptop, teléfono, iMac, etc.) O dice "agrega X", "quiero X" refiriéndose a un producto: BUSCA INMEDIATAMENTE con search_products. NO importa si dice "agrega 2 imacs" o "quiero una laptop", SIEMPRE busca primero. NO pidas más detalles primero.
 - Incluye siempre el checkout_url completo en tu respuesta cuando generes un checkout.
 
-REGLAS CRÍTICAS SOBRE BÚSQUEDA Y SINÓNIMOS:
-- El parámetro "terms" en search_products es un ARRAY de términos que reflejan la INTENCIÓN del cliente.
-- Interpreta la intención y manda 1-3 términos relevantes. Ejemplos:
-  * Cliente: "Busco una bolsa de viaje" → terms: ["bolsa"] o ["viaje"]
-  * Cliente: "¿Tienes cosas para el camping?" → terms: ["camping"]
-  * Cliente: "Quiero mochilas y tenis deportivos" → terms: ["mochila", "tenis"]
-- El sistema expande automáticamente cada término con sinónimos relevantes.
-- NO es tu responsabilidad pensar en sinónimos. Tú identificas el TÉRMINO PRINCIPAL y el servidor lo expande.
+REGLAS CRÍTICAS SOBRE BÚSQUEDA:
+- El parámetro "query" en search_products es una cadena de texto que refleja la INTENCIÓN del cliente en lenguaje natural.
+- Manda la búsqueda tal como la entiende el cliente. Ejemplos:
+  * Cliente: "Busco una bolsa de viaje" → query: "bolsa de viaje"
+  * Cliente: "¿Tienes cosas para el camping?" → query: "camping"
+  * Cliente: "Quiero mochilas" → query: "mochilas"
+- NO expandes sinónimos tú mismo. El sistema MCP maneja la búsqueda inteligente de forma natural.
 
 REGLAS CRÍTICAS SOBRE EL CARRITO:
 - NUNCA digas que no puedes quitar o modificar productos. SIEMPRE tienes las tools para hacerlo.
@@ -67,19 +70,31 @@ const tools = [
       {
         name: "search_products",
         description:
-          "Busca productos en la tienda usando uno o más términos. El sistema expande automáticamente cada término con sinónimos relevantes. Manda 1-3 términos que reflejen la intención del cliente.",
+          "Busca productos en la tienda usando una consulta en lenguaje natural. Manda la búsqueda exacta que el cliente desea.",
         parameters: {
           type: "OBJECT",
           properties: {
-            terms: {
-              type: "ARRAY",
-              items: {
-                type: "STRING",
-              },
-              description: "Array de 1-3 términos de búsqueda (ej: ['bulto'] o ['mochila', 'laptop']). El sistema los expande automáticamente con sinónimos.",
+            query: {
+              type: "STRING",
+              description: "Consulta de búsqueda en lenguaje natural (ej: 'mochilas', 'bolsa de viaje', 'laptops')",
             },
           },
-          required: ["terms"],
+          required: ["query"],
+        },
+      },
+      {
+        name: "answer_policy_question",
+        description:
+          "Responde preguntas sobre políticas de la tienda, devoluciones, envíos, FAQs y términos. Usa esto cuando el cliente pregunte sobre políticas o tenga dudas de este tipo.",
+        parameters: {
+          type: "OBJECT",
+          properties: {
+            query: {
+              type: "STRING",
+              description: "Pregunta del cliente en lenguaje natural (ej: '¿cuál es la política de devoluciones?', '¿cuánto cuesta el envío?')",
+            },
+          },
+          required: ["query"],
         },
       },
       {
@@ -119,7 +134,7 @@ const tools = [
       {
         name: "update_cart_item",
         description:
-          "Reemplaza la cantidad de un producto que ya está en el carrito. Usa esto cuando el cliente quiera cambiar la cantidad de un producto existente.",
+          "Cambia la cantidad de un producto que ya está en el carrito. Usa esto cuando el cliente quiera modificar la cantidad de un producto existente.",
         parameters: {
           type: "OBJECT",
           properties: {
@@ -171,64 +186,196 @@ const tools = [
 ];
 
 async function executeTool(toolName, toolInput, sessionId) {
+  const session = getSession(sessionId);
+
   switch (toolName) {
     case "search_products": {
-      // toolInput.terms es un array de términos (ej: ["bulto", "mochila"])
-      // Si por algún motivo es string, convertir a array
-      let terms = Array.isArray(toolInput.terms)
-        ? toolInput.terms
-        : [toolInput.terms];
+      // query es una cadena de texto (lenguaje natural)
+      const query = toolInput.query;
+      console.log("[AI] search_products - query:", query);
 
-      // Expandir cada término con sinónimos y combinar resultados únicos
-      const expandedTerms = new Set();
-      for (const term of terms) {
-        const expanded = expandSearchTerms(term);
-        expanded.forEach((t) => expandedTerms.add(t));
+      try {
+        const result = await searchProducts(query);
+        console.log("[AI] search_products - resultado:", result?.products?.length || 0, "productos");
+        return result;
+      } catch (error) {
+        console.error("[AI] search_products - error:", error.message);
+        return { error: error.message, products: [] };
       }
+    }
 
-      // Convertir a array para enviar a Shopify
-      const allTerms = Array.from(expandedTerms);
-      const products = await searchProducts(allTerms);
-      return products;
+    case "answer_policy_question": {
+      // Responde preguntas sobre políticas
+      const query = toolInput.query;
+      console.log("[AI] answer_policy_question - query:", query);
+
+      try {
+        const result = await searchPolicies(query);
+        console.log("[AI] answer_policy_question - respuesta obtenida");
+        return result;
+      } catch (error) {
+        console.error("[AI] answer_policy_question - error:", error.message);
+        return { error: error.message, answer: "No pude obtener información sobre esa política." };
+      }
     }
+
     case "add_to_cart": {
-      const session = addToCart(sessionId, {
-        variant_id: toolInput.variant_id,
-        quantity: toolInput.quantity,
-        title: toolInput.title,
-        price: toolInput.price,
-      });
-      return { success: true, cart: session.cart };
+      console.log("[AI] add_to_cart - variant_id:", toolInput.variant_id, "cantidad:", toolInput.quantity);
+
+      try {
+        // Crear carrito si no existe
+        if (!session.cartId) {
+          console.log("[AI] Creando carrito nuevo...");
+        }
+
+        // Llamar a updateCart del MCP
+        const mcpResult = await updateCart({
+          cart_id: session.cartId || undefined,
+          add_items: [
+            {
+              product_variant_id: toolInput.variant_id,
+              quantity: toolInput.quantity,
+            },
+          ],
+        });
+
+        // Guardar cartId y sincronizar cart
+        if (mcpResult.cart) {
+          setCartId(sessionId, mcpResult.cart.id);
+          syncCartFromMCP(sessionId, mcpResult.cart);
+          console.log("[AI] Carrito sincronizado. ID:", mcpResult.cart.id);
+        }
+
+        return { success: true, cart: session.cart };
+      } catch (error) {
+        console.error("[AI] add_to_cart - error:", error.message);
+        return { error: error.message };
+      }
     }
+
     case "remove_from_cart": {
-      const session = removeFromCart(sessionId, toolInput.variant_id);
-      return { success: true, cart: session.cart };
+      console.log("[AI] remove_from_cart - variant_id:", toolInput.variant_id);
+
+      try {
+        // Buscar el line_id del item a eliminar
+        const item = session.cart.find((i) => i.variant_id === toolInput.variant_id);
+        if (!item) {
+          return { error: "Producto no encontrado en el carrito" };
+        }
+
+        // Llamar a updateCart del MCP para remover el item
+        const mcpResult = await updateCart({
+          cart_id: session.cartId,
+          remove_line_ids: [item.line_id],
+        });
+
+        // Sincronizar cart
+        if (mcpResult.cart) {
+          syncCartFromMCP(sessionId, mcpResult.cart);
+          console.log("[AI] Producto removido del carrito");
+        }
+
+        return { success: true, cart: session.cart };
+      } catch (error) {
+        console.error("[AI] remove_from_cart - error:", error.message);
+        return { error: error.message };
+      }
     }
+
     case "update_cart_item": {
-      const session = updateCartItem(
-        sessionId,
-        toolInput.variant_id,
-        toolInput.new_quantity
-      );
-      return { success: true, cart: session.cart };
+      console.log("[AI] update_cart_item - variant_id:", toolInput.variant_id, "nueva cantidad:", toolInput.new_quantity);
+
+      try {
+        // Buscar el item
+        const item = session.cart.find((i) => i.variant_id === toolInput.variant_id);
+        if (!item) {
+          return { error: "Producto no encontrado en el carrito" };
+        }
+
+        // Llamar a updateCart del MCP
+        const mcpResult = await updateCart({
+          cart_id: session.cartId,
+          update_items: [
+            {
+              id: item.line_id,
+              quantity: toolInput.new_quantity,
+            },
+          ],
+        });
+
+        // Sincronizar cart
+        if (mcpResult.cart) {
+          syncCartFromMCP(sessionId, mcpResult.cart);
+          console.log("[AI] Cantidad actualizada");
+        }
+
+        return { success: true, cart: session.cart };
+      } catch (error) {
+        console.error("[AI] update_cart_item - error:", error.message);
+        return { error: error.message };
+      }
     }
+
     case "view_cart": {
-      const session = getSession(sessionId);
+      console.log("[AI] view_cart - items en carrito:", session.cart.length);
       return { cart: session.cart };
     }
+
     case "clear_cart": {
-      const session = clearCart(sessionId);
-      return { success: true, cart: session.cart };
-    }
-    case "create_checkout": {
-      const session = getSession(sessionId);
-      if (session.cart.length === 0) {
-        return { error: "El carrito está vacío" };
+      console.log("[AI] clear_cart");
+
+      try {
+        if (session.cartId) {
+          // Llamar a updateCart del MCP para limpiar
+          const lineIds = session.cart.map((item) => item.line_id);
+          if (lineIds.length > 0) {
+            await updateCart({
+              cart_id: session.cartId,
+              remove_line_ids: lineIds,
+            });
+          }
+        }
+
+        // Limpiar session
+        clearCart(sessionId);
+        return { success: true, cart: session.cart };
+      } catch (error) {
+        console.error("[AI] clear_cart - error:", error.message);
+        // Igual limpiamos la session localmente
+        clearCart(sessionId);
+        return { success: true, cart: session.cart };
       }
-      const checkoutUrl = createCheckoutUrl(session.cart);
-      clearCart(sessionId);
-      return { checkout_url: checkoutUrl };
     }
+
+    case "create_checkout": {
+      console.log("[AI] create_checkout");
+
+      try {
+        if (!session.cartId) {
+          return { error: "No hay carrito activo" };
+        }
+
+        if (session.cart.length === 0) {
+          return { error: "El carrito está vacío" };
+        }
+
+        // Obtener el carrito final con continue_url
+        const mcpResult = await getCart(session.cartId);
+
+        if (!mcpResult.checkout_url) {
+          return { error: "No se pudo generar el checkout" };
+        }
+
+        // Limpiar session después de checkout
+        clearCart(sessionId);
+
+        return { checkout_url: mcpResult.checkout_url };
+      } catch (error) {
+        console.error("[AI] create_checkout - error:", error.message);
+        return { error: error.message };
+      }
+    }
+
     default:
       return { error: `Tool desconocida: ${toolName}` };
   }

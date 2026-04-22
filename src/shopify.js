@@ -17,6 +17,8 @@ async function searchProducts(terms) {
     // Convertir a string con OR para Shopify
     const query = Array.isArray(terms) ? terms.join(" OR ") : terms;
 
+    console.log("[DEBUG] searchProducts - query final para Shopify:", query);
+
     const graphqlUrl = `https://${SHOP}/admin/api/${API_VERSION}/graphql.json`;
     const gqlQuery = `
       query searchProducts($query: String!) {
@@ -60,7 +62,7 @@ async function searchProducts(terms) {
       throw new Error(data.errors.map((e) => e.message).join(", "));
     }
 
-    return data.data.products.edges.map(({ node: p }) => ({
+    const products = data.data.products.edges.map(({ node: p }) => ({
       id: p.id.replace("gid://shopify/Product/", ""),
       title: p.title,
       description: p.descriptionHtml,
@@ -74,6 +76,13 @@ async function searchProducts(terms) {
         available: v.inventoryQuantity > 0,
       })),
     }));
+
+    console.log("[DEBUG] searchProducts - productos devueltos por Shopify:", products.length);
+    if (products.length > 0) {
+      console.log("[DEBUG]   - primeros 2 productos:", products.slice(0, 2).map(p => p.title));
+    }
+
+    return products;
   } catch (error) {
     console.error("searchProducts error:", error.message);
     throw error;
