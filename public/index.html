@@ -204,19 +204,57 @@
       const div = document.createElement("div");
       div.className = `msg ${role}`;
 
-      const urlRegex = /(https?:\/\/[^\s]+)/g;
-      const hasCheckout = role === "bot" && urlRegex.test(text);
+      if (role === "bot") {
+        // Procesamos markdown de imágenes y checkouts
+        const imageRegex = /!\[([^\]]*)\]\(([^)]+)\)/g;
+        const parts = [];
+        let lastIndex = 0;
+        let match;
 
-      if (hasCheckout) {
-        const parts = text.split(urlRegex);
+        // Encontrar todas las imágenes
+        const imageMatches = [];
+        while ((match = imageRegex.exec(text)) !== null) {
+          imageMatches.push({
+            alt: match[1],
+            url: match[2],
+            start: match.index,
+            end: match.index + match[0].length,
+          });
+        }
+
+        // Construir el contenido con imágenes y texto
         let html = "";
-        for (const part of parts) {
-          if (/^https?:\/\//.test(part)) {
-            html += `<br><a class="checkout-btn" href="${part}" target="_blank" rel="noopener">Ir al checkout</a>`;
-          } else {
-            html += part.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        let currentIndex = 0;
+
+        // Procesar imágenes
+        imageMatches.forEach((img) => {
+          // Texto antes de la imagen
+          if (currentIndex < img.start) {
+            const textPart = text.substring(currentIndex, img.start);
+            html += textPart.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+          }
+          // Agregar imagen
+          html += `<img src="${img.url}" alt="${img.alt}" style="max-width:200px; border-radius:8px; margin:4px 0; display:block;">`;
+          currentIndex = img.end;
+        });
+
+        // Texto restante después de la última imagen
+        if (currentIndex < text.length) {
+          const remaining = text.substring(currentIndex);
+
+          // Procesar checkout URLs en el texto restante
+          const checkoutRegex = /(https?:\/\/[^\s]+)/g;
+          const checkoutParts = remaining.split(checkoutRegex);
+
+          for (const part of checkoutParts) {
+            if (/^https?:\/\//.test(part)) {
+              html += `<br><a class="checkout-btn" href="${part}" target="_blank" rel="noopener">Ir al checkout</a>`;
+            } else if (part) {
+              html += part.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            }
           }
         }
+
         div.innerHTML = html;
       } else {
         div.textContent = text;
