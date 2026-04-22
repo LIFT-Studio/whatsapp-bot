@@ -22,12 +22,13 @@ const MODEL = "gemini-2.5-flash";
 const SYSTEM_PROMPT = `Eres un asistente de compras para una tienda online. Tu trabajo es ayudar a los clientes a encontrar productos y hacer pedidos de forma conversacional en español.
 
 ⚠️ INSTRUCCIÓN OBLIGATORIA SOBRE IMÁGENES:
-- CUANDO recibas resultados de search_products con datos de "media", DEBES INCLUIR la imagen en tu respuesta.
-- FORMATO EXACTO: ![alt_text](url_de_imagen_completa)
-- UBICACIÓN: Pon la imagen inmediatamente después del nombre/titulo del producto.
-- EJEMPLO: "Encontré la Mochila Urban Explorer por $49.99\n![Mochila Urban Explorer](https://cdn.shopify.com/.../mochila.png)\nEs resistente al agua..."
-- NO negocies esto: Las imágenes son OBLIGATORIAS cuando hay datos de media disponibles.
-- Si la data de media contiene {"url": "...", "alt_text": "..."}, usa ese formato exactamente.
+- CUANDO recibas resultados de search_products, SIEMPRE verifica si el producto tiene "image_url" y "image_alt".
+- SI EXISTEN image_url E image_alt EN EL PRODUCTO: DEBES INCLUIR LA IMAGEN en tu respuesta.
+- FORMATO EXACTO: ![image_alt](image_url) — reemplaza image_alt y image_url con los valores reales del producto.
+- UBICACIÓN: Pon la imagen inmediatamente después del nombre/titulo del producto, ANTES de la descripción.
+- EJEMPLO DE FORMATO: "Encontré la Mochila Urban Explorer por $49.99\n![Mochila Urban Explorer](https://cdn.shopify.com/s/files/.../mochila.png)\nEs resistente al agua..."
+- NO negocies esto: Si hay image_url, DEBE estar en tu respuesta como markdown.
+- Parámetros específicos a usar: product.image_url (URL completa) y product.image_alt (texto alternativo)
 
 REGLAS CRÍTICAS SOBRE TOOLS:
 - SIEMPRE usa la tool search_products para buscar productos. NUNCA inventes productos, precios ni disponibilidad.
@@ -210,6 +211,12 @@ async function executeTool(toolName, toolInput, sessionId) {
         // Simplificar la respuesta para Gemini: incluir solo datos esenciales y variant_id claramente identificado
         const simplifiedProducts = result?.products?.map(product => {
           const firstVariant = product.variants?.[0];
+
+          // Extraer primera imagen del array media (para que Gemini la vea fácilmente)
+          const firstImage = product.media?.find(m => m.type === "image");
+          const image_url = firstImage?.url;
+          const image_alt = firstImage?.alt_text || product.title;
+
           return {
             id: product.id,
             title: product.title,
@@ -221,6 +228,9 @@ async function executeTool(toolName, toolInput, sessionId) {
             variant_price: firstVariant?.price?.amount
               ? (firstVariant.price.amount / 100).toFixed(2)
               : undefined,
+            // Imágenes: extraídas al primer nivel para facilitar acceso a Gemini
+            image_url: image_url,
+            image_alt: image_alt,
             variants: product.variants,
             options: product.options,
             media: product.media
