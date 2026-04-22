@@ -16,7 +16,7 @@ Bot conversacional integrado con Shopify para búsqueda de productos, gestión d
 - **Respuestas a políticas** ✅ — Via Storefront MCP (`search_shop_policies_and_faqs`)
 
 ### Fase Actual
-**Estable** — En desarrollo iterativo
+**Estable (v1.0)** — MVP completo con imágenes, carrito y checkout funcionales. Desplegado en producción.
 
 ---
 
@@ -209,11 +209,17 @@ curl -X POST http://localhost:3000/api/chat \
 - ✅ Gemini ahora incluye markdown `![alt](url)` en respuestas
 - ✅ Desplegado en Railway y verificado en producción
 
-### Validaciones Pendientes
-- [ ] Ejecutar test-e2e.js completo
-- [ ] Validar con múltiples productos/categorías
-- [ ] Pruebas de error handling
-- [ ] Validar limpieza de sesiones viejas
+### Validaciones Completadas (Post Fase 3.1)
+- ✅ E2E flow completo: Búsqueda → Agregar → Ver carrito → Checkout
+- ✅ Imágenes renderizadas en todas las fases del flujo
+- ✅ Carrito persiste y se limpia correctamente en checkout
+- ✅ Checkout URL generado correctamente
+- ✅ Desplegado y verificado en producción (Railway)
+
+### Validaciones Futuras
+- [ ] Validar con múltiples productos/categorías diferentes
+- [ ] Pruebas de error handling (producto no disponible, etc.)
+- [ ] Validar limpieza de sesiones viejas (implementar TTL)
 
 ---
 
