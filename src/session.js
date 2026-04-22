@@ -43,13 +43,22 @@ function syncCartFromMCP(sessionId, mcpCart) {
     session.cart = [];
   } else {
     // Map MCP lines to session.cart format
-    session.cart = mcpCart.lines.map(line => ({
-      line_id: line.id,                      // For MCP operations (remove/update)
-      variant_id: line.product_variant_id,   // For display and user reference
-      quantity: line.quantity,
-      title: line.title || line.product_title || "Unknown Product",
-      price: line.price || "0.00"
-    }));
+    session.cart = mcpCart.lines.map(line => {
+      // Extract variant ID from merchandise.id
+      const variantId = line.merchandise?.id || "unknown";
+      // Extract product title
+      const title = line.merchandise?.product?.title || "Unknown Product";
+      // Extract price from cost structure
+      const price = line.cost?.subtotal_amount?.amount || "0.00";
+
+      return {
+        line_id: line.id,           // For MCP operations (remove/update)
+        variant_id: variantId,      // For display and user reference
+        quantity: line.quantity,
+        title: title,
+        price: price
+      };
+    });
   }
 
   session.updatedAt = new Date().toISOString();

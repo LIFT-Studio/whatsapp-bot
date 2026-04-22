@@ -1,0 +1,55 @@
+
+> whatsapp-bot@1.0.0 start
+> node src/server.js
+
+Server running on http://localhost:3000
+[AI] search_products - query: mochila
+[MCP] Llamando search_catalog: {
+  "catalog": {
+    "query": "mochila"
+  }
+}
+[MCP] ✅ Respuesta de search_catalog: OK
+[AI] search_products - resultado: 1 productos
+[AI] Primer variant_id para Gemini: gid://shopify/ProductVariant/53622813753708
+[AI] search_products - query: mochila
+[MCP] Llamando search_catalog: {
+  "catalog": {
+    "query": "mochila"
+  }
+}
+[MCP] ✅ Respuesta de search_catalog: OK
+[AI] search_products - resultado: 1 productos
+[AI] Primer variant_id para Gemini: gid://shopify/ProductVariant/53622813753708
+[AI] add_to_cart - variant_id: gid://shopify/ProductVariant/53622813753708 cantidad: 1
+[AI] Creando carrito nuevo...
+[MCP] Llamando update_cart: {
+  "add_items": [
+    {
+      "product_variant_id": "gid://shopify/ProductVariant/53622813753708",
+      "quantity": 1
+    }
+  ]
+}
+[MCP] ✅ Respuesta de update_cart: OK
+[AI] MCP updateCart respuesta keys: [ 'instructions', 'cart', 'errors' ]
+[AI] MCP updateCart tiene 'cart'? true
+[AI] MCP cart estructura: {"id":"gid://shopify/Cart/hWNBIpYkGZMpfKMqOP0guxOc?key=e215fdbe17b0873f0ef7f02809b66929","created_at":"2026-04-22T02:57:48.999Z","updated_at":"2026-04-22T02:57:48.999Z","lines":[{"id":"gid://shopify/CartLine/fedc4f8d-ff03-45f7-b3b9-f353019f8daa?cart=hWNBIpYkGZMpfKMqOP0guxOc","quantity":1,"cost":{"total_amount":{"amount":"49.99","currency":"USD"},"subtotal_amount":{"amount":"49.99","currency":"USD"}},"merchandise":{"id":"gid://shopify/ProductVariant/53622813753708","title":"Default Title","produc
+[AI] Carrito sincronizado. ID: gid://shopify/Cart/hWNBIpYkGZMpfKMqOP0guxOc?key=e215fdbe17b0873f0ef7f02809b66929 items: 1
+[AI] Session cart después de sync: 1 items
+[AI] answer_policy_question - query: ¿cuál es la política de devoluciones?
+[MCP] Llamando search_shop_policies_and_faqs: {
+  "query": "¿cuál es la política de devoluciones?"
+}
+[MCP] ✅ Respuesta de search_shop_policies_and_faqs: OK
+[AI] answer_policy_question - respuesta obtenida
+[AI] create_checkout - cartId: gid://shopify/Cart/hWNBIpYkGZMpfKMqOP0guxOc?key=e215fdbe17b0873f0ef7f02809b66929
+[AI] Llamando getCart con cartId: gid://shopify/Cart/hWNBIpYkGZMpfKMqOP0guxOc?key=e215fdbe17b0873f0ef7f02809b66929
+[MCP] Llamando get_cart: {
+  "cart_id": "gid://shopify/Cart/hWNBIpYkGZMpfKMqOP0guxOc?key=e215fdbe17b0873f0ef7f02809b66929"
+}
+[MCP] ✅ Respuesta de get_cart: OK
+[AI] getCart resultado keys: [ 'instructions', 'cart', 'errors' ]
+[AI] checkoutUrl encontrado? true
+[AI] checkout_url: https://b2b-sandbox-lift-2.myshopify.com/cart/c/hWNBIpYkGZMpfKMqOP0guxOc?key=e215fdbe17b0873f0ef7f02
+[AI] ✅ Checkout generado exitosamente

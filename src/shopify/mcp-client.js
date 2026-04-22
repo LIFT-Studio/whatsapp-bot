@@ -58,7 +58,22 @@ async function callMCPTool(toolName, toolArguments) {
 
     console.log(`[MCP] ✅ Respuesta de ${toolName}: ${data.result ? "OK" : "vacío"}`);
 
-    return data.result;
+    // Storefront MCP wraps response in { content: [{ type: "text", text: "..." }] }
+    // Extract and parse if needed
+    let result = data.result;
+    if (result && result.content && Array.isArray(result.content)) {
+      const textContent = result.content.find((c) => c.type === "text");
+      if (textContent && typeof textContent.text === "string") {
+        try {
+          result = JSON.parse(textContent.text);
+        } catch (e) {
+          // If it's not JSON, keep the original text
+          result = textContent.text;
+        }
+      }
+    }
+
+    return result;
   } catch (error) {
     console.error(`[MCP] ❌ Error en ${toolName}:`, error.message);
     throw error;

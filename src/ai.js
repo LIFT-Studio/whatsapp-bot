@@ -24,6 +24,7 @@ const SYSTEM_PROMPT = `Eres un asistente de compras para una tienda online. Tu t
 REGLAS CRÍTICAS SOBRE TOOLS:
 - SIEMPRE usa la tool search_products para buscar productos. NUNCA inventes productos, precios ni disponibilidad.
 - SIEMPRE usa la tool add_to_cart para agregar productos al carrito. NUNCA digas que agregaste algo sin llamar a add_to_cart primero. El carrito solo se actualiza cuando llamas a esta tool.
+- IMPORTANTE para add_to_cart: El "variant_id" DEBE ser el valor exacto del campo "id" en el objeto variant (ej: "gid://shopify/ProductVariant/53622813753708"). NO cambies ni acortes este valor. Extrae el price.amount como price en formato string.
 - SIEMPRE usa la tool answer_policy_question para responder preguntas sobre políticas, devoluciones, envíos, etc. No inventes políticas.
 - SIEMPRE usa la tool create_checkout para generar el link de pago cuando el cliente confirme la compra. NUNCA generes URLs tú mismo.
 - Infiere variantes del mensaje del cliente (talla, color, cantidad). Solo pregunta si hay ambigüedad real.
@@ -104,10 +105,10 @@ const tools = [
         parameters: {
           type: "OBJECT",
           properties: {
-            variant_id: { type: "STRING", description: "ID de la variante" },
+            variant_id: { type: "STRING", description: "ID EXACTO de la variante (ej: 'gid://shopify/ProductVariant/12345'). SIEMPRE usa el valor del campo 'id' del objeto variant del producto." },
             quantity: { type: "NUMBER", description: "Cantidad a agregar" },
-            title: { type: "STRING", description: "Nombre del producto" },
-            price: { type: "STRING", description: "Precio unitario" },
+            title: { type: "STRING", description: "Nombre del producto (ej: 'Mochila Urban Explorer')" },
+            price: { type: "STRING", description: "Precio unitario del producto" },
           },
           required: ["variant_id", "quantity", "title", "price"],
         },
@@ -197,7 +198,30 @@ async function executeTool(toolName, toolInput, sessionId) {
       try {
         const result = await searchProducts(query);
         console.log("[AI] search_products - resultado:", result?.products?.length || 0, "productos");
-        return result;
+
+        // Simplificar la respuesta para Gemini: incluir solo datos esenciales y variant_id claramente identificado
+        const simplifiedProducts = result?.products?.map(product => {
+          const firstVariant = product.variants?.[0];
+          return {
+            id: product.id,
+            title: product.title,
+            description: product.description,
+            price_range: product.price_range,
+            // CRÍTICO: Incluir variant_id como field de primer nivel para que Gemini lo vea claramente
+            variant_id: firstVariant?.id,
+            variant_title: firstVariant?.title,
+            variant_price: firstVariant?.price,
+            variants: product.variants,
+            options: product.options,
+            media: product.media
+          };
+        }) || [];
+
+        if (simplifiedProducts.length > 0 && simplifiedProducts[0].variant_id) {
+          console.log("[AI] Primer variant_id para Gemini:", simplifiedProducts[0].variant_id);
+        }
+
+        return { products: simplifiedProducts };
       } catch (error) {
         console.error("[AI] search_products - error:", error.message);
         return { error: error.message, products: [] };
@@ -239,14 +263,22 @@ async function executeTool(toolName, toolInput, sessionId) {
           ],
         });
 
+        console.log("[AI] MCP updateCart respuesta keys:", Object.keys(mcpResult));
+        console.log("[AI] MCP updateCart tiene 'cart'?", !!mcpResult.cart);
+        console.log("[AI] MCP cart estructura:", JSON.stringify(mcpResult.cart).substring(0, 500));
+
         // Guardar cartId y sincronizar cart
         if (mcpResult.cart) {
           setCartId(sessionId, mcpResult.cart.id);
           syncCartFromMCP(sessionId, mcpResult.cart);
-          console.log("[AI] Carrito sincronizado. ID:", mcpResult.cart.id);
+          console.log("[AI] Carrito sincronizado. ID:", mcpResult.cart.id, "items:", mcpResult.cart.lines?.length);
+        } else {
+          console.log("[AI] ⚠️ No hay cart en mcpResult");
         }
 
-        return { success: true, cart: session.cart };
+        const updatedSession = getSession(sessionId);
+        console.log("[AI] Session cart después de sync:", updatedSession.cart.length, "items");
+        return { success: true, cart: updatedSession.cart };
       } catch (error) {
         console.error("[AI] add_to_cart - error:", error.message);
         return { error: error.message };
@@ -348,30 +380,45 @@ async function executeTool(toolName, toolInput, sessionId) {
     }
 
     case "create_checkout": {
-      console.log("[AI] create_checkout");
+      console.log("[AI] create_checkout - cartId:", session.cartId);
 
       try {
         if (!session.cartId) {
+          console.log("[AI] create_checkout - no cartId");
           return { error: "No hay carrito activo" };
         }
 
         if (session.cart.length === 0) {
+          console.log("[AI] create_checkout - carrito vacío");
           return { error: "El carrito está vacío" };
         }
 
-        // Obtener el carrito final con continue_url
+        // Obtener el carrito final con checkout_url
+        console.log("[AI] Llamando getCart con cartId:", session.cartId);
         const mcpResult = await getCart(session.cartId);
 
-        if (!mcpResult.checkout_url) {
+        console.log("[AI] getCart resultado keys:", Object.keys(mcpResult));
+        const checkoutUrl = mcpResult.cart?.checkout_url;
+        console.log("[AI] checkoutUrl encontrado?", !!checkoutUrl);
+        if (checkoutUrl) {
+          console.log("[AI] checkout_url:", checkoutUrl.substring(0, 100));
+        } else {
+          console.log("[AI] mcpResult.cart keys:", Object.keys(mcpResult.cart || {}));
+        }
+
+        if (!checkoutUrl) {
+          console.log("[AI] ❌ No hay checkout_url en la respuesta");
           return { error: "No se pudo generar el checkout" };
         }
 
         // Limpiar session después de checkout
         clearCart(sessionId);
 
-        return { checkout_url: mcpResult.checkout_url };
+        console.log("[AI] ✅ Checkout generado exitosamente");
+        return { checkout_url: checkoutUrl };
       } catch (error) {
         console.error("[AI] create_checkout - error:", error.message);
+        console.error("[AI] Stack:", error.stack);
         return { error: error.message };
       }
     }
