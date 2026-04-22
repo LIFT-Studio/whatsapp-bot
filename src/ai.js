@@ -210,7 +210,9 @@ async function executeTool(toolName, toolInput, sessionId) {
             // CRÍTICO: Incluir variant_id como field de primer nivel para que Gemini lo vea claramente
             variant_id: firstVariant?.id,
             variant_title: firstVariant?.title,
-            variant_price: firstVariant?.price,
+            variant_price: firstVariant?.price?.amount
+              ? (firstVariant.price.amount / 100).toFixed(2)
+              : undefined,
             variants: product.variants,
             options: product.options,
             media: product.media
