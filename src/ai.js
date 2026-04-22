@@ -455,7 +455,7 @@ async function processMessage(sessionId, userMessage) {
   let response = result.response;
 
   while (
-    response.candidates[0].content.parts.some((p) => p.functionCall)
+    response?.candidates?.[0]?.content?.parts?.some((p) => p.functionCall)
   ) {
     const functionCalls = response.candidates[0].content.parts.filter(
       (p) => p.functionCall
@@ -488,7 +488,7 @@ async function processMessage(sessionId, userMessage) {
     response = result.response;
   }
 
-  const assistantText = response.text();
+  const assistantText = response?.text?.() || "";
 
   addMessage(sessionId, "assistant", assistantText);
 
