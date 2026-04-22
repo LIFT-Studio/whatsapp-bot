@@ -10,6 +10,9 @@ const { getSession, startCleanupJob } = require("./session");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy: required for rate limiting to work behind Railway's proxy
+app.set('trust proxy', 1);
+
 // Rate limiter for /api/chat endpoint: 30 requests per minute per IP
 const chatLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
