@@ -17,67 +17,88 @@ const MCP_ENDPOINT = `https://${SHOPIFY_SHOP}/api/mcp`;
 let requestId = 0;
 
 /**
- * Realiza una llamada JSON-RPC 2.0 al Storefront MCP
+ * Realiza una llamada JSON-RPC 2.0 al Storefront MCP con reintentos automáticos
  * @param {string} toolName - Nombre de la herramienta
  * @param {object} toolArguments - Parámetros de la herramienta
+ * @param {number} maxRetries - Número máximo de reintentos (default: 2)
  * @returns {Promise<object>} Resultado de la herramienta
  */
-async function callMCPTool(toolName, toolArguments) {
-  const id = ++requestId;
+async function callMCPTool(toolName, toolArguments, maxRetries = 2) {
+  let lastError;
 
-  const payload = {
-    jsonrpc: "2.0",
-    method: "tools/call",
-    id,
-    params: {
-      name: toolName,
-      arguments: toolArguments,
-    },
-  };
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const id = ++requestId;
 
-  console.log(`[MCP] Llamando ${toolName}:`, JSON.stringify(toolArguments, null, 2).substring(0, 200));
+      const payload = {
+        jsonrpc: "2.0",
+        method: "tools/call",
+        id,
+        params: {
+          name: toolName,
+          arguments: toolArguments,
+        },
+      };
 
-  try {
-    const response = await fetch(MCP_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+      if (attempt === 0) {
+        console.log(`[MCP] Llamando ${toolName}:`, JSON.stringify(toolArguments, null, 2).substring(0, 200));
+      } else {
+        console.log(`[MCP] Reintentando ${toolName} (intento ${attempt}/${maxRetries})...`);
+      }
 
-    if (!response.ok) {
-      throw new Error(`MCP HTTP ${response.status}: ${response.statusText}`);
-    }
+      const response = await fetch(MCP_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    const data = await response.json();
+      if (!response.ok) {
+        throw new Error(`MCP HTTP ${response.status}: ${response.statusText}`);
+      }
 
-    // JSON-RPC puede retornar error
-    if (data.error) {
-      const errorMsg = data.error.message || JSON.stringify(data.error);
-      throw new Error(`MCP Error (${data.error.code}): ${errorMsg}`);
-    }
+      const data = await response.json();
 
-    console.log(`[MCP] ✅ Respuesta de ${toolName}: ${data.result ? "OK" : "vacío"}`);
+      // JSON-RPC puede retornar error
+      if (data.error) {
+        const errorMsg = data.error.message || JSON.stringify(data.error);
+        throw new Error(`MCP Error (${data.error.code}): ${errorMsg}`);
+      }
 
-    // Storefront MCP wraps response in { content: [{ type: "text", text: "..." }] }
-    // Extract and parse if needed
-    let result = data.result;
-    if (result && result.content && Array.isArray(result.content)) {
-      const textContent = result.content.find((c) => c.type === "text");
-      if (textContent && typeof textContent.text === "string") {
-        try {
-          result = JSON.parse(textContent.text);
-        } catch (e) {
-          // If it's not JSON, keep the original text
-          result = textContent.text;
+      console.log(`[MCP] ✅ Respuesta de ${toolName}: ${data.result ? "OK" : "vacío"}`);
+
+      // Storefront MCP wraps response in { content: [{ type: "text", text: "..." }] }
+      // Extract and parse if needed
+      let result = data.result;
+      if (result && result.content && Array.isArray(result.content)) {
+        const textContent = result.content.find((c) => c.type === "text");
+        if (textContent && typeof textContent.text === "string") {
+          try {
+            result = JSON.parse(textContent.text);
+          } catch (e) {
+            // If it's not JSON, keep the original text
+            result = textContent.text;
+          }
         }
       }
-    }
 
-    return result;
-  } catch (error) {
-    console.error(`[MCP] ❌ Error en ${toolName}:`, error.message);
-    throw error;
+      return result;
+    } catch (error) {
+      lastError = error;
+      console.error(`[MCP] ❌ Error en ${toolName} (intento ${attempt + 1}/${maxRetries + 1}):`, error.message);
+
+      // Si es el último intento o no es un error de timeout/red, lanza el error
+      if (attempt === maxRetries) {
+        throw error;
+      }
+
+      // Esperar con backoff exponencial antes de reintentar
+      const delayMs = Math.pow(2, attempt) * 500; // 500ms, 1s, 2s, etc.
+      console.log(`[MCP] Esperando ${delayMs}ms antes de reintentar...`);
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+    }
   }
+
+  throw lastError;
 }
 
 /**
