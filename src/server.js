@@ -39,12 +39,18 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
   try {
     const sessionId = req.body.sessionId || crypto.randomUUID();
     const { message } = req.body;
+    const logPrefix = `[SERVER] [${sessionId.substring(0, 8)}...]`;
 
     if (!message) {
+      console.warn(`${logPrefix} missing message in request`);
       return res.status(400).json({ error: "message is required" });
     }
 
+    console.log(`${logPrefix} processing message: "${message.substring(0, 50)}${message.length > 50 ? '...' : ''}"`);
+
     const result = await processMessage(sessionId, message);
+
+    console.log(`${logPrefix} response generated successfully`);
 
     res.json({
       sessionId,
@@ -53,7 +59,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
       cart: result.cart,
     });
   } catch (error) {
-    console.error("POST /api/chat error:", error.message);
+    console.error(`[SERVER] POST /api/chat error: ${error.message}`);
     res.status(500).json({ error: "Internal server error" });
   }
 });

@@ -19,7 +19,14 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const MODEL = "gemini-2.5-flash";
 
-const SYSTEM_PROMPT = `Eres un asistente de compras para una tienda online. Tu trabajo es ayudar a los clientes a encontrar productos y hacer pedidos de forma conversacional en español.
+const SYSTEM_PROMPT = `Eres un asistente de compras amigable y útil. Tu trabajo es ayudar a los clientes a encontrar productos y hacer pedidos de forma conversacional en español.
+
+La tienda se llama: ${process.env.SHOPIFY_SHOP?.split('.')[0] || 'Mi Tienda'}
+
+Saludos iniciales:
+- CUANDO sea el primer mensaje del cliente (sin historial previo), saluda con el nombre de la tienda.
+- EJEMPLO: "¡Hola! Bienvenido a ${process.env.SHOPIFY_SHOP?.split('.')[0] || 'Mi Tienda'}. ¿En qué puedo ayudarte hoy?"
+- NO repitas este saludo en mensajes posteriores de la misma sesión.
 
 ⚠️ INSTRUCCIÓN OBLIGATORIA SOBRE DISPONIBILIDAD:
 - SIEMPRE verifica el campo "available" en los productos que retorna search_products.
@@ -38,6 +45,14 @@ const SYSTEM_PROMPT = `Eres un asistente de compras para una tienda online. Tu t
 - Parámetros específicos a usar: product.image_url (URL completa) y product.image_alt (texto alternativo)
 - CUANDO el usuario pide una imagen específica (color, variante): busca con search_products incluyendo esa especificación para encontrar imágenes actualizadas.
   * EJEMPLO: Cliente pregunta "¿me muestras en color rojo?" → busca "mochila roja" con search_products → incluye la imagen de resultado en tu respuesta
+
+⚠️ INSTRUCCIÓN OBLIGATORIA SOBRE LINKS DE PRODUCTOS:
+- CUANDO muestres un producto que tenga "product_url", DEBES incluir un enlace a la tienda como referencia.
+- FORMATO: Incluye la URL como un link markdown inline: [Ver en la tienda](product_url)
+- UBICACIÓN: Pon el link al final de la descripción del producto, después del precio.
+- EJEMPLO: "Encontré la Mochila Urban Explorer por $49.99... [Ver en la tienda](https://mi-tienda.myshopify.com/products/mochila-urban-explorer)"
+- NO negocies esto: Si hay product_url, DEBE estar en tu respuesta como link markdown.
+
 - SI EL CLIENTE PREGUNTA "¿PUEDES MOSTRARME IMÁGENES?" O "¿ME MUESTRAS LA FOTO?":
   * SÍ PUEDES mostrar imágenes. Tienes acceso a image_url y image_alt de cada producto.
   * Busca con search_products si no tienes los datos, luego INCLUYE LAS IMÁGENES en markdown.
@@ -87,7 +102,9 @@ REGLAS CRÍTICAS SOBRE BÚSQUEDA:
 
 REGLAS CRÍTICAS SOBRE EL CARRITO:
 - NUNCA digas que no puedes quitar o modificar productos. SIEMPRE tienes las tools para hacerlo.
-- Cuando el cliente quiera quitar un producto: USA SIEMPRE la tool remove_from_cart. Sin excepciones.
+- Cuando el cliente quiera quitar UN PRODUCTO específico: PIDE CONFIRMACIÓN PRIMERO. Ejemplo: "¿Confirmas que quieres quitar la Mochila Urban Explorer del carrito?"
+- Cuando el cliente quiera VACIAR TODO EL CARRITO: PIDE CONFIRMACIÓN EXPLÍCITA. Ejemplo: "¿Estás seguro que quieres vaciar todo el carrito? Contiene 3 productos."
+- DESPUÉS de obtener confirmación del cliente: USA clear_cart o remove_from_cart respectivamente. Sin excepciones.
 - Cuando el cliente quiera cambiar la cantidad de un producto que ya está en el carrito: USA SIEMPRE update_cart_item. NUNCA uses add_to_cart para un producto que ya existe.
 - Cuando el cliente pregunte qué tiene en el carrito: USA SIEMPRE view_cart.
 - Cuando el cliente diga "quiero otra" o "dame otra": es una solicitud DIRECTA de agregar una más. Llama a update_cart_item INMEDIATAMENTE para aumentar cantidad en 1. NO preguntes.
@@ -231,15 +248,18 @@ const tools = [
 async function executeTool(toolName, toolInput, sessionId) {
   const session = getSession(sessionId);
 
+  // Log structure: [COMPONENT] [SESSION_ID] [TOOL] message
+  const logPrefix = `[AI] [${sessionId.substring(0, 8)}...] [${toolName}]`;
+
   switch (toolName) {
     case "search_products": {
       // query es una cadena de texto (lenguaje natural)
       const query = toolInput.query;
-      console.log("[AI] search_products - query:", query);
+      console.log(`${logPrefix} query: "${query}"`);
 
       try {
         const result = await searchProducts(query);
-        console.log("[AI] search_products - resultado:", result?.products?.length || 0, "productos");
+        console.log(`${logPrefix} found ${result?.products?.length || 0} products`);
 
         // Simplificar la respuesta para Gemini: incluir solo datos esenciales y variant_id claramente identificado
         const simplifiedProducts = result?.products?.map(product => {
@@ -262,6 +282,13 @@ async function executeTool(toolName, toolInput, sessionId) {
             values: option.values
           })) || [];
 
+          // Construir URL del producto usando la tienda Shopify
+          const shopDomain = process.env.SHOPIFY_SHOP;
+          const productHandle = product.handle || product.id?.split('/').pop();
+          const product_url = productHandle
+            ? `https://${shopDomain}/products/${productHandle}`
+            : null;
+
           return {
             id: product.id,
             title: product.title,
@@ -280,6 +307,8 @@ async function executeTool(toolName, toolInput, sessionId) {
             // Imágenes: extraídas al primer nivel para facilitar acceso a Gemini
             image_url: image_url,
             image_alt: image_alt,
+            // Link del producto
+            product_url: product_url,
             variants: product.variants,
             options: product.options,
             media: product.media
@@ -287,12 +316,12 @@ async function executeTool(toolName, toolInput, sessionId) {
         }) || [];
 
         if (simplifiedProducts.length > 0 && simplifiedProducts[0].variant_id) {
-          console.log("[AI] Primer variant_id para Gemini:", simplifiedProducts[0].variant_id);
+          console.log(`${logPrefix} first variant_id: ${simplifiedProducts[0].variant_id.substring(0, 50)}...`);
         }
 
         return { products: simplifiedProducts };
       } catch (error) {
-        console.error("[AI] search_products - error:", error.message);
+        console.error(`${logPrefix} error: ${error.message}`);
         return { error: error.message, products: [] };
       }
     }
@@ -300,25 +329,25 @@ async function executeTool(toolName, toolInput, sessionId) {
     case "answer_policy_question": {
       // Responde preguntas sobre políticas
       const query = toolInput.query;
-      console.log("[AI] answer_policy_question - query:", query);
+      console.log(`${logPrefix} query: "${query}"`);
 
       try {
         const result = await searchPolicies(query);
-        console.log("[AI] answer_policy_question - respuesta obtenida");
+        console.log(`${logPrefix} policy answer obtained`);
         return result;
       } catch (error) {
-        console.error("[AI] answer_policy_question - error:", error.message);
+        console.error(`${logPrefix} error: ${error.message}`);
         return { error: error.message, answer: "No pude obtener información sobre esa política." };
       }
     }
 
     case "add_to_cart": {
-      console.log("[AI] add_to_cart - variant_id:", toolInput.variant_id, "cantidad:", toolInput.quantity);
+      console.log(`${logPrefix} adding variant_id: ${toolInput.variant_id.substring(0, 50)}..., quantity: ${toolInput.quantity}`);
 
       try {
         // Crear carrito si no existe
         if (!session.cartId) {
-          console.log("[AI] Creando carrito nuevo...");
+          console.log(`${logPrefix} creating new cart...`);
         }
 
         // Llamar a updateCart del MCP
@@ -332,35 +361,32 @@ async function executeTool(toolName, toolInput, sessionId) {
           ],
         });
 
-        console.log("[AI] MCP updateCart respuesta keys:", Object.keys(mcpResult));
-        console.log("[AI] MCP updateCart tiene 'cart'?", !!mcpResult.cart);
-        console.log("[AI] MCP cart estructura:", JSON.stringify(mcpResult.cart).substring(0, 500));
-
         // Guardar cartId y sincronizar cart
         if (mcpResult.cart) {
           setCartId(sessionId, mcpResult.cart.id);
           syncCartFromMCP(sessionId, mcpResult.cart);
-          console.log("[AI] Carrito sincronizado. ID:", mcpResult.cart.id, "items:", mcpResult.cart.lines?.length);
+          console.log(`${logPrefix} cart synced. ID: ${mcpResult.cart.id}, items: ${mcpResult.cart.lines?.length}`);
         } else {
-          console.log("[AI] ⚠️ No hay cart en mcpResult");
+          console.warn(`${logPrefix} warning: no cart in response`);
         }
 
         const updatedSession = getSession(sessionId);
-        console.log("[AI] Session cart después de sync:", updatedSession.cart.length, "items");
+        console.log(`${logPrefix} cart now has ${updatedSession.cart.length} items`);
         return { success: true, cart: updatedSession.cart };
       } catch (error) {
-        console.error("[AI] add_to_cart - error:", error.message);
+        console.error(`${logPrefix} error: ${error.message}`);
         return { error: error.message };
       }
     }
 
     case "remove_from_cart": {
-      console.log("[AI] remove_from_cart - variant_id:", toolInput.variant_id);
+      console.log(`${logPrefix} removing variant_id: ${toolInput.variant_id.substring(0, 50)}...`);
 
       try {
         // Buscar el line_id del item a eliminar
         const item = session.cart.find((i) => i.variant_id === toolInput.variant_id);
         if (!item) {
+          console.warn(`${logPrefix} product not found in cart`);
           return { error: "Producto no encontrado en el carrito" };
         }
 
@@ -373,23 +399,24 @@ async function executeTool(toolName, toolInput, sessionId) {
         // Sincronizar cart
         if (mcpResult.cart) {
           syncCartFromMCP(sessionId, mcpResult.cart);
-          console.log("[AI] Producto removido del carrito");
+          console.log(`${logPrefix} product removed. cart now has ${session.cart.length} items`);
         }
 
         return { success: true, cart: session.cart };
       } catch (error) {
-        console.error("[AI] remove_from_cart - error:", error.message);
+        console.error(`${logPrefix} error: ${error.message}`);
         return { error: error.message };
       }
     }
 
     case "update_cart_item": {
-      console.log("[AI] update_cart_item - variant_id:", toolInput.variant_id, "nueva cantidad:", toolInput.new_quantity);
+      console.log(`${logPrefix} updating quantity: variant_id ${toolInput.variant_id.substring(0, 50)}..., new_quantity: ${toolInput.new_quantity}`);
 
       try {
         // Buscar el item
         const item = session.cart.find((i) => i.variant_id === toolInput.variant_id);
         if (!item) {
+          console.warn(`${logPrefix} product not found in cart`);
           return { error: "Producto no encontrado en el carrito" };
         }
 
@@ -407,23 +434,23 @@ async function executeTool(toolName, toolInput, sessionId) {
         // Sincronizar cart
         if (mcpResult.cart) {
           syncCartFromMCP(sessionId, mcpResult.cart);
-          console.log("[AI] Cantidad actualizada");
+          console.log(`${logPrefix} quantity updated successfully`);
         }
 
         return { success: true, cart: session.cart };
       } catch (error) {
-        console.error("[AI] update_cart_item - error:", error.message);
+        console.error(`${logPrefix} error: ${error.message}`);
         return { error: error.message };
       }
     }
 
     case "view_cart": {
-      console.log("[AI] view_cart - items en carrito:", session.cart.length);
+      console.log(`${logPrefix} viewing cart with ${session.cart.length} items`);
       return { cart: session.cart };
     }
 
     case "clear_cart": {
-      console.log("[AI] clear_cart");
+      console.log(`${logPrefix} clearing cart (${session.cart.length} items)`);
 
       try {
         if (session.cartId) {
@@ -439,9 +466,10 @@ async function executeTool(toolName, toolInput, sessionId) {
 
         // Limpiar session
         clearCart(sessionId);
+        console.log(`${logPrefix} cart cleared successfully`);
         return { success: true, cart: session.cart };
       } catch (error) {
-        console.error("[AI] clear_cart - error:", error.message);
+        console.error(`${logPrefix} error: ${error.message}`);
         // Igual limpiamos la session localmente
         clearCart(sessionId);
         return { success: true, cart: session.cart };
@@ -449,45 +477,35 @@ async function executeTool(toolName, toolInput, sessionId) {
     }
 
     case "create_checkout": {
-      console.log("[AI] create_checkout - cartId:", session.cartId);
+      console.log(`${logPrefix} creating checkout with cartId: ${session.cartId}`);
 
       try {
         if (!session.cartId) {
-          console.log("[AI] create_checkout - no cartId");
+          console.warn(`${logPrefix} no active cart`);
           return { error: "No hay carrito activo" };
         }
 
         if (session.cart.length === 0) {
-          console.log("[AI] create_checkout - carrito vacío");
+          console.warn(`${logPrefix} cart is empty`);
           return { error: "El carrito está vacío" };
         }
 
         // Obtener el carrito final con checkout_url
-        console.log("[AI] Llamando getCart con cartId:", session.cartId);
         const mcpResult = await getCart(session.cartId);
-
-        console.log("[AI] getCart resultado keys:", Object.keys(mcpResult));
         const checkoutUrl = mcpResult.cart?.checkout_url;
-        console.log("[AI] checkoutUrl encontrado?", !!checkoutUrl);
-        if (checkoutUrl) {
-          console.log("[AI] checkout_url:", checkoutUrl.substring(0, 100));
-        } else {
-          console.log("[AI] mcpResult.cart keys:", Object.keys(mcpResult.cart || {}));
-        }
 
         if (!checkoutUrl) {
-          console.log("[AI] ❌ No hay checkout_url en la respuesta");
+          console.error(`${logPrefix} checkout_url not found in response`);
           return { error: "No se pudo generar el checkout" };
         }
 
         // Limpiar session después de checkout
         clearCart(sessionId);
 
-        console.log("[AI] ✅ Checkout generado exitosamente");
+        console.log(`${logPrefix} checkout created successfully: ${checkoutUrl.substring(0, 80)}...`);
         return { checkout_url: checkoutUrl };
       } catch (error) {
-        console.error("[AI] create_checkout - error:", error.message);
-        console.error("[AI] Stack:", error.stack);
+        console.error(`${logPrefix} error: ${error.message}`);
         return { error: error.message };
       }
     }
@@ -498,8 +516,10 @@ async function executeTool(toolName, toolInput, sessionId) {
 }
 
 async function processMessage(sessionId, userMessage) {
+  const logPrefix = `[AI] [${sessionId.substring(0, 8)}...]`;
   const session = getSession(sessionId);
 
+  console.log(`${logPrefix} [processMessage] starting message processing`);
   addMessage(sessionId, "user", userMessage);
 
   const model = genAI.getGenerativeModel({
@@ -520,6 +540,7 @@ async function processMessage(sessionId, userMessage) {
       ? `\n[Estado actual del carrito: ${JSON.stringify(session.cart)}]`
       : "\n[El carrito está vacío]";
 
+  console.log(`${logPrefix} [processMessage] sending to Gemini (history: ${history.length} msgs)`);
   let result = await chat.sendMessage(userMessage + cartContext);
   let response = result.response;
 
@@ -529,6 +550,8 @@ async function processMessage(sessionId, userMessage) {
     const functionCalls = response.candidates[0].content.parts.filter(
       (p) => p.functionCall
     );
+
+    console.log(`${logPrefix} [processMessage] executing ${functionCalls.length} tool calls`);
 
     const functionResponses = [];
     for (const part of functionCalls) {
@@ -544,6 +567,7 @@ async function processMessage(sessionId, userMessage) {
           },
         });
       } catch (error) {
+        console.error(`${logPrefix} [processMessage] tool error in ${name}: ${error.message}`);
         functionResponses.push({
           functionResponse: {
             name,
@@ -553,6 +577,7 @@ async function processMessage(sessionId, userMessage) {
       }
     }
 
+    console.log(`${logPrefix} [processMessage] sending tool results back to Gemini`);
     result = await chat.sendMessage(functionResponses);
     response = result.response;
   }
@@ -562,6 +587,8 @@ async function processMessage(sessionId, userMessage) {
   addMessage(sessionId, "assistant", assistantText);
 
   const updatedSession = getSession(sessionId);
+  console.log(`${logPrefix} [processMessage] completed. response length: ${assistantText.length} chars, cart items: ${updatedSession.cart.length}`);
+
   return {
     response: assistantText,
     state: updatedSession.state,
