@@ -19,6 +19,19 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const MODEL = "gemini-2.5-flash";
 
+// Telemetry event logging for tracking conversion metrics
+// Format: JSON logs that can be parsed and analyzed for analytics
+function logEvent(sessionId, eventType, data = {}) {
+  const timestamp = new Date().toISOString();
+  const shortSessionId = sessionId.substring(0, 8);
+  console.log(JSON.stringify({
+    timestamp,
+    sessionId: shortSessionId,
+    eventType,
+    ...data
+  }));
+}
+
 const SYSTEM_PROMPT = `Eres un asistente de compras amigable y útil. Tu trabajo es ayudar a los clientes a encontrar productos y hacer pedidos de forma conversacional en español.
 
 La tienda se llama: ${process.env.SHOPIFY_SHOP?.split('.')[0] || 'Mi Tienda'}
@@ -74,11 +87,31 @@ REGLAS CRÍTICAS SOBRE TOOLS:
 - SIEMPRE usa la tool search_products para buscar productos. NUNCA inventes productos, precios ni disponibilidad.
 - SIEMPRE usa la tool add_to_cart para agregar productos al carrito. NUNCA digas que agregaste algo sin llamar a add_to_cart primero. El carrito solo se actualiza cuando llamas a esta tool.
 - IMPORTANTE para add_to_cart: El "variant_id" DEBE ser el valor exacto del campo "id" en el objeto variant (ej: "gid://shopify/ProductVariant/53622813753708"). NO cambies ni acortes este valor. Extrae el price.amount como price en formato string.
-- SIEMPRE usa la tool answer_policy_question para responder preguntas sobre políticas, devoluciones, envíos, etc. No inventes políticas. Después de recibir la respuesta de answer_policy_question, SIEMPRE genera un texto de respuesta conversacional explicando la información que recibiste de forma clara y amigable.
+- SIEMPRE usa la tool answer_policy_question para responder preguntas sobre políticas, devoluciones, envíos, FAQs, garantías, etc. No inventes políticas. Después de recibir la respuesta de answer_policy_question, SIEMPRE genera un texto de respuesta conversacional explicando la información que recibiste de forma clara y amigable.
+- SENSIBILIDAD MEJORADA para answer_policy_question: detecta CUALQUIER pregunta sobre:
+  * Políticas: "¿cuál es tu política...?", "¿qué dicen sobre...?"
+  * Devoluciones/cambios: "¿puedo devolver?", "¿how do returns work?", "¿cambios?"
+  * Envíos: "¿cuánto cuesta envío?", "¿cuánto tarda?", "¿a dónde envían?", "¿envío gratis?"
+  * Garantía/cobertura: "¿garantía?", "¿qué cubre?", "¿cuánto tiempo?"
+  * Condiciones generales: "¿términos?", "¿condiciones?", "¿requisitos?"
+  * Aunque el cliente sea impreciso o use sinónimos, busca la intención de preguntar sobre políticas.
+- Si la respuesta de la tool está vacía o dice "no encontrado": ofrece ayuda alternativa. "No encontré esa información específica, pero puedo ayudarte con..."
 - SIEMPRE usa la tool create_checkout para generar el link de pago cuando el cliente confirme la compra. NUNCA generes URLs tú mismo.
 - Infiere variantes del mensaje del cliente (talla, color, cantidad). Solo pregunta si hay ambigüedad real.
 - Puedes manejar múltiples productos en un solo mensaje.
 - Si un producto no está disponible, dilo claramente.
+
+MANEJO DE AMBIGÜEDAD Y MULTIPLES PRODUCTOS:
+- CUANDO el cliente busca algo ambiguo (ej: "bolsa"): search_products retorna MÚLTIPLES opciones.
+- SI RECIBIS MÚLTIPLES PRODUCTOS:
+  * Muestra 3-5 opciones principales con imagen, precio y link.
+  * Pregunta cuál interesa: "¿Cuál de estos te interesa?" o "¿Prefieres este o este otro?"
+  * Evita información duplicada: resume brevemente cada opción.
+- CUANDO el cliente es específico pero impreciso (ej: "la mochila"): busca con search_products PRIMERO.
+  * Si retorna 1 producto: muéstralo directamente.
+  * Si retorna múltiples: pregunta cuál desea.
+- CUANDO el cliente añade detalles que ayuden (ej: "mochila azul", "mochila para camping"): usa esos detalles en la búsqueda.
+  * El sistema MCP entiende búsquedas naturales, así que manda la consulta tal como la entiende el cliente.
 - Responde SIEMPRE en español, de forma conversacional, amigable y concisa.
 - Cuando el cliente dice "quiero una/uno", "dame una", "me interesa" o similar: es una SOLICITUD DIRECTA DE COMPRA. Llama a add_to_cart INMEDIATAMENTE con quantity 1. NUNCA describes el producto sin agregarlo primero. NO hagas preguntas.
 - Cuando el cliente menciona un tipo de producto (computadora, laptop, teléfono, iMac, etc.) O dice "agrega X", "quiero X" refiriéndose a un producto: BUSCA INMEDIATAMENTE con search_products. NO importa si dice "agrega 2 imacs" o "quiero una laptop", SIEMPRE busca primero. NO pidas más detalles primero.
@@ -261,6 +294,9 @@ async function executeTool(toolName, toolInput, sessionId) {
         const result = await searchProducts(query);
         console.log(`${logPrefix} found ${result?.products?.length || 0} products`);
 
+        // Telemetry: log search event
+        logEvent(sessionId, "SEARCH", { query, productsFound: result?.products?.length || 0 });
+
         // Simplificar la respuesta para Gemini: incluir solo datos esenciales y variant_id claramente identificado
         const simplifiedProducts = result?.products?.map(product => {
           const firstVariant = product.variants?.[0];
@@ -322,6 +358,7 @@ async function executeTool(toolName, toolInput, sessionId) {
         return { products: simplifiedProducts };
       } catch (error) {
         console.error(`${logPrefix} error: ${error.message}`);
+        logEvent(sessionId, "ERROR", { tool: "search_products", errorMessage: error.message });
         return { error: error.message, products: [] };
       }
     }
@@ -372,9 +409,19 @@ async function executeTool(toolName, toolInput, sessionId) {
 
         const updatedSession = getSession(sessionId);
         console.log(`${logPrefix} cart now has ${updatedSession.cart.length} items`);
+
+        // Telemetry: log add to cart event
+        logEvent(sessionId, "ADD_TO_CART", {
+          title: toolInput.title,
+          price: toolInput.price,
+          quantity: toolInput.quantity,
+          cartTotal: updatedSession.cart.length
+        });
+
         return { success: true, cart: updatedSession.cart };
       } catch (error) {
         console.error(`${logPrefix} error: ${error.message}`);
+        logEvent(sessionId, "ERROR", { tool: "add_to_cart", errorMessage: error.message, productTitle: toolInput.title });
         return { error: error.message };
       }
     }
@@ -503,6 +550,13 @@ async function executeTool(toolName, toolInput, sessionId) {
         clearCart(sessionId);
 
         console.log(`${logPrefix} checkout created successfully: ${checkoutUrl.substring(0, 80)}...`);
+
+        // Telemetry: log checkout event (critical for conversion tracking)
+        logEvent(sessionId, "CHECKOUT_CREATED", {
+          cartItems: session.cart.length,
+          cartTotal: session.cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0).toFixed(2)
+        });
+
         return { checkout_url: checkoutUrl };
       } catch (error) {
         console.error(`${logPrefix} error: ${error.message}`);
@@ -518,6 +572,13 @@ async function executeTool(toolName, toolInput, sessionId) {
 async function processMessage(sessionId, userMessage) {
   const logPrefix = `[AI] [${sessionId.substring(0, 8)}...]`;
   const session = getSession(sessionId);
+
+  // Track if this is the first message (new session)
+  const isFirstMessage = session.messages.length === 0;
+
+  if (isFirstMessage) {
+    logEvent(sessionId, "SESSION_START", { firstMessageLength: userMessage.length });
+  }
 
   console.log(`${logPrefix} [processMessage] starting message processing`);
   addMessage(sessionId, "user", userMessage);
