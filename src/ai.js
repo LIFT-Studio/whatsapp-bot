@@ -14,6 +14,7 @@ const {
   setCartId,
   clearCart,
 } = require("./session");
+const { log, logStart, logSuccess, logError, logToolExecution, logUserMessage, logBotResponse, logCartOperation, logSessionEvent, createTimer } = require('./utils/logger');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -402,6 +403,7 @@ const tools = [
 
 async function executeTool(toolName, toolInput, sessionId) {
   const session = getSession(sessionId);
+  const timer = createTimer();
 
   // Log structure: [COMPONENT] [SESSION_ID] [TOOL] message
   const logPrefix = `[AI] [${sessionId.substring(0, 8)}...] [${toolName}]`;
@@ -410,14 +412,20 @@ async function executeTool(toolName, toolInput, sessionId) {
     case "search_products": {
       // query es una cadena de texto (lenguaje natural)
       const query = toolInput.query;
+      logStart(sessionId, `executeTool[search_products]`, { query });
       console.log(`${logPrefix} query: "${query}"`);
 
       try {
         const result = await searchProducts(query);
-        console.log(`${logPrefix} found ${result?.products?.length || 0} products`);
+        const productsFound = result?.products?.length || 0;
+        console.log(`${logPrefix} found ${productsFound} products`);
+        logSuccess(sessionId, `executeTool[search_products]`, timer.elapsed(), {
+          query,
+          productsFound
+        });
 
         // Telemetry: log search event
-        logEvent(sessionId, "SEARCH", { query, productsFound: result?.products?.length || 0 });
+        logEvent(sessionId, "SEARCH", { query, productsFound });
 
         // Simplificar la respuesta para Gemini: incluir solo datos esenciales y variant_id claramente identificado
         const simplifiedProducts = result?.products?.map(product => {
@@ -480,6 +488,7 @@ async function executeTool(toolName, toolInput, sessionId) {
         return { products: simplifiedProducts };
       } catch (error) {
         console.error(`${logPrefix} error: ${error.message}`);
+        logError(sessionId, `executeTool[search_products]`, error, { query });
         logEvent(sessionId, "ERROR", { tool: "search_products", errorMessage: error.message });
         return { error: error.message, products: [] };
       }
@@ -501,6 +510,7 @@ async function executeTool(toolName, toolInput, sessionId) {
     }
 
     case "add_to_cart": {
+      logStart(sessionId, `executeTool[add_to_cart]`, { title: toolInput.title, quantity: toolInput.quantity });
       console.log(`${logPrefix} adding variant_id: ${toolInput.variant_id.substring(0, 50)}..., quantity: ${toolInput.quantity}`);
 
       try {
@@ -532,6 +542,13 @@ async function executeTool(toolName, toolInput, sessionId) {
         const updatedSession = getSession(sessionId);
         console.log(`${logPrefix} cart now has ${updatedSession.cart.length} items`);
 
+        logCartOperation(sessionId, "add", {
+          title: toolInput.title,
+          price: toolInput.price,
+          quantity: toolInput.quantity,
+          cartTotal: updatedSession.cart.length
+        }, true);
+
         // Telemetry: log add to cart event
         logEvent(sessionId, "ADD_TO_CART", {
           title: toolInput.title,
@@ -540,15 +557,22 @@ async function executeTool(toolName, toolInput, sessionId) {
           cartTotal: updatedSession.cart.length
         });
 
+        logSuccess(sessionId, `executeTool[add_to_cart]`, timer.elapsed(), {
+          title: toolInput.title,
+          cartTotal: updatedSession.cart.length
+        });
+
         return { success: true, cart: updatedSession.cart };
       } catch (error) {
         console.error(`${logPrefix} error: ${error.message}`);
+        logError(sessionId, `executeTool[add_to_cart]`, error, { productTitle: toolInput.title });
         logEvent(sessionId, "ERROR", { tool: "add_to_cart", errorMessage: error.message, productTitle: toolInput.title });
         return { error: error.message };
       }
     }
 
     case "remove_from_cart": {
+      logStart(sessionId, `executeTool[remove_from_cart]`, { title: toolInput.title });
       console.log(`${logPrefix} removing variant_id: ${toolInput.variant_id.substring(0, 50)}...`);
 
       try {
@@ -556,6 +580,7 @@ async function executeTool(toolName, toolInput, sessionId) {
         const item = session.cart.find((i) => i.variant_id === toolInput.variant_id);
         if (!item) {
           console.warn(`${logPrefix} product not found in cart`);
+          logError(sessionId, `executeTool[remove_from_cart]`, "Product not found in cart", { title: toolInput.title });
           return { error: "Producto no encontrado en el carrito" };
         }
 
@@ -571,14 +596,19 @@ async function executeTool(toolName, toolInput, sessionId) {
           console.log(`${logPrefix} product removed. cart now has ${session.cart.length} items`);
         }
 
+        logCartOperation(sessionId, "remove", { title: toolInput.title, cartTotal: session.cart.length }, true);
+        logSuccess(sessionId, `executeTool[remove_from_cart]`, timer.elapsed(), { title: toolInput.title });
+
         return { success: true, cart: session.cart };
       } catch (error) {
         console.error(`${logPrefix} error: ${error.message}`);
+        logError(sessionId, `executeTool[remove_from_cart]`, error, { title: toolInput.title });
         return { error: error.message };
       }
     }
 
     case "update_cart_item": {
+      logStart(sessionId, `executeTool[update_cart_item]`, { title: toolInput.title, newQuantity: toolInput.new_quantity });
       console.log(`${logPrefix} updating quantity: variant_id ${toolInput.variant_id.substring(0, 50)}..., new_quantity: ${toolInput.new_quantity}`);
 
       try {
@@ -586,6 +616,7 @@ async function executeTool(toolName, toolInput, sessionId) {
         const item = session.cart.find((i) => i.variant_id === toolInput.variant_id);
         if (!item) {
           console.warn(`${logPrefix} product not found in cart`);
+          logError(sessionId, `executeTool[update_cart_item]`, "Product not found in cart", { title: toolInput.title });
           return { error: "Producto no encontrado en el carrito" };
         }
 
@@ -606,19 +637,26 @@ async function executeTool(toolName, toolInput, sessionId) {
           console.log(`${logPrefix} quantity updated successfully`);
         }
 
+        logCartOperation(sessionId, "update", { title: toolInput.title, newQuantity: toolInput.new_quantity }, true);
+        logSuccess(sessionId, `executeTool[update_cart_item]`, timer.elapsed(), { title: toolInput.title });
+
         return { success: true, cart: session.cart };
       } catch (error) {
         console.error(`${logPrefix} error: ${error.message}`);
+        logError(sessionId, `executeTool[update_cart_item]`, error, { title: toolInput.title });
         return { error: error.message };
       }
     }
 
     case "view_cart": {
+      logStart(sessionId, `executeTool[view_cart]`, { cartItems: session.cart.length });
       console.log(`${logPrefix} viewing cart with ${session.cart.length} items`);
+      logSuccess(sessionId, `executeTool[view_cart]`, timer.elapsed(), { cartItems: session.cart.length });
       return { cart: session.cart };
     }
 
     case "clear_cart": {
+      logStart(sessionId, `executeTool[clear_cart]`, { itemsCleared: session.cart.length });
       console.log(`${logPrefix} clearing cart (${session.cart.length} items)`);
 
       try {
@@ -636,26 +674,32 @@ async function executeTool(toolName, toolInput, sessionId) {
         // Limpiar session
         clearCart(sessionId);
         console.log(`${logPrefix} cart cleared successfully`);
+        logCartOperation(sessionId, "clear", { itemsCleared: session.cart.length }, true);
+        logSuccess(sessionId, `executeTool[clear_cart]`, timer.elapsed(), { itemsCleared: session.cart.length });
         return { success: true, cart: session.cart };
       } catch (error) {
         console.error(`${logPrefix} error: ${error.message}`);
         // Igual limpiamos la session localmente
         clearCart(sessionId);
+        logError(sessionId, `executeTool[clear_cart]`, error, {});
         return { success: true, cart: session.cart };
       }
     }
 
     case "create_checkout": {
+      logStart(sessionId, `executeTool[create_checkout]`, { cartItems: session.cart.length });
       console.log(`${logPrefix} creating checkout with cartId: ${session.cartId}`);
 
       try {
         if (!session.cartId) {
           console.warn(`${logPrefix} no active cart`);
+          logError(sessionId, `executeTool[create_checkout]`, "No active cart", {});
           return { error: "No hay carrito activo" };
         }
 
         if (session.cart.length === 0) {
           console.warn(`${logPrefix} cart is empty`);
+          logError(sessionId, `executeTool[create_checkout]`, "Cart is empty", {});
           return { error: "El carrito está vacío" };
         }
 
@@ -665,8 +709,12 @@ async function executeTool(toolName, toolInput, sessionId) {
 
         if (!checkoutUrl) {
           console.error(`${logPrefix} checkout_url not found in response`);
+          logError(sessionId, `executeTool[create_checkout]`, "Checkout URL not found", {});
           return { error: "No se pudo generar el checkout" };
         }
+
+        // Calcular total del carrito antes de limpiar
+        const cartTotal = session.cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0).toFixed(2);
 
         // Limpiar session después de checkout
         clearCart(sessionId);
@@ -676,12 +724,18 @@ async function executeTool(toolName, toolInput, sessionId) {
         // Telemetry: log checkout event (critical for conversion tracking)
         logEvent(sessionId, "CHECKOUT_CREATED", {
           cartItems: session.cart.length,
-          cartTotal: session.cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0).toFixed(2)
+          cartTotal
+        });
+
+        logSuccess(sessionId, `executeTool[create_checkout]`, timer.elapsed(), {
+          cartItems: session.cart.length,
+          cartTotal
         });
 
         return { checkout_url: checkoutUrl };
       } catch (error) {
         console.error(`${logPrefix} error: ${error.message}`);
+        logError(sessionId, `executeTool[create_checkout]`, error, {});
         return { error: error.message };
       }
     }
@@ -694,14 +748,17 @@ async function executeTool(toolName, toolInput, sessionId) {
 async function processMessage(sessionId, userMessage) {
   const logPrefix = `[AI] [${sessionId.substring(0, 8)}...]`;
   const session = getSession(sessionId);
+  const messageTimer = createTimer();
 
   // Track if this is the first message (new session)
   const isFirstMessage = session.messages.length === 0;
 
   if (isFirstMessage) {
+    logSessionEvent(sessionId, "start", { messageCount: 0 });
     logEvent(sessionId, "SESSION_START", { firstMessageLength: userMessage.length });
   }
 
+  logUserMessage(sessionId, userMessage, userMessage.length, isFirstMessage);
   console.log(`${logPrefix} [processMessage] starting message processing`);
   addMessage(sessionId, "user", userMessage);
 
@@ -726,6 +783,7 @@ async function processMessage(sessionId, userMessage) {
   console.log(`${logPrefix} [processMessage] sending to Gemini (history: ${history.length} msgs)`);
   let result = await chat.sendMessage(userMessage + cartContext);
   let response = result.response;
+  let toolCallCount = 0;
 
   while (
     response?.candidates?.[0]?.content?.parts?.some((p) => p.functionCall)
@@ -734,7 +792,9 @@ async function processMessage(sessionId, userMessage) {
       (p) => p.functionCall
     );
 
+    toolCallCount += functionCalls.length;
     console.log(`${logPrefix} [processMessage] executing ${functionCalls.length} tool calls`);
+    logStart(sessionId, `executeToolCalls`, { count: functionCalls.length });
 
     const functionResponses = [];
     for (const part of functionCalls) {
@@ -751,6 +811,7 @@ async function processMessage(sessionId, userMessage) {
         });
       } catch (error) {
         console.error(`${logPrefix} [processMessage] tool error in ${name}: ${error.message}`);
+        logError(sessionId, `executeToolCalls[${name}]`, error, {});
         functionResponses.push({
           functionResponse: {
             name,
@@ -770,7 +831,16 @@ async function processMessage(sessionId, userMessage) {
   addMessage(sessionId, "assistant", assistantText);
 
   const updatedSession = getSession(sessionId);
+  const totalDuration = messageTimer.elapsed();
   console.log(`${logPrefix} [processMessage] completed. response length: ${assistantText.length} chars, cart items: ${updatedSession.cart.length}`);
+
+  logBotResponse(sessionId, assistantText, assistantText.length, toolCallCount, totalDuration);
+  logSuccess(sessionId, "processMessage", totalDuration, {
+    responseLength: assistantText.length,
+    toolCalls: toolCallCount,
+    cartItems: updatedSession.cart.length,
+    messageHistoryLength: updatedSession.messages.length
+  });
 
   return {
     response: assistantText,
