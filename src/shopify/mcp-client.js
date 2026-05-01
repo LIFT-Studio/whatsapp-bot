@@ -13,80 +13,41 @@
 
 const SHOPIFY_SHOP = process.env.SHOPIFY_SHOP;
 const MCP_ENDPOINT = `https://${SHOPIFY_SHOP}/api/mcp`;
+const DEFAULT_TIMEOUT_MS = parseInt(process.env.MCP_TIMEOUT_MS || '8000');
+const DEFAULT_MAX_RETRIES = parseInt(process.env.MCP_MAX_RETRIES || '3');
 
 let requestId = 0;
 
 /**
- * Realiza una llamada JSON-RPC 2.0 al Storefront MCP con reintentos automáticos
+ * Realiza una llamada JSON-RPC 2.0 al Storefront MCP con timeouts y reintentos
  * @param {string} toolName - Nombre de la herramienta
  * @param {object} toolArguments - Parámetros de la herramienta
- * @param {number} maxRetries - Número máximo de reintentos (default: 2)
+ * @param {number} maxRetries - Número máximo de reintentos (default: DEFAULT_MAX_RETRIES)
+ * @param {number} timeoutMs - Timeout por intento en ms (default: DEFAULT_TIMEOUT_MS)
  * @returns {Promise<object>} Resultado de la herramienta
  */
-async function callMCPTool(toolName, toolArguments, maxRetries = 2) {
+async function callMCPTool(toolName, toolArguments, maxRetries = DEFAULT_MAX_RETRIES, timeoutMs = DEFAULT_TIMEOUT_MS) {
   let lastError;
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
-      const id = ++requestId;
-
-      const payload = {
-        jsonrpc: "2.0",
-        method: "tools/call",
-        id,
-        params: {
-          name: toolName,
-          arguments: toolArguments,
-        },
-      };
-
       if (attempt === 0) {
         console.log(`[MCP] Llamando ${toolName}:`, JSON.stringify(toolArguments, null, 2).substring(0, 200));
       } else {
-        console.log(`[MCP] Reintentando ${toolName} (intento ${attempt}/${maxRetries})...`);
+        console.log(`[MCP] Reintentando ${toolName} (intento ${attempt}/${maxRetries}, timeout: ${timeoutMs}ms)...`);
       }
 
-      const response = await fetch(MCP_ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        throw new Error(`MCP HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-
-      // JSON-RPC puede retornar error
-      if (data.error) {
-        const errorMsg = data.error.message || JSON.stringify(data.error);
-        throw new Error(`MCP Error (${data.error.code}): ${errorMsg}`);
-      }
-
-      console.log(`[MCP] ✅ Respuesta de ${toolName}: ${data.result ? "OK" : "vacío"}`);
-
-      // Storefront MCP wraps response in { content: [{ type: "text", text: "..." }] }
-      // Extract and parse if needed
-      let result = data.result;
-      if (result && result.content && Array.isArray(result.content)) {
-        const textContent = result.content.find((c) => c.type === "text");
-        if (textContent && typeof textContent.text === "string") {
-          try {
-            result = JSON.parse(textContent.text);
-          } catch (e) {
-            // If it's not JSON, keep the original text
-            result = textContent.text;
-          }
-        }
-      }
-
+      // Execute fetch with timeout
+      const result = await fetchWithTimeout(toolName, toolArguments, timeoutMs);
       return result;
     } catch (error) {
       lastError = error;
-      console.error(`[MCP] ❌ Error en ${toolName} (intento ${attempt + 1}/${maxRetries + 1}):`, error.message);
+      const isTimeout = error.name === 'TimeoutError';
+      const errorType = isTimeout ? 'TIMEOUT' : 'ERROR';
 
-      // Si es el último intento o no es un error de timeout/red, lanza el error
+      console.error(`[MCP] ❌ ${errorType} en ${toolName} (intento ${attempt + 1}/${maxRetries + 1}):`, error.message);
+
+      // Si es el último intento, lanza el error
       if (attempt === maxRetries) {
         throw error;
       }
@@ -99,6 +60,75 @@ async function callMCPTool(toolName, toolArguments, maxRetries = 2) {
   }
 
   throw lastError;
+}
+
+/**
+ * Ejecuta fetch con timeout
+ * @private
+ */
+async function fetchWithTimeout(toolName, toolArguments, timeoutMs) {
+  const id = ++requestId;
+
+  const payload = {
+    jsonrpc: "2.0",
+    method: "tools/call",
+    id,
+    params: {
+      name: toolName,
+      arguments: toolArguments,
+    },
+  };
+
+  // Create timeout promise
+  const timeoutPromise = new Promise((_, reject) => {
+    setTimeout(() => {
+      const error = new Error(`MCP ${toolName} timed out after ${timeoutMs}ms`);
+      error.name = 'TimeoutError';
+      error.timeout = timeoutMs;
+      reject(error);
+    }, timeoutMs);
+  });
+
+  // Race between fetch and timeout
+  const response = await Promise.race([
+    fetch(MCP_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }),
+    timeoutPromise
+  ]);
+
+  if (!response.ok) {
+    throw new Error(`MCP HTTP ${response.status}: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+
+  // JSON-RPC puede retornar error
+  if (data.error) {
+    const errorMsg = data.error.message || JSON.stringify(data.error);
+    throw new Error(`MCP Error (${data.error.code}): ${errorMsg}`);
+  }
+
+  console.log(`[MCP] ✅ Respuesta de ${toolName}: ${data.result ? "OK" : "vacío"}`);
+
+  // Storefront MCP wraps response in { content: [{ type: "text", text: "..." }] }
+  // Extract and parse if needed
+  let result = data.result;
+  if (result && result.content && Array.isArray(result.content)) {
+    const textContent = result.content.find((c) => c.type === "text");
+    if (textContent && typeof textContent.text === "string") {
+      try {
+        result = JSON.parse(textContent.text);
+      } catch (e) {
+        // If it's not JSON, keep the original text
+        result = textContent.text;
+      }
+    }
+  }
+
+  return result;
 }
 
 /**
