@@ -15,7 +15,6 @@ const {
   clearCart,
 } = require("./session");
 const { log, logStart, logSuccess, logError, logToolExecution, logUserMessage, logBotResponse, logCartOperation, logSessionEvent, createTimer } = require('./utils/logger');
-const { handleError, formatErrorForLog } = require('./utils/api-error-handler');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -489,26 +488,9 @@ async function executeTool(toolName, toolInput, sessionId) {
         return { products: simplifiedProducts };
       } catch (error) {
         console.error(`${logPrefix} error: ${error.message}`);
-        const errorInfo = handleError(error, 'search_products');
-        const errorLog = formatErrorForLog(error, 'search_products');
-
-        logError(sessionId, `executeTool[search_products]`, error, {
-          query,
-          errorType: errorInfo.errorType,
-          isRetryable: errorInfo.isRetryable
-        });
-        logEvent(sessionId, "ERROR", {
-          tool: "search_products",
-          errorType: errorInfo.errorType,
-          errorMessage: error.message,
-          userMessage: errorInfo.userMessage
-        });
-
-        return {
-          error: errorInfo.userMessage,
-          errorType: errorInfo.errorType,
-          products: []
-        };
+        logError(sessionId, `executeTool[search_products]`, error, { query });
+        logEvent(sessionId, "ERROR", { tool: "search_products", errorMessage: error.message });
+        return { error: error.message, products: [] };
       }
     }
 
@@ -583,26 +565,9 @@ async function executeTool(toolName, toolInput, sessionId) {
         return { success: true, cart: updatedSession.cart };
       } catch (error) {
         console.error(`${logPrefix} error: ${error.message}`);
-        const errorInfo = handleError(error, 'add_to_cart');
-        const errorLog = formatErrorForLog(error, 'add_to_cart');
-
-        logError(sessionId, `executeTool[add_to_cart]`, error, {
-          productTitle: toolInput.title,
-          errorType: errorInfo.errorType,
-          isRetryable: errorInfo.isRetryable
-        });
-        logEvent(sessionId, "ERROR", {
-          tool: "add_to_cart",
-          errorType: errorInfo.errorType,
-          errorMessage: error.message,
-          userMessage: errorInfo.userMessage,
-          productTitle: toolInput.title
-        });
-
-        return {
-          error: errorInfo.userMessage,
-          errorType: errorInfo.errorType
-        };
+        logError(sessionId, `executeTool[add_to_cart]`, error, { productTitle: toolInput.title });
+        logEvent(sessionId, "ERROR", { tool: "add_to_cart", errorMessage: error.message, productTitle: toolInput.title });
+        return { error: error.message };
       }
     }
 
@@ -770,24 +735,8 @@ async function executeTool(toolName, toolInput, sessionId) {
         return { checkout_url: checkoutUrl };
       } catch (error) {
         console.error(`${logPrefix} error: ${error.message}`);
-        const errorInfo = handleError(error, 'create_checkout');
-        const errorLog = formatErrorForLog(error, 'create_checkout');
-
-        logError(sessionId, `executeTool[create_checkout]`, error, {
-          errorType: errorInfo.errorType,
-          isRetryable: errorInfo.isRetryable
-        });
-        logEvent(sessionId, "ERROR", {
-          tool: "create_checkout",
-          errorType: errorInfo.errorType,
-          errorMessage: error.message,
-          userMessage: errorInfo.userMessage
-        });
-
-        return {
-          error: errorInfo.userMessage,
-          errorType: errorInfo.errorType
-        };
+        logError(sessionId, `executeTool[create_checkout]`, error, {});
+        return { error: error.message };
       }
     }
 
