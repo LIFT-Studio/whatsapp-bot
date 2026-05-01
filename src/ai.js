@@ -15,6 +15,8 @@ const {
   clearCart,
 } = require("./session");
 const { log, logStart, logSuccess, logError, logToolExecution, logUserMessage, logBotResponse, logCartOperation, logSessionEvent, createTimer } = require('./utils/logger');
+const { handleError } = require('./utils/api-error-handler');
+const { withRetry, executeWithTimeout } = require('./utils/retry');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -416,7 +418,14 @@ async function executeTool(toolName, toolInput, sessionId) {
       console.log(`${logPrefix} query: "${query}"`);
 
       try {
-        const result = await searchProducts(query);
+        // READ operation: safe to retry on timeout
+        const result = await withRetry(
+          () => searchProducts(query),
+          2,  // maxRetries
+          8000,  // timeoutMs
+          `search_products:${query.substring(0, 30)}`
+        );
+
         const productsFound = result?.products?.length || 0;
         console.log(`${logPrefix} found ${productsFound} products`);
         logSuccess(sessionId, `executeTool[search_products]`, timer.elapsed(), {
@@ -487,10 +496,11 @@ async function executeTool(toolName, toolInput, sessionId) {
 
         return { products: simplifiedProducts };
       } catch (error) {
-        console.error(`${logPrefix} error: ${error.message}`);
-        logError(sessionId, `executeTool[search_products]`, error, { query });
-        logEvent(sessionId, "ERROR", { tool: "search_products", errorMessage: error.message });
-        return { error: error.message, products: [] };
+        const errorInfo = handleError(error, 'search_products', false); // isWriteOperation = false
+        console.error(`${logPrefix} [${errorInfo.errorType}] ${errorInfo.userMessage}`);
+        logError(sessionId, `executeTool[search_products]`, error, { query, errorType: errorInfo.errorType });
+        logEvent(sessionId, "ERROR", { tool: "search_products", errorType: errorInfo.errorType, errorMessage: errorInfo.userMessage });
+        return { error: errorInfo.userMessage, errorType: errorInfo.errorType, products: [] };
       }
     }
 
@@ -498,14 +508,24 @@ async function executeTool(toolName, toolInput, sessionId) {
       // Responde preguntas sobre políticas
       const query = toolInput.query;
       console.log(`${logPrefix} query: "${query}"`);
+      logStart(sessionId, `executeTool[answer_policy_question]`, { query });
 
       try {
-        const result = await searchPolicies(query);
+        // READ operation: safe to retry on timeout
+        const result = await withRetry(
+          () => searchPolicies(query),
+          2,  // maxRetries
+          8000,  // timeoutMs
+          `answer_policy_question:${query.substring(0, 30)}`
+        );
         console.log(`${logPrefix} policy answer obtained`);
+        logSuccess(sessionId, `executeTool[answer_policy_question]`, timer.elapsed(), { query });
         return result;
       } catch (error) {
-        console.error(`${logPrefix} error: ${error.message}`);
-        return { error: error.message, answer: "No pude obtener información sobre esa política." };
+        const errorInfo = handleError(error, 'answer_policy_question', false); // isWriteOperation = false
+        console.error(`${logPrefix} [${errorInfo.errorType}] ${errorInfo.userMessage}`);
+        logError(sessionId, `executeTool[answer_policy_question]`, error, { query, errorType: errorInfo.errorType });
+        return { error: errorInfo.userMessage, errorType: errorInfo.errorType, answer: "No pude obtener información sobre esa política." };
       }
     }
 
@@ -514,7 +534,8 @@ async function executeTool(toolName, toolInput, sessionId) {
       console.log(`${logPrefix} adding variant_id: ${toolInput.variant_id.substring(0, 50)}..., quantity: ${toolInput.quantity}`);
 
       try {
-        // Crear carrito si no existe
+        // WRITE operation: do NOT retry on timeout after request sent
+        // Just call updateCart directly (mcp-client has its own retry for connection errors)
         if (!session.cartId) {
           console.log(`${logPrefix} creating new cart...`);
         }
@@ -564,10 +585,11 @@ async function executeTool(toolName, toolInput, sessionId) {
 
         return { success: true, cart: updatedSession.cart };
       } catch (error) {
-        console.error(`${logPrefix} error: ${error.message}`);
-        logError(sessionId, `executeTool[add_to_cart]`, error, { productTitle: toolInput.title });
-        logEvent(sessionId, "ERROR", { tool: "add_to_cart", errorMessage: error.message, productTitle: toolInput.title });
-        return { error: error.message };
+        const errorInfo = handleError(error, 'add_to_cart', true); // isWriteOperation = true
+        console.error(`${logPrefix} [${errorInfo.errorType}] ${errorInfo.userMessage}`);
+        logError(sessionId, `executeTool[add_to_cart]`, error, { productTitle: toolInput.title, errorType: errorInfo.errorType });
+        logEvent(sessionId, "ERROR", { tool: "add_to_cart", errorType: errorInfo.errorType, errorMessage: errorInfo.userMessage, productTitle: toolInput.title });
+        return { error: errorInfo.userMessage, errorType: errorInfo.errorType };
       }
     }
 
@@ -581,9 +603,10 @@ async function executeTool(toolName, toolInput, sessionId) {
         if (!item) {
           console.warn(`${logPrefix} product not found in cart`);
           logError(sessionId, `executeTool[remove_from_cart]`, "Product not found in cart", { title: toolInput.title });
-          return { error: "Producto no encontrado en el carrito" };
+          return { error: "Producto no encontrado en el carrito", errorType: "NOT_FOUND" };
         }
 
+        // WRITE operation: do NOT retry on timeout after request sent
         // Llamar a updateCart del MCP para remover el item
         const mcpResult = await updateCart({
           cart_id: session.cartId,
@@ -601,9 +624,10 @@ async function executeTool(toolName, toolInput, sessionId) {
 
         return { success: true, cart: session.cart };
       } catch (error) {
-        console.error(`${logPrefix} error: ${error.message}`);
-        logError(sessionId, `executeTool[remove_from_cart]`, error, { title: toolInput.title });
-        return { error: error.message };
+        const errorInfo = handleError(error, 'remove_from_cart', true); // isWriteOperation = true
+        console.error(`${logPrefix} [${errorInfo.errorType}] ${errorInfo.userMessage}`);
+        logError(sessionId, `executeTool[remove_from_cart]`, error, { title: toolInput.title, errorType: errorInfo.errorType });
+        return { error: errorInfo.userMessage, errorType: errorInfo.errorType };
       }
     }
 
@@ -617,9 +641,10 @@ async function executeTool(toolName, toolInput, sessionId) {
         if (!item) {
           console.warn(`${logPrefix} product not found in cart`);
           logError(sessionId, `executeTool[update_cart_item]`, "Product not found in cart", { title: toolInput.title });
-          return { error: "Producto no encontrado en el carrito" };
+          return { error: "Producto no encontrado en el carrito", errorType: "NOT_FOUND" };
         }
 
+        // WRITE operation: do NOT retry on timeout after request sent
         // Llamar a updateCart del MCP
         const mcpResult = await updateCart({
           cart_id: session.cartId,
@@ -642,17 +667,27 @@ async function executeTool(toolName, toolInput, sessionId) {
 
         return { success: true, cart: session.cart };
       } catch (error) {
-        console.error(`${logPrefix} error: ${error.message}`);
-        logError(sessionId, `executeTool[update_cart_item]`, error, { title: toolInput.title });
-        return { error: error.message };
+        const errorInfo = handleError(error, 'update_cart_item', true); // isWriteOperation = true
+        console.error(`${logPrefix} [${errorInfo.errorType}] ${errorInfo.userMessage}`);
+        logError(sessionId, `executeTool[update_cart_item]`, error, { title: toolInput.title, errorType: errorInfo.errorType });
+        return { error: errorInfo.userMessage, errorType: errorInfo.errorType };
       }
     }
 
     case "view_cart": {
       logStart(sessionId, `executeTool[view_cart]`, { cartItems: session.cart.length });
       console.log(`${logPrefix} viewing cart with ${session.cart.length} items`);
-      logSuccess(sessionId, `executeTool[view_cart]`, timer.elapsed(), { cartItems: session.cart.length });
-      return { cart: session.cart };
+
+      try {
+        // READ operation: returning local session cart (no external call)
+        logSuccess(sessionId, `executeTool[view_cart]`, timer.elapsed(), { cartItems: session.cart.length });
+        return { cart: session.cart };
+      } catch (error) {
+        const errorInfo = handleError(error, 'view_cart', false); // isWriteOperation = false
+        console.error(`${logPrefix} [${errorInfo.errorType}] ${errorInfo.userMessage}`);
+        logError(sessionId, `executeTool[view_cart]`, error, { errorType: errorInfo.errorType });
+        return { error: errorInfo.userMessage, errorType: errorInfo.errorType, cart: [] };
+      }
     }
 
     case "clear_cart": {
@@ -660,6 +695,7 @@ async function executeTool(toolName, toolInput, sessionId) {
       console.log(`${logPrefix} clearing cart (${session.cart.length} items)`);
 
       try {
+        // WRITE operation: do NOT retry on timeout after request sent
         if (session.cartId) {
           // Llamar a updateCart del MCP para limpiar
           const lineIds = session.cart.map((item) => item.line_id);
@@ -678,11 +714,12 @@ async function executeTool(toolName, toolInput, sessionId) {
         logSuccess(sessionId, `executeTool[clear_cart]`, timer.elapsed(), { itemsCleared: session.cart.length });
         return { success: true, cart: session.cart };
       } catch (error) {
-        console.error(`${logPrefix} error: ${error.message}`);
-        // Igual limpiamos la session localmente
+        const errorInfo = handleError(error, 'clear_cart', true); // isWriteOperation = true
+        console.error(`${logPrefix} [${errorInfo.errorType}] ${errorInfo.userMessage}`);
+        // Limpiar session localmente anyway
         clearCart(sessionId);
-        logError(sessionId, `executeTool[clear_cart]`, error, {});
-        return { success: true, cart: session.cart };
+        logError(sessionId, `executeTool[clear_cart]`, error, { errorType: errorInfo.errorType });
+        return { error: errorInfo.userMessage, errorType: errorInfo.errorType, success: false };
       }
     }
 
@@ -694,15 +731,16 @@ async function executeTool(toolName, toolInput, sessionId) {
         if (!session.cartId) {
           console.warn(`${logPrefix} no active cart`);
           logError(sessionId, `executeTool[create_checkout]`, "No active cart", {});
-          return { error: "No hay carrito activo" };
+          return { error: "No hay carrito activo", errorType: "NOT_FOUND" };
         }
 
         if (session.cart.length === 0) {
           console.warn(`${logPrefix} cart is empty`);
           logError(sessionId, `executeTool[create_checkout]`, "Cart is empty", {});
-          return { error: "El carrito está vacío" };
+          return { error: "El carrito está vacío", errorType: "NOT_FOUND" };
         }
 
+        // WRITE operation: do NOT retry on timeout after request sent
         // Obtener el carrito final con checkout_url
         const mcpResult = await getCart(session.cartId);
         const checkoutUrl = mcpResult.cart?.checkout_url;
@@ -710,7 +748,7 @@ async function executeTool(toolName, toolInput, sessionId) {
         if (!checkoutUrl) {
           console.error(`${logPrefix} checkout_url not found in response`);
           logError(sessionId, `executeTool[create_checkout]`, "Checkout URL not found", {});
-          return { error: "No se pudo generar el checkout" };
+          return { error: "No se pudo generar el checkout", errorType: "INVALID_RESPONSE" };
         }
 
         // Calcular total del carrito antes de limpiar
@@ -734,9 +772,10 @@ async function executeTool(toolName, toolInput, sessionId) {
 
         return { checkout_url: checkoutUrl };
       } catch (error) {
-        console.error(`${logPrefix} error: ${error.message}`);
-        logError(sessionId, `executeTool[create_checkout]`, error, {});
-        return { error: error.message };
+        const errorInfo = handleError(error, 'create_checkout', true); // isWriteOperation = true
+        console.error(`${logPrefix} [${errorInfo.errorType}] ${errorInfo.userMessage}`);
+        logError(sessionId, `executeTool[create_checkout]`, error, { errorType: errorInfo.errorType });
+        return { error: errorInfo.userMessage, errorType: errorInfo.errorType };
       }
     }
 
@@ -781,72 +820,103 @@ async function processMessage(sessionId, userMessage) {
       : "\n[El carrito está vacío]";
 
   console.log(`${logPrefix} [processMessage] sending to Gemini (history: ${history.length} msgs)`);
-  let result = await chat.sendMessage(userMessage + cartContext);
-  let response = result.response;
-  let toolCallCount = 0;
 
-  while (
-    response?.candidates?.[0]?.content?.parts?.some((p) => p.functionCall)
-  ) {
-    const functionCalls = response.candidates[0].content.parts.filter(
-      (p) => p.functionCall
+  try {
+    // Wrap Gemini call with timeout to handle unresponsive API
+    let result = await executeWithTimeout(
+      () => chat.sendMessage(userMessage + cartContext),
+      10000,  // 10 second timeout for Gemini
+      `chat.sendMessage`
     );
+    let response = result.response;
+    let toolCallCount = 0;
 
-    toolCallCount += functionCalls.length;
-    console.log(`${logPrefix} [processMessage] executing ${functionCalls.length} tool calls`);
-    logStart(sessionId, `executeToolCalls`, { count: functionCalls.length });
+    while (
+      response?.candidates?.[0]?.content?.parts?.some((p) => p.functionCall)
+    ) {
+      const functionCalls = response.candidates[0].content.parts.filter(
+        (p) => p.functionCall
+      );
 
-    const functionResponses = [];
-    for (const part of functionCalls) {
-      const { name, args } = part.functionCall;
-      try {
-        const toolResult = await executeTool(name, args, sessionId);
-        functionResponses.push({
-          functionResponse: {
-            name,
-            response: Array.isArray(toolResult)
-              ? { results: toolResult }
-              : toolResult,
-          },
-        });
-      } catch (error) {
-        console.error(`${logPrefix} [processMessage] tool error in ${name}: ${error.message}`);
-        logError(sessionId, `executeToolCalls[${name}]`, error, {});
-        functionResponses.push({
-          functionResponse: {
-            name,
-            response: { error: error.message },
-          },
-        });
+      toolCallCount += functionCalls.length;
+      console.log(`${logPrefix} [processMessage] executing ${functionCalls.length} tool calls`);
+      logStart(sessionId, `executeToolCalls`, { count: functionCalls.length });
+
+      const functionResponses = [];
+      for (const part of functionCalls) {
+        const { name, args } = part.functionCall;
+        try {
+          const toolResult = await executeTool(name, args, sessionId);
+          functionResponses.push({
+            functionResponse: {
+              name,
+              response: Array.isArray(toolResult)
+                ? { results: toolResult }
+                : toolResult,
+            },
+          });
+        } catch (error) {
+          console.error(`${logPrefix} [processMessage] tool error in ${name}: ${error.message}`);
+          logError(sessionId, `executeToolCalls[${name}]`, error, {});
+          functionResponses.push({
+            functionResponse: {
+              name,
+              response: { error: error.message },
+            },
+          });
+        }
       }
+
+      console.log(`${logPrefix} [processMessage] sending tool results back to Gemini`);
+      result = await executeWithTimeout(
+        () => chat.sendMessage(functionResponses),
+        10000,  // 10 second timeout for Gemini
+        `chat.sendMessage[followup]`
+      );
+      response = result.response;
     }
 
-    console.log(`${logPrefix} [processMessage] sending tool results back to Gemini`);
-    result = await chat.sendMessage(functionResponses);
-    response = result.response;
+    // Success case: extract assistant text and return response
+    const assistantText = response?.text?.() || "";
+
+    addMessage(sessionId, "assistant", assistantText);
+
+    const updatedSession = getSession(sessionId);
+    const totalDuration = messageTimer.elapsed();
+    console.log(`${logPrefix} [processMessage] completed. response length: ${assistantText.length} chars, cart items: ${updatedSession.cart.length}`);
+
+    logBotResponse(sessionId, assistantText, assistantText.length, toolCallCount, totalDuration);
+    logSuccess(sessionId, "processMessage", totalDuration, {
+      responseLength: assistantText.length,
+      toolCalls: toolCallCount,
+      cartItems: updatedSession.cart.length,
+      messageHistoryLength: updatedSession.messages.length
+    });
+
+    return {
+      response: assistantText,
+      state: updatedSession.state,
+      cart: updatedSession.cart,
+    };
+  } catch (geminiError) {
+    const errorInfo = handleError(geminiError, 'processMessage', false); // Gemini is READ-like from user perspective
+    console.error(`${logPrefix} [${errorInfo.errorType}] Gemini error: ${errorInfo.userMessage}`);
+    logError(sessionId, `processMessage[gemini]`, geminiError, { errorType: errorInfo.errorType });
+
+    // Return error response to user
+    const assistantText = errorInfo.userMessage;
+    addMessage(sessionId, "assistant", assistantText);
+
+    const updatedSession = getSession(sessionId);
+    logBotResponse(sessionId, assistantText, assistantText.length, 0, messageTimer.elapsed());
+
+    return {
+      response: assistantText,
+      errorType: errorInfo.errorType,
+      state: updatedSession.state,
+      cart: updatedSession.cart,
+    };
   }
-
-  const assistantText = response?.text?.() || "";
-
-  addMessage(sessionId, "assistant", assistantText);
-
-  const updatedSession = getSession(sessionId);
-  const totalDuration = messageTimer.elapsed();
-  console.log(`${logPrefix} [processMessage] completed. response length: ${assistantText.length} chars, cart items: ${updatedSession.cart.length}`);
-
-  logBotResponse(sessionId, assistantText, assistantText.length, toolCallCount, totalDuration);
-  logSuccess(sessionId, "processMessage", totalDuration, {
-    responseLength: assistantText.length,
-    toolCalls: toolCallCount,
-    cartItems: updatedSession.cart.length,
-    messageHistoryLength: updatedSession.messages.length
-  });
-
-  return {
-    response: assistantText,
-    state: updatedSession.state,
-    cart: updatedSession.cart,
-  };
 }
 
 module.exports = { processMessage };

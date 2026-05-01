@@ -52,14 +52,29 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
 
     console.log(`${logPrefix} response generated successfully`);
 
-    res.json({
+    // Check if this is a handled error (errorType field present)
+    if (result.errorType) {
+      // Handled error: return HTTP 200 with error details in response
+      console.log(`${logPrefix} handled error: ${result.errorType}`);
+      return res.status(200).json({
+        sessionId,
+        response: result.response,
+        errorType: result.errorType,
+        state: result.state,
+        cart: result.cart,
+      });
+    }
+
+    // Success case: return HTTP 200 with normal response
+    res.status(200).json({
       sessionId,
       response: result.response,
       state: result.state,
       cart: result.cart,
     });
   } catch (error) {
-    console.error(`[SERVER] POST /api/chat error: ${error.message}`);
+    console.error(`[SERVER] POST /api/chat unhandled error: ${error.message}`);
+    // Unhandled exception: return HTTP 500
     res.status(500).json({ error: "Internal server error" });
   }
 });
