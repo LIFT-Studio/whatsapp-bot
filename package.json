@@ -4,7 +4,9 @@
   "description": "WhatsApp Bot with Shopify + AI",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "eval": "node eval/run.js",
+    "eval:watch": "nodemon eval/run.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

@@ -1,0 +1,2365 @@
+{
+  "timestamp": "2026-04-30T23:57:28.281Z",
+  "metadata": {
+    "totalPersonas": 25,
+    "conversationsSimulated": 25,
+    "conversationsValid": 25,
+    "evaluationsCompleted": 25
+  },
+  "aggregateScores": {
+    "calidez": 3.6,
+    "curiosidad": 4.2,
+    "recomendacion": 1.4,
+    "concision": 6.1,
+    "naturalidad": 5,
+    "ambiguedad": 5
+  },
+  "overallScore": {
+    "overall": 4.2,
+    "breakdown": {
+      "calidez": 3.6,
+      "curiosidad": 4.2,
+      "recomendacion": 1.4,
+      "concision": 6.1,
+      "naturalidad": 5,
+      "ambiguedad": 5
+    },
+    "passed": false,
+    "failures": [
+      {
+        "dimension": "calidez",
+        "score": 3.6
+      },
+      {
+        "dimension": "curiosidad",
+        "score": 4.2
+      },
+      {
+        "dimension": "recomendacion",
+        "score": 1.4
+      },
+      {
+        "dimension": "concision",
+        "score": 6.1
+      },
+      {
+        "dimension": "naturalidad",
+        "score": 5
+      },
+      {
+        "dimension": "ambiguedad",
+        "score": 5
+      }
+    ]
+  },
+  "dimensionAnalysis": {
+    "calidez": {
+      "avg": 3.64,
+      "min": 1,
+      "max": 8,
+      "failed": 25
+    },
+    "curiosidad": {
+      "avg": 4.2,
+      "min": 1,
+      "max": 8,
+      "failed": 25
+    },
+    "recomendacion": {
+      "avg": 1.44,
+      "min": 1,
+      "max": 5,
+      "failed": 25
+    },
+    "concision": {
+      "avg": 6.12,
+      "min": 4,
+      "max": 8,
+      "failed": 25
+    },
+    "naturalidad": {
+      "avg": 5.04,
+      "min": 1,
+      "max": 8,
+      "failed": 25
+    },
+    "ambiguedad": {
+      "avg": 5,
+      "min": 5,
+      "max": 5,
+      "failed": 25
+    }
+  },
+  "problemConversations": [
+    {
+      "persona": "Adolescente Gamer",
+      "overall": 3,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 1
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 4
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 6
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 1
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Papá Primerizo",
+      "overall": 3.3,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 2
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 4
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 3
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Mamá Millennial",
+      "overall": 3.3,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 1
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 1
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 8
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 4
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Experto en Reviews",
+      "overall": 3.3,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 3
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 1
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 6
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 4
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Comprador Impulsivo",
+      "overall": 3.3,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 2
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 3
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 4
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Técnico Paranoico",
+      "overall": 3.3,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 1
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 1
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 7
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Viajero Nómada",
+      "overall": 3.5,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 2
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 4
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 6
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 3
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Ama de Casa Tradicional",
+      "overall": 3.7,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 3
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 4
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 4
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Divorciado Reciente",
+      "overall": 3.7,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 2
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 3
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 7
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 4
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Amante del Lujo",
+      "overall": 3.7,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 2
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 4
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 2
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 4
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Fashionista Obsesionado",
+      "overall": 3.7,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 2
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 2
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 7
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Madre Ocupada",
+      "overall": 3.8,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 2
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 4
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 6
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Emprendedor Joven",
+      "overall": 3.8,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 3
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 2
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 7
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Influencer Fashion",
+      "overall": 4,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 4
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 3
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 6
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Papá Ahorrista",
+      "overall": 4,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 4
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 6
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 4
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 4
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Carlos Empresario",
+      "overall": 4.3,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 3
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 4
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 6
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 7
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Ejecutiva Moderna",
+      "overall": 4.3,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 3
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 6
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 6
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Joven Estudiante",
+      "overall": 4.7,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 6
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 4
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 7
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Señor Jubilado",
+      "overall": 5,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 6
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 6
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 7
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Ingeniero Técnico",
+      "overall": 5.2,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 3
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 8
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 7
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 7
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Regalero Experto",
+      "overall": 5.5,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 6
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 4
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 5
+        },
+        {
+          "dimension": "concision",
+          "score": 6
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 7
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Señora María",
+      "overall": 5.8,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 7
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 6
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 4
+        },
+        {
+          "dimension": "concision",
+          "score": 7
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 6
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Indeciso Crónico",
+      "overall": 5.8,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 7
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 6
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 2
+        },
+        {
+          "dimension": "concision",
+          "score": 7
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 8
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Abuela Conectada",
+      "overall": 5.8,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 8
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 8
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 6
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 7
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Regateadora Compulsiva",
+      "overall": 6,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 8
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 7
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 3
+        },
+        {
+          "dimension": "concision",
+          "score": 7
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 6
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    }
+  ],
+  "allEvaluations": [
+    {
+      "numericScores": {
+        "calidez": 7,
+        "curiosidad": 6,
+        "recomendacion": 4,
+        "concision": 7,
+        "naturalidad": 6,
+        "ambiguedad": 5
+      },
+      "persona": "Señora María",
+      "rawResponse": "CALIDEZ: 7\nCURIOSIDAD: 6\nRECOMENDACION: 4\nCONCISION: 7\nNATURALIDAD: 6\nAMBIG"
+    },
+    {
+      "numericScores": {
+        "calidez": 3,
+        "curiosidad": 4,
+        "recomendacion": 1,
+        "concision": 6,
+        "naturalidad": 7,
+        "ambiguedad": 5
+      },
+      "persona": "Carlos Empresario",
+      "rawResponse": "CALIDEZ: 3\nCURIOSIDAD: 4\nRECOMENDACION: 1\nCONCISION: 6\nNATURALIDAD: 7\nAMBIGUED"
+    },
+    {
+      "numericScores": {
+        "calidez": 6,
+        "curiosidad": 4,
+        "recomendacion": 1,
+        "concision": 5,
+        "naturalidad": 7,
+        "ambiguedad": 5
+      },
+      "persona": "Joven Estudiante",
+      "rawResponse": "CALIDEZ: 6\nCURIOSIDAD: 4\nRECOMENDACION: 1\nCONCISION: 5\nNATURALIDAD: 7\n"
+    },
+    {
+      "numericScores": {
+        "calidez": 2,
+        "curiosidad": 4,
+        "recomendacion": 1,
+        "concision": 6,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Madre Ocupada",
+      "rawResponse": "CALIDEZ: 2\nCURIOSIDAD: 4\nRECOMENDACION: 1\nCONCISION: 6\nNATURALIDAD: 5\nAMBIGUED"
+    },
+    {
+      "numericScores": {
+        "calidez": 3,
+        "curiosidad": 8,
+        "recomendacion": 1,
+        "concision": 7,
+        "naturalidad": 7,
+        "ambiguedad": 5
+      },
+      "persona": "Ingeniero Técnico",
+      "rawResponse": "CALIDEZ: 3\nCURIOSIDAD: 8\nRECOMENDACION: 1\nCONCISION: 7\nNATURALIDAD: 7\nAM"
+    },
+    {
+      "numericScores": {
+        "calidez": 4,
+        "curiosidad": 3,
+        "recomendacion": 1,
+        "concision": 6,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Influencer Fashion",
+      "rawResponse": "CALIDEZ: 4\nCURIOSIDAD: 3\nRECOMENDACION: 1\nCONCISION: 6\nNATURALIDAD: 5\nAMBIG"
+    },
+    {
+      "numericScores": {
+        "calidez": 2,
+        "curiosidad": 4,
+        "recomendacion": 1,
+        "concision": 5,
+        "naturalidad": 3,
+        "ambiguedad": 5
+      },
+      "persona": "Papá Primerizo",
+      "rawResponse": "CALIDEZ: 2\nCURIOSIDAD: 4\nRECOMENDACION: 1\nCONCISION: 5\nNATURALIDAD: 3\n"
+    },
+    {
+      "numericScores": {
+        "calidez": 2,
+        "curiosidad": 4,
+        "recomendacion": 1,
+        "concision": 6,
+        "naturalidad": 3,
+        "ambiguedad": 5
+      },
+      "persona": "Viajero Nómada",
+      "rawResponse": "CALIDEZ: 2\nCURIOSIDAD: 4\nRECOMENDACION: 1\nCONCISION: 6\nNATURALIDAD: 3\nAM"
+    },
+    {
+      "numericScores": {
+        "calidez": 3,
+        "curiosidad": 4,
+        "recomendacion": 1,
+        "concision": 5,
+        "naturalidad": 4,
+        "ambiguedad": 5
+      },
+      "persona": "Ama de Casa Tradicional",
+      "rawResponse": "CALIDEZ: 3\nCURIOSIDAD: 4\nRECOMENDACION: 1\nCONCISION: 5\nNATURALIDAD: 4\nAMBIGUED"
+    },
+    {
+      "numericScores": {
+        "calidez": 3,
+        "curiosidad": 6,
+        "recomendacion": 1,
+        "concision": 5,
+        "naturalidad": 6,
+        "ambiguedad": 5
+      },
+      "persona": "Ejecutiva Moderna",
+      "rawResponse": "CALIDEZ: 3\nCURIOSIDAD: 6\nRECOMENDACION: 1\nCONCISION: 5\nNATURALIDAD: 6\nAMBIG"
+    },
+    {
+      "numericScores": {
+        "calidez": 6,
+        "curiosidad": 6,
+        "recomendacion": 1,
+        "concision": 7,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Señor Jubilado",
+      "rawResponse": "CALIDEZ: 6\nCURIOSIDAD: 6\nRECOMENDACION: 1\nCONCISION: 7\nNATURALIDAD: 5\nAMBIGUED"
+    },
+    {
+      "numericScores": {
+        "calidez": 1,
+        "curiosidad": 4,
+        "recomendacion": 1,
+        "concision": 6,
+        "naturalidad": 1,
+        "ambiguedad": 5
+      },
+      "persona": "Adolescente Gamer",
+      "rawResponse": "CALIDEZ: 1\nCURIOSIDAD: 4\nRECOMENDACION: 1\nCONCISION: 6\nNATURALIDAD: 1\n"
+    },
+    {
+      "numericScores": {
+        "calidez": 8,
+        "curiosidad": 7,
+        "recomendacion": 3,
+        "concision": 7,
+        "naturalidad": 6,
+        "ambiguedad": 5
+      },
+      "persona": "Regateadora Compulsiva",
+      "rawResponse": "CALIDEZ: 8\nCURIOSIDAD: 7\nRECOMENDACION: 3\nCONCISION: 7\nNATURALIDAD: 6\nAMBIGUED"
+    },
+    {
+      "numericScores": {
+        "calidez": 3,
+        "curiosidad": 2,
+        "recomendacion": 1,
+        "concision": 7,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Emprendedor Joven",
+      "rawResponse": "CALIDEZ: 3\nCURIOSIDAD: 2\nRECOMENDACION: 1\nCONCISION: 7\nNATURALIDAD: 5\nAMBIGUED"
+    },
+    {
+      "numericScores": {
+        "calidez": 2,
+        "curiosidad": 3,
+        "recomendacion": 1,
+        "concision": 7,
+        "naturalidad": 4,
+        "ambiguedad": 5
+      },
+      "persona": "Divorciado Reciente",
+      "rawResponse": "CALIDEZ: 2\nCURIOSIDAD: 3\nRECOMENDACION: 1\nCONCISION: 7\nNATURALIDAD: 4\n"
+    },
+    {
+      "numericScores": {
+        "calidez": 2,
+        "curiosidad": 4,
+        "recomendacion": 2,
+        "concision": 5,
+        "naturalidad": 4,
+        "ambiguedad": 5
+      },
+      "persona": "Amante del Lujo",
+      "rawResponse": "CALIDEZ: 2\nCURIOSIDAD: 4\nRECOMENDACION: 2\nCONCISION: 5\nNATURALIDAD: 4\nAM"
+    },
+    {
+      "numericScores": {
+        "calidez": 1,
+        "curiosidad": 1,
+        "recomendacion": 1,
+        "concision": 8,
+        "naturalidad": 4,
+        "ambiguedad": 5
+      },
+      "persona": "Mamá Millennial",
+      "rawResponse": "CALIDEZ: 1\nCURIOSIDAD: 1\nRECOMENDACION: 1\nCONCISION: 8\nNATURALIDAD: 4\nAMBIGUED"
+    },
+    {
+      "numericScores": {
+        "calidez": 3,
+        "curiosidad": 1,
+        "recomendacion": 1,
+        "concision": 6,
+        "naturalidad": 4,
+        "ambiguedad": 5
+      },
+      "persona": "Experto en Reviews",
+      "rawResponse": "CALIDEZ: 3\nCURIOSIDAD: 1\nRECOMENDACION: 1\nCONCISION: 6\nNATURALIDAD: 4\nAM"
+    },
+    {
+      "numericScores": {
+        "calidez": 2,
+        "curiosidad": 3,
+        "recomendacion": 1,
+        "concision": 5,
+        "naturalidad": 4,
+        "ambiguedad": 5
+      },
+      "persona": "Comprador Impulsivo",
+      "rawResponse": "CALIDEZ: 2\nCURIOSIDAD: 3\nRECOMENDACION: 1\nCONCISION: 5\nNATURALIDAD: 4\nAMBIG"
+    },
+    {
+      "numericScores": {
+        "calidez": 7,
+        "curiosidad": 6,
+        "recomendacion": 2,
+        "concision": 7,
+        "naturalidad": 8,
+        "ambiguedad": 5
+      },
+      "persona": "Indeciso Crónico",
+      "rawResponse": "CALIDEZ: 7\nCURIOSIDAD: 6\nRECOMENDACION: 2\nCONCISION: 7\nNATURALIDAD: 8\nAMBIG"
+    },
+    {
+      "numericScores": {
+        "calidez": 4,
+        "curiosidad": 6,
+        "recomendacion": 1,
+        "concision": 4,
+        "naturalidad": 4,
+        "ambiguedad": 5
+      },
+      "persona": "Papá Ahorrista",
+      "rawResponse": "CALIDEZ: 4\nCURIOSIDAD: 6\nRECOMENDACION: 1\nCONCISION: 4\nNATURALIDAD: 4\nAMBIGUED"
+    },
+    {
+      "numericScores": {
+        "calidez": 2,
+        "curiosidad": 2,
+        "recomendacion": 1,
+        "concision": 7,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Fashionista Obsesionado",
+      "rawResponse": "CALIDEZ: 2\nCURIOSIDAD: 2\nRECOMENDACION: 1\nCONCISION: 7\nNATURALIDAD: 5\nAM"
+    },
+    {
+      "numericScores": {
+        "calidez": 6,
+        "curiosidad": 4,
+        "recomendacion": 5,
+        "concision": 6,
+        "naturalidad": 7,
+        "ambiguedad": 5
+      },
+      "persona": "Regalero Experto",
+      "rawResponse": "CALIDEZ: 6\nCURIOSIDAD: 4\nRECOMENDACION: 5\nCONCISION: 6\nNATURALIDAD: 7\n"
+    },
+    {
+      "numericScores": {
+        "calidez": 1,
+        "curiosidad": 1,
+        "recomendacion": 1,
+        "concision": 7,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Técnico Paranoico",
+      "rawResponse": "CALIDEZ: 1\nCURIOSIDAD: 1\nRECOMENDACION: 1\nCONCISION: 7\nNATURALIDAD: 5\n"
+    },
+    {
+      "numericScores": {
+        "calidez": 8,
+        "curiosidad": 8,
+        "recomendacion": 1,
+        "concision": 6,
+        "naturalidad": 7,
+        "ambiguedad": 5
+      },
+      "persona": "Abuela Conectada",
+      "rawResponse": "CALIDEZ: 8\nCURIOSIDAD: 8\nRECOMENDACION: 1\nCONCISION: 6\nNATURALIDAD: 7\nAMBIGUED"
+    }
+  ],
+  "allConversations": [
+    {
+      "persona": "Señora María",
+      "personaId": 1,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Hola, hola, ¿hay alguien aquí?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Hola! Bienvenido a b2b-sandbox-lift-2. ¿En qué puedo ayudarte hoy?"
+        },
+        {
+          "role": "user",
+          "content": "Es que necesito un regalo para mi nieta, pero no sé qué regalarle"
+        },
+        {
+          "role": "bot",
+          "content": "¡Claro que sí! Con gusto te ayudo a encontrar el regalo perfecto para tu nieta. Para darte las mejores opciones, ¿podrías decirme su edad o qué tipo de cosas le gustan? Así puedo buscar algo más adecuado."
+        },
+        {
+          "role": "user",
+          "content": "Ella tiene 25 años, trabaja en una oficina"
+        },
+        {
+          "role": "bot",
+          "content": "Lo siento, encontré la Mochila Urban Explorer, pero lamentablemente no está disponible en este momento.\n\n![Mochila Urban Explorer](https://cdn.shopify.com/s/files/1/0897/7249/1116/files/mochila-urban-explorer.png?v=1776363655)\nEs resistente al agua y tiene compartimento para laptop, ideal para el trabajo o la universidad. Su precio es de $49.99. [Ver en la tienda](https://b2b-sandbox-lift-2.myshopify.com/products/15086298726764)\n\n¿Te gustaría que buscara otras opciones de regalos o accesorios que puedan interesarle?"
+        },
+        {
+          "role": "user",
+          "content": "No, no sabe de tecnología. Es simple"
+        },
+        {
+          "role": "bot",
+          "content": "Lo siento, parece que no encontré ningún \"accesorio de oficina\" en este momento.\n\nQuizás podamos encontrar algo más si buscamos de una manera diferente. ¿Te gustaría que buscara algo más general como \"regalos\" o tienes alguna otra idea de lo que le podría gustar a tu nieta, quizás algo relacionado con bienestar o artículos personales que sean sencillos?"
+        },
+        {
+          "role": "user",
+          "content": "Sí, quiero algo que le dure, que sea bonito"
+        },
+        {
+          "role": "bot",
+          "content": "Parece que no encontré \"regalos elegantes y duraderos\" con esa descripción.\n\n¿Qué tal si buscamos \"bolsos\" o \"accesorios de moda\" que suelen ser duraderos y bonitos? O si tienes alguna otra idea de categoría, házmelo saber."
+        },
+        {
+          "role": "user",
+          "content": "¿Cuánto cuesta? No quiero gastar demasiado, ¿eh?"
+        },
+        {
+          "role": "bot",
+          "content": "Disculpa, no encontré ningún \"accesorio de moda\" con esa búsqueda.\n\nParece que estamos teniendo un poco de dificultad para encontrar el regalo perfecto. Para afinar la búsqueda y encontrar algo que se ajuste a tu presupuesto y le guste a tu nieta, ¿podrías darme una idea más específica? Por ejemplo, ¿le interesan joyas, bufandas, carteras, o algún otro tipo de accesorio?"
+        },
+        {
+          "role": "user",
+          "content": "Mira, está bien. Si tú lo recomiendas, le hace falta"
+        },
+        {
+          "role": "bot",
+          "content": "¡Entendido! Si buscas algo práctico, bonito y que le pueda durar, un bolso o una cartera de buena calidad siempre son una excelente opción para alguien que trabaja en una oficina.\n\nPermíteme buscar algunas opciones de \"bolsos\" que podrían interesarle a tu nieta."
+        }
+      ],
+      "success": true,
+      "messageCount": 14
+    },
+    {
+      "persona": "Carlos Empresario",
+      "personaId": 2,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Necesito una solución rápido para mi equipo"
+        },
+        {
+          "role": "bot",
+          "content": "¡Hola! Bienvenido a b2b-sandbox-lift-2. ¿En qué puedo ayudarte hoy?\n\nPara encontrar una solución rápida para tu equipo, necesito saber qué tipo de producto o servicio estás buscando. ¿Podrías darme más detalles? Por ejemplo, ¿buscas software, hardware, herramientas, o algo específico para alguna tarea?"
+        },
+        {
+          "role": "user",
+          "content": "15 personas en la oficina, tenemos presupuesto limitado"
+        },
+        {
+          "role": "bot",
+          "content": "Entiendo. Para poder ayudarte a encontrar la mejor solución para tu equipo de 15 personas con presupuesto limitado, necesito más información.\n\n¿Qué tipo de solución están buscando? ¿Es para alguna necesidad específica como mobiliario de oficina, equipos tecnológicos, software, o algo más general para el bienestar del equipo?"
+        },
+        {
+          "role": "user",
+          "content": "¿Cuál es la opción que más ROI genera?"
+        },
+        {
+          "role": "bot",
+          "content": "Como soy un asistente de compras, no puedo ofrecerte asesoramiento financiero o de inversión sobre qué opción generará el mayor ROI. Mi función es ayudarte a encontrar productos específicos y gestionar tu carrito.\n\nPara poder recomendarte algo que se ajuste a tu presupuesto y necesidades para 15 personas, ¿podrías decirme qué tipo de productos o soluciones estás buscando? Por ejemplo, si buscas software, hardware, muebles, o algo para mejorar la productividad."
+        },
+        {
+          "role": "user",
+          "content": "Dale, ¿cuánto es en total?"
+        },
+        {
+          "role": "bot",
+          "content": "Tu carrito está vacío en este momento. Para saber el total, primero necesitamos agregar algunos productos. ¿Hay algo que te interese buscar?"
+        },
+        {
+          "role": "user",
+          "content": "Perfecto, proceda al checkout"
+        },
+        {
+          "role": "bot",
+          "content": "Tu carrito está vacío en este momento, así que no hay nada para proceder al checkout. ¿Te gustaría que busquemos algunos productos que te interesen primero?"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Joven Estudiante",
+      "personaId": 3,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Oye, ¿cuál es el producto más barato que tienes?"
+        },
+        {
+          "role": "bot",
+          "content": "Lo siento, no pude encontrar ningún producto con la búsqueda general de \"productos\". ¿Podrías ser más específico sobre qué tipo de producto te interesa para poder buscarlo?"
+        },
+        {
+          "role": "user",
+          "content": "Soy estudiante, no tengo mucho dinero"
+        },
+        {
+          "role": "bot",
+          "content": "Entiendo. Para poder ayudarte a encontrar algo que se ajuste a tu presupuesto, ¿qué tipo de producto estás buscando? Por ejemplo, ¿ropa, accesorios, o algo más específico?"
+        },
+        {
+          "role": "user",
+          "content": "¿Cuál es la mejor oferta que me puedas dar?"
+        },
+        {
+          "role": "bot",
+          "content": "Para poder buscar la mejor oferta para ti, necesito saber qué tipo de producto te interesa. ¿Buscas algo en particular, como ropa, accesorios, o quizás algo para el hogar o la escuela?"
+        },
+        {
+          "role": "user",
+          "content": "Hmm, ¿hay descuento si compro ahora?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Claro que sí! Siempre tenemos promociones vigentes. Actualmente puedes usar el código **BIENVENIDO10** para obtener un 10% de descuento en tu primer pedido.\n\nAdemás, ofrecemos envío gratis en compras mayores a $999 MXN y descuentos especiales en temporadas como Buen Fin, Navidad y Hot Sale. Te recomendamos suscribirte a nuestro boletín para recibir ofertas exclusivas antes que nadie. 🎉\n\n¿Te gustaría que te ayude a buscar algún producto en particular?"
+        },
+        {
+          "role": "user",
+          "content": "Dale, me lo llevo"
+        },
+        {
+          "role": "bot",
+          "content": "Tu carrito está vacío en este momento. Para que puedas aprovechar esa oferta, primero necesitamos agregar algunos productos a tu carrito.\n\n¿Qué te gustaría comprar?"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Madre Ocupada",
+      "personaId": 4,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Necesito algo para mi familia, pero tiene que ser duradero"
+        },
+        {
+          "role": "bot",
+          "content": "Lo siento, no pude encontrar ningún producto con la descripción \"productos duraderos para familia\". ¿Hay algo más específico que estés buscando que sea duradero?"
+        },
+        {
+          "role": "user",
+          "content": "Tengo dos hijos, 8 y 12 años"
+        },
+        {
+          "role": "bot",
+          "content": "Entendido. Para poder ayudarte mejor, ¿qué tipo de producto estás buscando para tus hijos de 8 y 12 años? Por ejemplo, ¿ropa, juguetes, algo para el aire libre, o algo más?"
+        },
+        {
+          "role": "user",
+          "content": "¿Es seguro para niños? No quiero problemas"
+        },
+        {
+          "role": "bot",
+          "content": "No pude encontrar información específica sobre la seguridad de los productos para niños en nuestras políticas. Sin embargo, todos los productos que vendemos cumplen con los estándares de seguridad requeridos.\n\n¿Hay algún tipo de producto en particular que te interese para tus hijos? Así puedo buscar opciones y darte más detalles."
+        },
+        {
+          "role": "user",
+          "content": "¿Cuánto tiempo dura?"
+        },
+        {
+          "role": "bot",
+          "content": "Para poder decirte cuánto tiempo dura algo, necesito saber a qué producto te refieres.\n\n¿Hay algún producto específico que te interese, o te gustaría que te ayude a buscar algo para tus hijos?"
+        },
+        {
+          "role": "user",
+          "content": "Dale, suena bien, sigue adelante"
+        },
+        {
+          "role": "bot",
+          "content": "¡Claro! Parece que tu carrito está vacío. ¿Qué producto te gustaría buscar o añadir para tus hijos?"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Ingeniero Técnico",
+      "personaId": 5,
+      "messages": [
+        {
+          "role": "user",
+          "content": "¿Cuáles son las especificaciones técnicas exactas?"
+        },
+        {
+          "role": "bot",
+          "content": "Para poder darte las especificaciones técnicas, necesito saber a qué producto te refieres. ¿Podrías indicarme el nombre del producto o qué estás buscando?"
+        },
+        {
+          "role": "user",
+          "content": "¿Cuál es el voltaje, amperaje y eficiencia?"
+        },
+        {
+          "role": "bot",
+          "content": "Para poder darte esa información, necesito saber de qué producto estás preguntando. ¿Podrías decirme a qué producto te refieres?"
+        },
+        {
+          "role": "user",
+          "content": "¿Cómo se compara con la marca X?"
+        },
+        {
+          "role": "bot",
+          "content": "Para poder comparar, necesito saber de qué producto de nuestra tienda estamos hablando. ¿Me puedes decir qué producto te interesa y así lo comparamos con la marca X?"
+        },
+        {
+          "role": "user",
+          "content": "Necesito datos concretos, no marketing"
+        },
+        {
+          "role": "bot",
+          "content": "Entiendo. Para darte datos concretos, por favor, dime qué producto te interesa. Una vez que sepa de qué producto hablamos, podré buscar su voltaje, amperaje, eficiencia o cualquier otra especificación técnica que necesites, así como ayudarte a compararlo con otras marcas si tengo esa información.\n\n¿Qué producto te gustaría que investiguemos?"
+        },
+        {
+          "role": "user",
+          "content": "Si los specs son esos, me interesa"
+        },
+        {
+          "role": "bot",
+          "content": "Parece que tienes interés en un producto, pero aún no me has dicho cuál. Para poder ayudarte a agregarlo al carrito o darte más detalles, ¿podrías decirme de qué producto estamos hablando?"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Influencer Fashion",
+      "personaId": 6,
+      "messages": [
+        {
+          "role": "user",
+          "content": "¡Hola! ¿Qué de nuevo tienen?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Hola! Bienvenido a b2b-sandbox-lift-2. ¡Siempre tenemos cosas interesantes! Para ver qué hay de nuevo, puedo buscar productos. ¿Hay algo en particular que te interese o quieres que te muestre algunas de nuestras novedades?"
+        },
+        {
+          "role": "user",
+          "content": "Busco algo que esté en tendencia ahora"
+        },
+        {
+          "role": "bot",
+          "content": "No encontré productos específicos con la búsqueda \"en tendencia\". A veces es mejor buscar por categorías o tipos de productos. ¿Hay algún tipo de producto que te interese, como ropa, accesorios, o algo para el hogar?"
+        },
+        {
+          "role": "user",
+          "content": "¿Qué colores tienen? Quiero algo que no todos tengan"
+        },
+        {
+          "role": "bot",
+          "content": "Entiendo que buscas algo con un color único. Para poder ayudarte mejor, ¿podrías decirme qué tipo de producto te interesa? Así podré buscar opciones de colores dentro de esa categoría."
+        },
+        {
+          "role": "user",
+          "content": "Ame ese color, ¿es exclusivo?"
+        },
+        {
+          "role": "bot",
+          "content": "Me alegra que te haya gustado un color, pero no estoy segura a qué color te refieres. ¿Podrías indicarme a qué producto o color específico te refieres para poder decirte si es exclusivo?"
+        },
+        {
+          "role": "user",
+          "content": "¡Dale, me lo llevo!"
+        },
+        {
+          "role": "bot",
+          "content": "Parece que tu carrito está vacío en este momento. Para poder añadir algo, ¿qué producto te gustaría llevar?"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Papá Primerizo",
+      "personaId": 7,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Hola, necesito algo para mi recién nacido"
+        },
+        {
+          "role": "bot",
+          "content": "¡Hola! Bienvenido a b2b-sandbox-lift-2. ¿Qué tipo de productos te gustaría encontrar para tu recién nacido? Puedo buscar ropa, juguetes, accesorios o lo que necesites."
+        },
+        {
+          "role": "user",
+          "content": "¿Es seguro para bebés? Estoy asustado"
+        },
+        {
+          "role": "bot",
+          "content": "No encontré información específica sobre la seguridad de los productos para bebés en nuestras políticas. Sin embargo, todos los productos que ofrecemos cumplen con los estándares de seguridad pertinentes. Si tienes un producto específico en mente, puedo buscarlo y darte más detalles.\n\n¿Te gustaría que busque algún producto en particular o tienes alguna otra pregunta?"
+        },
+        {
+          "role": "user",
+          "content": "¿Tiene certificaciones de seguridad?"
+        },
+        {
+          "role": "bot",
+          "content": "No encontré información específica sobre certificaciones de seguridad en nuestras políticas. Sin embargo, te puedo asegurar que nos esforzamos por ofrecer productos de calidad que cumplan con los estándares de seguridad.\n\nSi te interesa un producto en particular, puedo intentar buscar más información al respecto. ¿Hay algo más en lo que pueda ayudarte?"
+        },
+        {
+          "role": "user",
+          "content": "¿Contiene material tóxico?"
+        },
+        {
+          "role": "bot",
+          "content": "No encontré información específica sobre si los productos contienen materiales tóxicos en nuestras políticas. Sin embargo, todos los productos que ofrecemos están diseñados para ser seguros.\n\nSi te preocupa un producto en particular, puedo buscar sus detalles. También puedo buscar productos específicos para recién nacidos que sean conocidos por ser seguros. ¿Te gustaría que busque algo en particular?"
+        },
+        {
+          "role": "user",
+          "content": "Dale, si es seguro, lo quiero"
+        },
+        {
+          "role": "bot",
+          "content": "Para poder ayudarte, necesito saber qué producto específico para tu recién nacido te interesa. ¿Estás buscando ropa, juguetes, accesorios o algo más? Una vez que me digas qué producto quieres, puedo buscarlo y, si está disponible y es seguro, lo agregamos al carrito."
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Viajero Nómada",
+      "personaId": 8,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Estoy viajando por Latinoamérica"
+        },
+        {
+          "role": "bot",
+          "content": "¡Hola! Bienvenido a b2b-sandbox-lift-2. ¿En qué puedo ayudarte hoy?"
+        },
+        {
+          "role": "user",
+          "content": "Necesito algo ligero y portable"
+        },
+        {
+          "role": "bot",
+          "content": "No encontré ningún producto específico con la descripción \"ligero y portable\". ¿Hay algo más en lo que pueda ayudarte o alguna categoría de producto en particular que estés buscando?"
+        },
+        {
+          "role": "user",
+          "content": "¿Cabe en una mochila de 40 litros?"
+        },
+        {
+          "role": "bot",
+          "content": "Disculpa, aún no estoy segura de a qué producto te refieres. ¿Podrías decirme qué tipo de artículo estás buscando para tu viaje, que sea ligero y portátil y que quepa en una mochila de 40 litros? Así podré buscar opciones específicas para ti."
+        },
+        {
+          "role": "user",
+          "content": "¿Aguanta los cambios de clima y golpes?"
+        },
+        {
+          "role": "bot",
+          "content": "Para poder ayudarte, necesito saber qué tipo de producto estás buscando. Una vez que me digas qué artículo te interesa, podré decirte si es resistente a los cambios de clima y a los golpes."
+        },
+        {
+          "role": "user",
+          "content": "Perfecto, me lo llevo"
+        },
+        {
+          "role": "bot",
+          "content": "Tu carrito está vacío en este momento. Parece que estabas buscando un producto ligero, portátil, que quepa en una mochila de 40 litros y que aguante cambios de clima y golpes.\n\n¿Te gustaría que te ayude a buscar un producto con esas características?"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Ama de Casa Tradicional",
+      "personaId": 9,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Hola, quisiera algo de buena calidad"
+        },
+        {
+          "role": "bot",
+          "content": "¡Hola! Bienvenido a b2b-sandbox-lift-2. Para poder ayudarte a encontrar algo de buena calidad, ¿podrías decirme qué tipo de producto te interesa? Por ejemplo, ¿estás buscando ropa, accesorios, electrónica, o algo más específico?"
+        },
+        {
+          "role": "user",
+          "content": "Es que los que tengo no me duran"
+        },
+        {
+          "role": "bot",
+          "content": "Entiendo perfectamente que busques productos duraderos. Para poder recomendarte algo, necesito saber qué tipo de artículo estás buscando. ¿Podrías decirme si necesitas ropa, accesorios, calzado, algo para el hogar o alguna otra cosa?"
+        },
+        {
+          "role": "user",
+          "content": "¿Vale la pena gastarse eso? Soy cuidadosa con el dinero"
+        },
+        {
+          "role": "bot",
+          "content": "Comprendo tu preocupación por el valor de tu dinero y que buscas invertir en productos que realmente valgan la pena y te duren. Para poder darte una recomendación útil y buscar algo que se ajuste a tus expectativas de calidad y precio, ¿podrías decirme qué tipo de producto te interesa? Así podré buscar opciones que sean conocidas por su durabilidad."
+        },
+        {
+          "role": "user",
+          "content": "¿Puedo pagar en partes?"
+        },
+        {
+          "role": "bot",
+          "content": "No encontré información específica sobre la opción de pagar en partes en este momento. Sin embargo, puedo ayudarte con otras preguntas que tengas sobre nuestros productos o si quieres buscar algo. ¿Hay algo más en lo que pueda asistirte hoy?"
+        },
+        {
+          "role": "user",
+          "content": "Dale, confío en ti"
+        },
+        {
+          "role": "bot",
+          "content": "¡Gracias por tu confianza! Para poder encontrar el producto perfecto para ti, necesito saber qué tipo de artículo te interesa. ¿Estás buscando algo de ropa, accesorios, electrónica, o tienes algo más específico en mente?"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Ejecutiva Moderna",
+      "personaId": 10,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Buenos días, necesito algo premium"
+        },
+        {
+          "role": "bot",
+          "content": "¡Hola! Bienvenido a b2b-sandbox-lift-2. Para ayudarte a encontrar algo premium, ¿podrías ser más específico sobre qué tipo de producto estás buscando? Por ejemplo, ¿ropa, accesorios, tecnología? Así podré buscar algo que se ajuste mejor a tus necesidades."
+        },
+        {
+          "role": "user",
+          "content": "¿Qué servicio post-venta ofrecen?"
+        },
+        {
+          "role": "bot",
+          "content": "No encontré información específica sobre el servicio post-venta en nuestras políticas. Sin embargo, puedo ayudarte con otras preguntas que tengas o buscar algún producto que te interese. ¿Hay algo más en lo que pueda asistirte?"
+        },
+        {
+          "role": "user",
+          "content": "¿Hay garantía extendida?"
+        },
+        {
+          "role": "bot",
+          "content": "No encontré información específica sobre la garantía extendida en nuestras políticas. Sin embargo, puedo ayudarte con otras preguntas que tengas o buscar algún producto que te interese. ¿Hay algo más en lo que pueda asistirte?"
+        },
+        {
+          "role": "user",
+          "content": "¿Es realmente la mejor opción del mercado?"
+        },
+        {
+          "role": "bot",
+          "content": "Como asistente de compras, no puedo dar opiniones subjetivas sobre si un producto es la \"mejor opción del mercado\", ya que eso puede variar mucho según las necesidades y preferencias de cada persona.\n\nSin embargo, puedo ayudarte a encontrar información detallada sobre nuestros productos para que puedas tomar una decisión informada.\n\nTu carrito está vacío en este momento. ¿Te gustaría que busquemos algún producto o tienes alguna otra pregunta?"
+        },
+        {
+          "role": "user",
+          "content": "Perfecto, proceda"
+        },
+        {
+          "role": "bot",
+          "content": "¡Excelente! Como tu carrito está vacío, ¿qué tipo de producto te gustaría que busquemos hoy? Así podré encontrar algo que te interese."
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Señor Jubilado",
+      "personaId": 11,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Hola joven, ¿me pueden ayudar?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Hola! Bienvenido a b2b-sandbox-lift-2. ¿En qué puedo ayudarte hoy?"
+        },
+        {
+          "role": "user",
+          "content": "Es que no entiendo bien esto del internet"
+        },
+        {
+          "role": "bot",
+          "content": "No te preocupes, estoy aquí para ayudarte. Veo que tu carrito está vacío en este momento.\n\n¿Te gustaría buscar algún producto o tienes alguna pregunta en particular sobre cómo funciona la tienda en línea?"
+        },
+        {
+          "role": "user",
+          "content": "¿Cómo sé que es seguro mandar dinero así?"
+        },
+        {
+          "role": "bot",
+          "content": "Disculpa, no encontré información específica sobre la seguridad de los pagos con esa pregunta. Sin embargo, te puedo asegurar que nuestra tienda b2b-sandbox-lift-2 utiliza plataformas de pago seguras para proteger tus transacciones.\n\nSi tienes alguna otra pregunta o quieres buscar algún producto, no dudes en decírmelo."
+        },
+        {
+          "role": "user",
+          "content": "¿Me pueden explicar paso a paso cómo funciona?"
+        },
+        {
+          "role": "bot",
+          "content": "No encontré esa información específica sobre un paso a paso detallado de cómo funciona la tienda en general.\n\nSin embargo, puedo guiarte con las funciones principales. Para empezar, puedes buscar productos. Una vez que encuentres algo que te interese, puedes agregarlo a tu carrito. Cuando estés listo para comprar, generaremos un enlace de pago seguro para que completes tu pedido.\n\n¿Te gustaría que busquemos algún producto para empezar?"
+        },
+        {
+          "role": "user",
+          "content": "Bueno, si es así, me animo"
+        },
+        {
+          "role": "bot",
+          "content": "¡Excelente! Me alegra que te animes.\n\nPara comenzar, ¿qué tipo de producto te gustaría buscar? Por ejemplo, puedes decirme \"quiero una mochila\" o \"estoy buscando algo para camping\"."
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Adolescente Gamer",
+      "personaId": 12,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Ey, ¿qué onda? Necesito gear gaming"
+        },
+        {
+          "role": "bot",
+          "content": "¡Hola! Bienvenido a b2b-sandbox-lift-2. No encontré ningún producto de \"gear gaming\" en este momento. ¿Te gustaría que busque algo similar o tienes algún producto específico en mente?"
+        },
+        {
+          "role": "user",
+          "content": "¿Qué FPS da? Porque tengo otro en 120"
+        },
+        {
+          "role": "bot",
+          "content": "Disculpa, no puedo darte información sobre los FPS de los productos directamente. ¿Qué tipo de artículo de gaming estás buscando, por ejemplo, un monitor, una tarjeta gráfica o una consola? Así puedo intentar buscar algo más específico."
+        },
+        {
+          "role": "user",
+          "content": "¿Es compatible con mi setup?"
+        },
+        {
+          "role": "bot",
+          "content": "Para poder ayudarte, necesito saber a qué producto te refieres. ¿Qué artículo de gaming te interesa saber si es compatible con tu setup?"
+        },
+        {
+          "role": "user",
+          "content": "¿Cómo es la latencia?"
+        },
+        {
+          "role": "bot",
+          "content": "Para poder darte información sobre la latencia, necesito saber a qué producto te refieres. ¿Me podrías decir qué artículo te interesa?"
+        },
+        {
+          "role": "user",
+          "content": "Voy, me lo llevo"
+        },
+        {
+          "role": "bot",
+          "content": "Tu carrito está vacío. ¿Qué producto te gustaría llevar?"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Regateadora Compulsiva",
+      "personaId": 13,
+      "messages": [
+        {
+          "role": "user",
+          "content": "¿Cuál es el mejor precio que tienen?"
+        },
+        {
+          "role": "bot",
+          "content": "No encontré información específica sobre un \"mejor precio\" general en las políticas de la tienda. Sin embargo, puedo ayudarte a buscar productos y sus precios. ¿Hay algo en particular que te interese?"
+        },
+        {
+          "role": "user",
+          "content": "He visto más barato en otro lado"
+        },
+        {
+          "role": "bot",
+          "content": "Entiendo. Lamento que hayas encontrado precios más bajos en otro lugar. No tenemos una política de igualación de precios, pero puedo ayudarte a encontrar los mejores productos y ofertas disponibles en b2b-sandbox-lift-2.\n\n¿Hay algo específico que estés buscando o te gustaría que te muestre algunos de nuestros productos populares?"
+        },
+        {
+          "role": "user",
+          "content": "¿Me hacen descuento?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Claro que sí! Siempre tenemos promociones vigentes. Actualmente puedes usar el código **BIENVENIDO10** para obtener un 10% de descuento en tu primer pedido.\n\nAdemás, ofrecemos envío gratis en compras mayores a $999 MXN y descuentos especiales en temporadas como Buen Fin, Navidad y Hot Sale. Te recomiendo suscribirte a nuestro boletín para recibir ofertas exclusivas antes que nadie. 🎉\n\n¿Te gustaría que busquemos algún producto para que puedas aplicar tu descuento?"
+        },
+        {
+          "role": "user",
+          "content": "¿Hay promoción esta semana?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Sí, claro! Como te mencioné, puedes usar el código **BIENVENIDO10** para obtener un 10% de descuento en tu primer pedido. Además, ofrecemos envío gratis en compras mayores a $999 MXN.\n\n¿Te gustaría que busquemos algún producto o tienes algo en mente que te interese?"
+        },
+        {
+          "role": "user",
+          "content": "Si me haces un descuento, me lo llevo"
+        },
+        {
+          "role": "bot",
+          "content": "¡Excelente! Recuerda que puedes usar el código **BIENVENIDO10** para obtener un 10% de descuento en tu primer pedido.\n\nPara poder aplicarlo, primero necesitamos agregar los productos a tu carrito. ¿Qué te gustaría llevar?"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Emprendedor Joven",
+      "personaId": 14,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Tengo un negocio de consultoría"
+        },
+        {
+          "role": "bot",
+          "content": "¡Hola! Bienvenido a b2b-sandbox-lift-2. ¿En qué puedo ayudarte hoy?\n"
+        },
+        {
+          "role": "user",
+          "content": "¿Cómo me ayudaría esto a crecer?"
+        },
+        {
+          "role": "bot",
+          "content": "Como asistente de compras para b2b-sandbox-lift-2, puedo ayudarte a encontrar y adquirir productos que puedan ser útiles para tu negocio de consultoría. Por ejemplo, si necesitas equipos de oficina, software, materiales de marketing o cualquier otro insumo, puedo buscarlo en nuestra tienda.\n\nActualmente tu carrito está vacío. ¿Hay algún producto en particular que te interese buscar para tu negocio de consultoría?"
+        },
+        {
+          "role": "user",
+          "content": "¿Hay casos de éxito de emprendedores?"
+        },
+        {
+          "role": "bot",
+          "content": "No tengo acceso a información sobre casos de éxito de emprendedores. Mi función es ayudarte a encontrar productos en b2b-sandbox-lift-2.\n\n¿Hay algo más en lo que pueda ayudarte hoy, tal vez buscando algún producto específico para tu negocio?"
+        },
+        {
+          "role": "user",
+          "content": "¿Cuál es el tiempo de retorno?"
+        },
+        {
+          "role": "bot",
+          "content": "No encontré información específica sobre \"tiempo de retorno\" en nuestras políticas. ¿Te refieres a alguna política de devolución de productos o a algo más?\n\nSi tienes alguna otra pregunta o si quieres que busque algún producto en particular para tu negocio, házmelo saber."
+        },
+        {
+          "role": "user",
+          "content": "Suena bien, vamos adelante"
+        },
+        {
+          "role": "bot",
+          "content": "Genial, tu carrito está vacío en este momento.\n\n¿Qué productos te interesaría buscar para tu negocio de consultoría?"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Divorciado Reciente",
+      "personaId": 15,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Hola, es que estoy pasando por un cambio"
+        },
+        {
+          "role": "bot",
+          "content": "¡Hola! Bienvenido a b2b-sandbox-lift-2. ¿En qué puedo ayudarte hoy?\n\nParece que tu carrito está vacío. ¿Te gustaría buscar algún producto o tienes alguna pregunta?"
+        },
+        {
+          "role": "user",
+          "content": "Mi presupuesto es más limitado ahora"
+        },
+        {
+          "role": "bot",
+          "content": "Entiendo. ¿Hay algún tipo de producto en particular que te interese buscar dentro de tu presupuesto? Así puedo ayudarte a encontrar algo que se ajuste a tus necesidades."
+        },
+        {
+          "role": "user",
+          "content": "¿Realmente lo necesito?"
+        },
+        {
+          "role": "bot",
+          "content": "Si tu carrito está vacío, no hay nada que necesites comprar en este momento. 😊\n\n¿Te gustaría que busquemos algún producto para que veas qué opciones hay? Quizás encuentres algo que realmente te interese y se ajuste a tu presupuesto."
+        },
+        {
+          "role": "user",
+          "content": "¿No hay algo más económico?"
+        },
+        {
+          "role": "bot",
+          "content": "Como tu carrito está vacío, no hay productos en este momento para buscar alternativas más económicas.\n\n¿Hay algún tipo de producto en particular que te interese? Puedo buscar opciones económicas en esa categoría."
+        },
+        {
+          "role": "user",
+          "content": "Dale, me animo"
+        },
+        {
+          "role": "bot",
+          "content": "¡Excelente! Me alegra que te animes. ¿Qué tipo de productos te gustaría buscar hoy? Dime lo que tienes en mente y haré mi mejor esfuerzo para encontrar opciones que se ajusten a tu presupuesto."
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Amante del Lujo",
+      "personaId": 16,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Quiero lo mejor que tengan"
+        },
+        {
+          "role": "bot",
+          "content": "Parece que no pude encontrar ningún producto con esa búsqueda. ¿Hay algo más específico que te gustaría buscar?"
+        },
+        {
+          "role": "user",
+          "content": "¿Es realmente lo más exclusivo?"
+        },
+        {
+          "role": "bot",
+          "content": "Parece que la búsqueda anterior no arrojó resultados específicos. Para poder ayudarte a encontrar lo más exclusivo, ¿podrías indicarme qué tipo de producto te interesa? Por ejemplo, ¿buscas ropa, accesorios, electrónica o algo más?"
+        },
+        {
+          "role": "user",
+          "content": "¿Existe algo más premium?"
+        },
+        {
+          "role": "bot",
+          "content": "Encontré un producto que se describe como \"premium\": el Anillo.\n![Anillo sobre cuarzo](https://cdn.shopify.com/s/files/1/0897/7249/1116/files/anillo-sobre-cuarzo.png?v=1776879100)\nEs un hermoso anillo de alta calidad, diseñado con materiales premium para un acabado elegante y duradero. Sin embargo, lamentablemente, el Anillo no está disponible en este momento.\n\n¿Te gustaría que busque otras opciones de joyería o accesorios premium disponibles en nuestra tienda?"
+        },
+        {
+          "role": "user",
+          "content": "¿Cuál es la línea de lujo?"
+        },
+        {
+          "role": "bot",
+          "content": "No encontré una \"línea de lujo\" específica con esa descripción. Parece que no tenemos productos clasificados de esa manera.\n\n¿Hay algún tipo de producto en particular que busques que sea de alta gama o premium? Así podría intentar buscarlo de una manera diferente."
+        },
+        {
+          "role": "user",
+          "content": "Perfecto, ese es mi nivel"
+        },
+        {
+          "role": "bot",
+          "content": "Entendido. Para poder encontrar algo que se ajuste a tu nivel, ¿hay algún tipo de producto en particular que te interese, como joyas, accesorios o algo más específico?\n\nRecuerdo que el Anillo que mencioné antes no está disponible. Si me das más detalles, puedo intentar buscar otras opciones premium que tengamos en la tienda."
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Mamá Millennial",
+      "personaId": 17,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Me importa que sea sostenible"
+        },
+        {
+          "role": "bot",
+          "content": "Lo siento, no encontré productos etiquetados específicamente como \"sostenibles\" con esa búsqueda.\n\n¿Hay algún tipo de producto en particular que te interese, como ropa, accesorios, o algo más, para que pueda intentar una búsqueda diferente?"
+        },
+        {
+          "role": "user",
+          "content": "¿De dónde viene? ¿Prácticas éticas?"
+        },
+        {
+          "role": "bot",
+          "content": "No encontré información específica sobre el origen de los productos o las prácticas éticas en este momento.\n\nPuedo ayudarte con otras cosas, como buscar productos o responder preguntas sobre envíos o devoluciones si tienes alguna."
+        },
+        {
+          "role": "user",
+          "content": "¿Cuánto plástico tiene?"
+        },
+        {
+          "role": "bot",
+          "content": "Lo siento, no tengo detalles sobre la cantidad de plástico que contiene un producto específico. Mi función principal es ayudarte a encontrar productos y gestionar tu carrito de compras.\n\n¿Te gustaría que buscara algún producto en particular?"
+        },
+        {
+          "role": "user",
+          "content": "¿Es hecho localmente?"
+        },
+        {
+          "role": "bot",
+          "content": "No encontré información específica sobre si los productos son hechos localmente.\n\n¿Hay algo más en lo que pueda ayudarte? Por ejemplo, ¿te gustaría que buscara algún producto o tienes alguna otra pregunta?"
+        },
+        {
+          "role": "user",
+          "content": "Si es así, me interesa"
+        },
+        {
+          "role": "bot",
+          "content": "Lo siento, como mencioné antes, no tengo información sobre si los productos son hechos localmente.\n\nSi te interesa buscar algún producto en particular, puedo ayudarte con eso. ¿Hay algo específico que estés buscando hoy?"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Experto en Reviews",
+      "personaId": 18,
+      "messages": [
+        {
+          "role": "user",
+          "content": "He visto malas reviews de ese producto"
+        },
+        {
+          "role": "bot",
+          "content": "Lamento escuchar eso. ¿Te gustaría buscar un producto diferente o tienes alguna otra pregunta en la que pueda ayudarte?"
+        },
+        {
+          "role": "user",
+          "content": "¿Cómo se compara con la competencia?"
+        },
+        {
+          "role": "bot",
+          "content": "No tengo la capacidad de comparar directamente productos con la competencia externa. Sin embargo, puedo ayudarte a encontrar un producto diferente que se ajuste a lo que buscas. ¿Hay algo más que te interese o algún producto específico sobre el que te gustaría saber más?"
+        },
+        {
+          "role": "user",
+          "content": "¿Cuáles son los defectos conocidos?"
+        },
+        {
+          "role": "bot",
+          "content": "No encontré información específica sobre defectos conocidos para los productos. Sin embargo, puedo ayudarte a buscar otros productos o responder a alguna otra pregunta que tengas."
+        },
+        {
+          "role": "user",
+          "content": "¿Qué dicen en Reddit/Twitter?"
+        },
+        {
+          "role": "bot",
+          "content": "No puedo buscar información en Reddit o Twitter directamente. Mi función es ayudarte con los productos disponibles en b2b-sandbox-lift-2.\n\nTu carrito está vacío. ¿Te gustaría que busquemos algún producto o tienes alguna otra pregunta?"
+        },
+        {
+          "role": "user",
+          "content": "Si los datos apoyan, me lo considero"
+        },
+        {
+          "role": "bot",
+          "content": "Lamentablemente, no tengo acceso a información en tiempo real de plataformas como Reddit o Twitter, ni a una base de datos de defectos conocidos o reseñas de usuarios externos. Mi función es ayudarte a encontrar productos disponibles en b2b-sandbox-lift-2.\n\nDado que tu carrito está vacío, ¿te gustaría que busquemos algún producto o tienes alguna otra pregunta sobre algo más en lo que pueda ayudarte?"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Comprador Impulsivo",
+      "personaId": 19,
+      "messages": [
+        {
+          "role": "user",
+          "content": "¡Ey! ¿Qué es lo más cool que tienen?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Hola! Bienvenido a b2b-sandbox-lift-2. Para saber qué es lo más \"cool\", ¿te gustaría que te muestre alguna categoría en particular o algo nuevo? Por ejemplo, puedo buscar \"novedad\" o \"popular\"."
+        },
+        {
+          "role": "user",
+          "content": "¿Puedo verlo ahora?"
+        },
+        {
+          "role": "bot",
+          "content": "Tu carrito está vacío. ¿Quieres buscar algún producto o tienes alguna pregunta?"
+        },
+        {
+          "role": "user",
+          "content": "¡Sí, parece genial!"
+        },
+        {
+          "role": "bot",
+          "content": "¡Genial! ¿Qué tipo de productos te gustaría ver?"
+        },
+        {
+          "role": "user",
+          "content": "¿Cuándo lo tengo?"
+        },
+        {
+          "role": "bot",
+          "content": "No encontré información específica sobre los tiempos de entrega. ¿Te gustaría que busque algo más o tienes alguna otra pregunta?"
+        },
+        {
+          "role": "user",
+          "content": "¡Dale, quiero ya!"
+        },
+        {
+          "role": "bot",
+          "content": "Tu carrito está vacío. ¿Qué te gustaría agregar?"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Indeciso Crónico",
+      "personaId": 20,
+      "messages": [
+        {
+          "role": "user",
+          "content": "No sé qué elegir"
+        },
+        {
+          "role": "bot",
+          "content": "¡Hola! Bienvenido a b2b-sandbox-lift-2. Puedo ayudarte a encontrar algo que te guste. ¿Hay algún tipo de producto en particular que te interese, o prefieres que te muestre algunas de nuestras opciones populares?"
+        },
+        {
+          "role": "user",
+          "content": "¿Cuál es mejor entre A y B?"
+        },
+        {
+          "role": "bot",
+          "content": "Para poder ayudarte, necesito saber a qué productos te refieres con \"A\" y \"B\". ¿Podrías darme más detalles sobre ellos?"
+        },
+        {
+          "role": "user",
+          "content": "¿Seguro que esa es la mejor opción?"
+        },
+        {
+          "role": "bot",
+          "content": "Para poder darte una recomendación, necesito que me digas a qué producto te refieres. ¿Hay algo en particular que estés buscando o que te interese?"
+        },
+        {
+          "role": "user",
+          "content": "¿No hay algo mejor?"
+        },
+        {
+          "role": "bot",
+          "content": "Claro, puedo ayudarte a encontrar algo que te guste. Para poder recomendarte algo \"mejor\", necesito saber qué tipo de productos te interesan. ¿Estás buscando algo en particular, como ropa, electrónica, o quizás algo para el hogar?"
+        },
+        {
+          "role": "user",
+          "content": "Está bien, pero sigue dándome opciones"
+        },
+        {
+          "role": "bot",
+          "content": "¡Perfecto! Como tu carrito está vacío, te invito a explorar nuestros productos. ¿Hay algo en particular que te interese, o prefieres que te muestre algunas opciones?"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Papá Ahorrista",
+      "personaId": 21,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Tengo presupuesto limitado"
+        },
+        {
+          "role": "bot",
+          "content": "¡Hola! Bienvenido a b2b-sandbox-lift-2. Entiendo que tienes un presupuesto limitado. ¿Qué tipo de productos te interesaría buscar? Así puedo intentar encontrar algo que se ajuste a tus necesidades."
+        },
+        {
+          "role": "user",
+          "content": "¿Es el más barato de calidad?"
+        },
+        {
+          "role": "bot",
+          "content": "Entiendo que buscas la mejor relación calidad-precio. Para poder ayudarte a encontrar productos que se ajusten a tu presupuesto y tus expectativas de calidad, ¿podrías decirme qué tipo de producto te interesa? Por ejemplo, ¿estás buscando ropa, electrónica, o algo más específico?"
+        },
+        {
+          "role": "user",
+          "content": "¿Cuánto tiempo va a durar?"
+        },
+        {
+          "role": "bot",
+          "content": "No encontré información específica sobre la duración de algún producto en particular. ¿Te refieres a la garantía de un producto específico, o a la duración del envío, quizás?\n\nSi tienes alguna pregunta sobre las políticas de la tienda o necesitas ayuda para encontrar un producto, házmelo saber. El carrito está vacío en este momento, ¿te gustaría que busquemos algunos productos?"
+        },
+        {
+          "role": "user",
+          "content": "¿Vale la pena el precio?"
+        },
+        {
+          "role": "bot",
+          "content": "No puedo darte una opinión subjetiva sobre si un producto \"vale la pena el precio\", ya que mis capacidades son limitadas a la información objetiva de los productos. Sin embargo, puedo ayudarte a encontrar información sobre productos específicos que te interesen, para que puedas evaluar si se ajustan a lo que buscas.\n\nActualmente tu carrito está vacío. ¿Te gustaría buscar algún producto en particular para que te proporcione sus detalles?"
+        },
+        {
+          "role": "user",
+          "content": "Dale, pero que sea durabilidad"
+        },
+        {
+          "role": "bot",
+          "content": "No encontré productos específicos con la descripción \"durabilidad\" en este momento. A veces, la durabilidad es una característica de un tipo de producto específico o de una marca.\n\n¿Te interesaría buscar algún tipo de producto en particular, como \"mochilas duraderas\", \"herramientas resistentes\", o alguna categoría específica?"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Fashionista Obsesionado",
+      "personaId": 22,
+      "messages": [
+        {
+          "role": "user",
+          "content": "¿Qué está trending en moda ahora?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Hola! Bienvenido a b2b-sandbox-lift-2. ¿Qué tipo de moda te interesa explorar? Puedo buscar productos por categorías, estilos o artículos específicos."
+        },
+        {
+          "role": "user",
+          "content": "¿Es exclusivo? ¿Pocos lo usan?"
+        },
+        {
+          "role": "bot",
+          "content": "No tengo información en tiempo real sobre tendencias o la exclusividad de ciertos estilos para saber cuántas personas los usan. Mi función es ayudarte a encontrar productos específicos en la tienda.\n\nSi buscas algo único o menos común, puedo intentar buscar productos con descripciones específicas o en categorías más especializadas. ¿Te gustaría que busque algo en particular?"
+        },
+        {
+          "role": "user",
+          "content": "¿Qué colores están en tendencia?"
+        },
+        {
+          "role": "bot",
+          "content": "No tengo información sobre las tendencias de color actuales. Mi función es ayudarte a encontrar productos específicos en la tienda. ¿Te gustaría buscar productos por algún color en particular o prefieres que te muestre los productos más populares en general?"
+        },
+        {
+          "role": "user",
+          "content": "¿Me va a quedar bien con mis otros outfits?"
+        },
+        {
+          "role": "bot",
+          "content": "No tengo información sobre tu estilo personal o tus otros outfits, por lo que no puedo decirte si un producto específico te quedará bien. Sin embargo, si me dices qué tipo de producto te interesa, puedo buscarlo y darte detalles sobre sus características, colores y estilos para que puedas decidir si combina con tu guardarropa.\n\n¿Quieres buscar algún producto en particular?"
+        },
+        {
+          "role": "user",
+          "content": "¡Sí! Me lo llevo ahora"
+        },
+        {
+          "role": "bot",
+          "content": "Para poder ayudarte, primero necesito saber qué producto deseas llevarte. ¿Podrías decirme qué te interesa?"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Regalero Experto",
+      "personaId": 23,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Necesito un regalo para mi hermano"
+        },
+        {
+          "role": "bot",
+          "content": "¡Hola! Bienvenido a b2b-sandbox-lift-2. ¿Qué tipo de regalo estás buscando para tu hermano? Así puedo buscar algo que le encante. 😊"
+        },
+        {
+          "role": "user",
+          "content": "Tiene 35 años, es abogado"
+        },
+        {
+          "role": "bot",
+          "content": "Parece que no encontré resultados para \"artículos de oficina\" en este momento.\n\n¿Qué tal si buscamos algo más general como \"regalos para hombre\" o quizás accesorios, ropa, o algo para el tiempo libre? ¿Hay alguna categoría que te interese más para tu hermano?"
+        },
+        {
+          "role": "user",
+          "content": "¿Qué crees que le va a gustar?"
+        },
+        {
+          "role": "bot",
+          "content": "Lo siento, no encontré ningún producto para \"accesorios para hombre\".\n\nQuizás podríamos buscar en categorías más generales. ¿Qué te parece si exploramos opciones como productos de tecnología, ropa, libros o artículos para el hogar?"
+        },
+        {
+          "role": "user",
+          "content": "¿Es apropiado para un ejecutivo?"
+        },
+        {
+          "role": "bot",
+          "content": "Lo siento, no encontré ningún producto para \"regalo ejecutivo\".\n\nParece que mis búsquedas anteriores no han dado muchos resultados. ¿Podrías darme alguna idea más de sus gustos o pasatiempos? Así podré buscar algo que realmente le guste."
+        },
+        {
+          "role": "user",
+          "content": "Dale, confío en tu recomendación"
+        },
+        {
+          "role": "bot",
+          "content": "¡Claro! Una \"Mochila Urban Explorer\" podría ser un excelente regalo para un ejecutivo. Es práctica, resistente al agua y con un diseño moderno, ideal para el trabajo o la universidad.\n\nAquí tienes más detalles:\n\n**Mochila Urban Explorer** por $49.99\n![Mochila Urban Explorer](https://cdn.shopify.com/s/files/1/0897/7249/1116/files/mochila-urban-explorer.png?v=1776363655)\nLa mochila perfecta para el urbanita moderno. Con diseño ergonómico y múltiples compartimentos, es ideal para el trabajo, la universidad o explorar la ciudad. Resistente al agua y con estilo. Capacidad: 20 litros, Color: Negro, Material: Poliéster resistente al agua, Compartimento para laptop de hasta 15\", Correas acolchadas ajustables.\n[Ver en la tienda](https://b2b-sandbox-lift-2.myshopify.com/products/15086298726764)\n\n¿Te gustaría agregar esta mochila al carrito o prefieres que busquemos otra cosa?"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Técnico Paranoico",
+      "personaId": 24,
+      "messages": [
+        {
+          "role": "user",
+          "content": "¿Dónde están mis datos? ¿Encriptados?"
+        },
+        {
+          "role": "bot",
+          "content": "No encontré información específica sobre la encriptación o ubicación de tus datos en las políticas de la tienda. ¿Puedo ayudarte con alguna otra pregunta sobre productos o el proceso de compra?"
+        },
+        {
+          "role": "user",
+          "content": "¿Qué protocolos de seguridad usan?"
+        },
+        {
+          "role": "bot",
+          "content": "No encontré información específica sobre los protocolos de seguridad que usa la tienda en sus políticas. ¿Hay algo más en lo que pueda ayudarte hoy, tal vez buscando algún producto o respondiendo otra pregunta?"
+        },
+        {
+          "role": "user",
+          "content": "¿Es open source?"
+        },
+        {
+          "role": "bot",
+          "content": "No encontré esa información específica en las políticas de la tienda. ¿Puedo ayudarte con algo más, como buscar productos o resolver alguna otra duda?"
+        },
+        {
+          "role": "user",
+          "content": "¿Cuál es la política de privacidad?"
+        },
+        {
+          "role": "bot",
+          "content": "No encontré información específica sobre la política de privacidad. ¿Puedo ayudarte con alguna otra pregunta o buscas algún producto en particular?"
+        },
+        {
+          "role": "user",
+          "content": "Si está auditado, lo considero"
+        },
+        {
+          "role": "bot",
+          "content": "[ERROR] [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: [503 Service Unavailable] The service is currently unavailable."
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Abuela Conectada",
+      "personaId": 25,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Hola, hola, ¿hay alguien ahí?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Hola! Bienvenido a b2b-sandbox-lift-2. ¿En qué puedo ayudarte hoy?\n"
+        },
+        {
+          "role": "user",
+          "content": "Es que mis nietos me dijeron que comprara por aquí"
+        },
+        {
+          "role": "bot",
+          "content": "¡Claro que sí! Con gusto te ayudaré. ¿Hay algo en particular que estés buscando para tus nietos o para ti?\n"
+        },
+        {
+          "role": "user",
+          "content": "Pero no sé cómo funciona esto"
+        },
+        {
+          "role": "bot",
+          "content": "No te preocupes, es muy sencillo. Dime qué producto te interesa y yo te ayudo a buscarlo y agregarlo a tu carrito. Por ejemplo, puedes decirme \"Quiero una mochila\" o \"¿Tienes audífonos?\".\n\nUna vez que tengamos productos en el carrito, te guiaré para finalizar la compra. ¿Te gustaría buscar algo en particular?\n"
+        },
+        {
+          "role": "user",
+          "content": "¿Me explicas bien? Soy un poco lenta"
+        },
+        {
+          "role": "bot",
+          "content": "¡Claro que sí, no te preocupes! Te explico paso a paso:\n\n1.  **Buscar productos:** Tú me dices lo que quieres, por ejemplo, \"Quiero un libro\" o \"Busco una cafetera\". Yo buscaré en la tienda y te mostraré los productos que encuentre, con su precio y una foto.\n2.  **Elegir y añadir al carrito:** Si te gusta un producto, me dices \"Quiero añadir esta mochila al carrito\" o \"Sí, esa cafetera me interesa\". Yo la agregaré a tu carrito de compras virtual. El carrito es como una cesta donde guardas todo lo que quieres comprar.\n3.  **Revisar el carrito:** En cualquier momento puedes preguntarme \"¿Qué tengo en el carrito?\" y te mostraré la lista de productos que has elegido.\n4.  **Finalizar la compra:** Cuando ya tengas todo lo que quieres en el carrito, me dices \"Quiero pagar\" o \"Proceder al checkout\". Yo te daré un enlace para que puedas ir a una página segura y completar tu compra.\n\nNo hay prisa, tómate tu tiempo. ¿Te gustaría que busquemos algo para empezar?\n"
+        },
+        {
+          "role": "user",
+          "content": "Está bien, me animo si me ayudas"
+        },
+        {
+          "role": "bot",
+          "content": "¡Con gusto te ayudaré en cada paso! Dime, ¿qué te gustaría buscar hoy?\n"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+EVALUATION REPORT
+4/30/2026, 6:57:28 PM
+================================================================================
+
+METADATA
+Total Personas: 25
+Conversations Simulated: 25
+Valid Conversations: 25
+Evaluations Completed: 25
+
+OVERALL SCORE
+Score: 4.2/10 ❌ FAILED
+
+DIMENSION BREAKDOWN
+Dimension            Avg      Min      Max      Failed  
+----------------------------------------------------
+Calidez (Warmth)     3.6      1        8        25      
+Curiosidad (Discovery) 4.2      1        8        25      
+Recomendación (Guidance) 1.4      1        5        25      
+Concisión (Brevity)  6.1      4        8        25      
+Naturalidad (Spanish Authenticity) 5.0      1        8        25      
+Manejo de Ambigüedad 5.0      5        5        25      
+
+PROBLEM CONVERSATIONS (Score < 8.5)
+Persona                   Score    Failing Dimensions
+----------------------------------------------------------------------
+Adolescente Gamer         3        calidez(1), curiosidad(4), recomendacion(1), concision(6), naturalidad(1), ambiguedad(5)
+Papá Primerizo            3.3      calidez(2), curiosidad(4), recomendacion(1), concision(5), naturalidad(3), ambiguedad(5)
+Mamá Millennial           3.3      calidez(1), curiosidad(1), recomendacion(1), concision(8), naturalidad(4), ambiguedad(5)
+Experto en Reviews        3.3      calidez(3), curiosidad(1), recomendacion(1), concision(6), naturalidad(4), ambiguedad(5)
+Comprador Impulsivo       3.3      calidez(2), curiosidad(3), recomendacion(1), concision(5), naturalidad(4), ambiguedad(5)
+Técnico Paranoico         3.3      calidez(1), curiosidad(1), recomendacion(1), concision(7), naturalidad(5), ambiguedad(5)
+Viajero Nómada            3.5      calidez(2), curiosidad(4), recomendacion(1), concision(6), naturalidad(3), ambiguedad(5)
+Ama de Casa Tradicional   3.7      calidez(3), curiosidad(4), recomendacion(1), concision(5), naturalidad(4), ambiguedad(5)
+Divorciado Reciente       3.7      calidez(2), curiosidad(3), recomendacion(1), concision(7), naturalidad(4), ambiguedad(5)
+Amante del Lujo           3.7      calidez(2), curiosidad(4), recomendacion(2), concision(5), naturalidad(4), ambiguedad(5)
+Fashionista Obsesionado   3.7      calidez(2), curiosidad(2), recomendacion(1), concision(7), naturalidad(5), ambiguedad(5)
+Madre Ocupada             3.8      calidez(2), curiosidad(4), recomendacion(1), concision(6), naturalidad(5), ambiguedad(5)
+Emprendedor Joven         3.8      calidez(3), curiosidad(2), recomendacion(1), concision(7), naturalidad(5), ambiguedad(5)
+Influencer Fashion        4        calidez(4), curiosidad(3), recomendacion(1), concision(6), naturalidad(5), ambiguedad(5)
+Papá Ahorrista            4        calidez(4), curiosidad(6), recomendacion(1), concision(4), naturalidad(4), ambiguedad(5)
+Carlos Empresario         4.3      calidez(3), curiosidad(4), recomendacion(1), concision(6), naturalidad(7), ambiguedad(5)
+Ejecutiva Moderna         4.3      calidez(3), curiosidad(6), recomendacion(1), concision(5), naturalidad(6), ambiguedad(5)
+Joven Estudiante          4.7      calidez(6), curiosidad(4), recomendacion(1), concision(5), naturalidad(7), ambiguedad(5)
+Señor Jubilado            5        calidez(6), curiosidad(6), recomendacion(1), concision(7), naturalidad(5), ambiguedad(5)
+Ingeniero Técnico         5.2      calidez(3), curiosidad(8), recomendacion(1), concision(7), naturalidad(7), ambiguedad(5)
+Regalero Experto          5.5      calidez(6), curiosidad(4), recomendacion(5), concision(6), naturalidad(7), ambiguedad(5)
+Señora María              5.8      calidez(7), curiosidad(6), recomendacion(4), concision(7), naturalidad(6), ambiguedad(5)
+Indeciso Crónico          5.8      calidez(7), curiosidad(6), recomendacion(2), concision(7), naturalidad(8), ambiguedad(5)
+Abuela Conectada          5.8      calidez(8), curiosidad(8), recomendacion(1), concision(6), naturalidad(7), ambiguedad(5)
+Regateadora Compulsiva    6        calidez(8), curiosidad(7), recomendacion(3), concision(7), naturalidad(6), ambiguedad(5)
