@@ -1,0 +1,2317 @@
+{
+  "timestamp": "2026-05-01T00:20:03.569Z",
+  "metadata": {
+    "totalPersonas": 25,
+    "conversationsSimulated": 25,
+    "conversationsValid": 25,
+    "evaluationsCompleted": 25
+  },
+  "aggregateScores": {
+    "calidez": 5.9,
+    "curiosidad": 5.6,
+    "recomendacion": 4,
+    "concision": 5.3,
+    "naturalidad": 6,
+    "ambiguedad": 5
+  },
+  "overallScore": {
+    "overall": 5.3,
+    "breakdown": {
+      "calidez": 5.9,
+      "curiosidad": 5.6,
+      "recomendacion": 4,
+      "concision": 5.3,
+      "naturalidad": 6,
+      "ambiguedad": 5
+    },
+    "passed": false,
+    "failures": [
+      {
+        "dimension": "calidez",
+        "score": 5.9
+      },
+      {
+        "dimension": "curiosidad",
+        "score": 5.6
+      },
+      {
+        "dimension": "recomendacion",
+        "score": 4
+      },
+      {
+        "dimension": "concision",
+        "score": 5.3
+      },
+      {
+        "dimension": "naturalidad",
+        "score": 6
+      },
+      {
+        "dimension": "ambiguedad",
+        "score": 5
+      }
+    ]
+  },
+  "dimensionAnalysis": {
+    "calidez": {
+      "avg": 5.92,
+      "min": 5,
+      "max": 9,
+      "failed": 22
+    },
+    "curiosidad": {
+      "avg": 5.64,
+      "min": 2,
+      "max": 9,
+      "failed": 22
+    },
+    "recomendacion": {
+      "avg": 4.04,
+      "min": 1,
+      "max": 5,
+      "failed": 25
+    },
+    "concision": {
+      "avg": 5.28,
+      "min": 5,
+      "max": 7,
+      "failed": 25
+    },
+    "naturalidad": {
+      "avg": 6.04,
+      "min": 5,
+      "max": 10,
+      "failed": 19
+    },
+    "ambiguedad": {
+      "avg": 5,
+      "min": 5,
+      "max": 5,
+      "failed": 25
+    }
+  },
+  "problemConversations": [
+    {
+      "persona": "Viajero Nómada",
+      "overall": 5,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 5
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 5
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 5
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Ama de Casa Tradicional",
+      "overall": 5,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 5
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 5
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 5
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Ejecutiva Moderna",
+      "overall": 5,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 5
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 5
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 5
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Señor Jubilado",
+      "overall": 5,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 5
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 5
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 5
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Adolescente Gamer",
+      "overall": 5,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 5
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 5
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 5
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Regateadora Compulsiva",
+      "overall": 5,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 5
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 5
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 5
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Emprendedor Joven",
+      "overall": 5,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 5
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 5
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 5
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Divorciado Reciente",
+      "overall": 5,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 5
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 5
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 5
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Amante del Lujo",
+      "overall": 5,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 5
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 5
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 5
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Mamá Millennial",
+      "overall": 5,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 5
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 5
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 5
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Experto en Reviews",
+      "overall": 5,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 5
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 5
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 5
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Comprador Impulsivo",
+      "overall": 5,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 5
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 5
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 5
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Indeciso Crónico",
+      "overall": 5,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 5
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 5
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 5
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Papá Ahorrista",
+      "overall": 5,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 5
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 5
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 5
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Fashionista Obsesionado",
+      "overall": 5,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 5
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 5
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 5
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Regalero Experto",
+      "overall": 5,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 5
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 5
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 5
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Técnico Paranoico",
+      "overall": 5,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 5
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 5
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 5
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Abuela Conectada",
+      "overall": 5,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 5
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 5
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 5
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Ingeniero Técnico",
+      "overall": 5.2,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 8
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 2
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 6
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Madre Ocupada",
+      "overall": 5.7,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 8
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 6
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 5
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Señora María",
+      "overall": 6.3,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 7
+        },
+        {
+          "dimension": "curiosidad",
+          "score": 8
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 5
+        },
+        {
+          "dimension": "concision",
+          "score": 7
+        },
+        {
+          "dimension": "naturalidad",
+          "score": 6
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Carlos Empresario",
+      "overall": 6.3,
+      "failures": [
+        {
+          "dimension": "calidez",
+          "score": 8
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 6
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Papá Primerizo",
+      "overall": 6.3,
+      "failures": [
+        {
+          "dimension": "curiosidad",
+          "score": 8
+        },
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 6
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Influencer Fashion",
+      "overall": 6.5,
+      "failures": [
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 6
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    },
+    {
+      "persona": "Joven Estudiante",
+      "overall": 6.7,
+      "failures": [
+        {
+          "dimension": "recomendacion",
+          "score": 1
+        },
+        {
+          "dimension": "concision",
+          "score": 6
+        },
+        {
+          "dimension": "ambiguedad",
+          "score": 5
+        }
+      ]
+    }
+  ],
+  "allEvaluations": [
+    {
+      "numericScores": {
+        "calidez": 7,
+        "curiosidad": 8,
+        "recomendacion": 5,
+        "concision": 7,
+        "naturalidad": 6,
+        "ambiguedad": 5
+      },
+      "persona": "Señora María",
+      "rawResponse": "CALIDEZ: 7\nCURIOSIDAD: 8\nRECOMENDACION: 5\nCONCISION: 7\nNATURALIDAD: 6\nAMBIGUED"
+    },
+    {
+      "numericScores": {
+        "calidez": 8,
+        "curiosidad": 9,
+        "recomendacion": 1,
+        "concision": 6,
+        "naturalidad": 9,
+        "ambiguedad": 5
+      },
+      "persona": "Carlos Empresario",
+      "rawResponse": "CALIDEZ: 8\nCURIOSIDAD: 9\nRECOMENDACION: 1\nCONCISION: 6\nNATURALIDAD: 9\n"
+    },
+    {
+      "numericScores": {
+        "calidez": 9,
+        "curiosidad": 9,
+        "recomendacion": 1,
+        "concision": 6,
+        "naturalidad": 10,
+        "ambiguedad": 5
+      },
+      "persona": "Joven Estudiante",
+      "rawResponse": "CALIDEZ: 9\nCURIOSIDAD: 9\nRECOMENDACION: 1\nCONCISION: 6\nNATURALIDAD: 10\nAM"
+    },
+    {
+      "numericScores": {
+        "calidez": 8,
+        "curiosidad": 6,
+        "recomendacion": 1,
+        "concision": 5,
+        "naturalidad": 9,
+        "ambiguedad": 5
+      },
+      "persona": "Madre Ocupada",
+      "rawResponse": "CALIDEZ: 8\nCURIOSIDAD: 6\nRECOMENDACION: 1\nCONCISION: 5\nNATURALIDAD: 9\nAM"
+    },
+    {
+      "numericScores": {
+        "calidez": 8,
+        "curiosidad": 2,
+        "recomendacion": 1,
+        "concision": 6,
+        "naturalidad": 9,
+        "ambiguedad": 5
+      },
+      "persona": "Ingeniero Técnico",
+      "rawResponse": "CALIDEZ: 8\nCURIOSIDAD: 2\nRECOMENDACION: 1\nCONCISION: 6\nNATURALIDAD: 9\nAMBIGUED"
+    },
+    {
+      "numericScores": {
+        "calidez": 9,
+        "curiosidad": 9,
+        "recomendacion": 1,
+        "concision": 6,
+        "naturalidad": 9,
+        "ambiguedad": 5
+      },
+      "persona": "Influencer Fashion",
+      "rawResponse": "CALIDEZ: 9\nCURIOSIDAD: 9\nRECOMENDACION: 1\nCONCISION: 6\nNATURALIDAD: 9\nAM"
+    },
+    {
+      "numericScores": {
+        "calidez": 9,
+        "curiosidad": 8,
+        "recomendacion": 1,
+        "concision": 6,
+        "naturalidad": 9,
+        "ambiguedad": 5
+      },
+      "persona": "Papá Primerizo",
+      "rawResponse": "CALIDEZ: 9\nCURIOSIDAD: 8\nRECOMENDACION: 1\nCONCISION: 6\nNATURALIDAD: 9\nAM"
+    },
+    {
+      "numericScores": {
+        "calidez": 5,
+        "curiosidad": 5,
+        "recomendacion": 5,
+        "concision": 5,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Viajero Nómada",
+      "error": "[GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed"
+    },
+    {
+      "numericScores": {
+        "calidez": 5,
+        "curiosidad": 5,
+        "recomendacion": 5,
+        "concision": 5,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Ama de Casa Tradicional",
+      "error": "[GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed"
+    },
+    {
+      "numericScores": {
+        "calidez": 5,
+        "curiosidad": 5,
+        "recomendacion": 5,
+        "concision": 5,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Ejecutiva Moderna",
+      "error": "[GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed"
+    },
+    {
+      "numericScores": {
+        "calidez": 5,
+        "curiosidad": 5,
+        "recomendacion": 5,
+        "concision": 5,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Señor Jubilado",
+      "error": "[GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed"
+    },
+    {
+      "numericScores": {
+        "calidez": 5,
+        "curiosidad": 5,
+        "recomendacion": 5,
+        "concision": 5,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Adolescente Gamer",
+      "error": "[GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed"
+    },
+    {
+      "numericScores": {
+        "calidez": 5,
+        "curiosidad": 5,
+        "recomendacion": 5,
+        "concision": 5,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Regateadora Compulsiva",
+      "error": "[GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed"
+    },
+    {
+      "numericScores": {
+        "calidez": 5,
+        "curiosidad": 5,
+        "recomendacion": 5,
+        "concision": 5,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Emprendedor Joven",
+      "error": "[GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed"
+    },
+    {
+      "numericScores": {
+        "calidez": 5,
+        "curiosidad": 5,
+        "recomendacion": 5,
+        "concision": 5,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Divorciado Reciente",
+      "error": "[GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed"
+    },
+    {
+      "numericScores": {
+        "calidez": 5,
+        "curiosidad": 5,
+        "recomendacion": 5,
+        "concision": 5,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Amante del Lujo",
+      "error": "[GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed"
+    },
+    {
+      "numericScores": {
+        "calidez": 5,
+        "curiosidad": 5,
+        "recomendacion": 5,
+        "concision": 5,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Mamá Millennial",
+      "error": "[GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed"
+    },
+    {
+      "numericScores": {
+        "calidez": 5,
+        "curiosidad": 5,
+        "recomendacion": 5,
+        "concision": 5,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Experto en Reviews",
+      "error": "[GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed"
+    },
+    {
+      "numericScores": {
+        "calidez": 5,
+        "curiosidad": 5,
+        "recomendacion": 5,
+        "concision": 5,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Comprador Impulsivo",
+      "error": "[GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed"
+    },
+    {
+      "numericScores": {
+        "calidez": 5,
+        "curiosidad": 5,
+        "recomendacion": 5,
+        "concision": 5,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Indeciso Crónico",
+      "error": "[GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed"
+    },
+    {
+      "numericScores": {
+        "calidez": 5,
+        "curiosidad": 5,
+        "recomendacion": 5,
+        "concision": 5,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Papá Ahorrista",
+      "error": "[GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed"
+    },
+    {
+      "numericScores": {
+        "calidez": 5,
+        "curiosidad": 5,
+        "recomendacion": 5,
+        "concision": 5,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Fashionista Obsesionado",
+      "error": "[GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed"
+    },
+    {
+      "numericScores": {
+        "calidez": 5,
+        "curiosidad": 5,
+        "recomendacion": 5,
+        "concision": 5,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Regalero Experto",
+      "error": "[GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed"
+    },
+    {
+      "numericScores": {
+        "calidez": 5,
+        "curiosidad": 5,
+        "recomendacion": 5,
+        "concision": 5,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Técnico Paranoico",
+      "error": "[GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed"
+    },
+    {
+      "numericScores": {
+        "calidez": 5,
+        "curiosidad": 5,
+        "recomendacion": 5,
+        "concision": 5,
+        "naturalidad": 5,
+        "ambiguedad": 5
+      },
+      "persona": "Abuela Conectada",
+      "error": "[GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: fetch failed"
+    }
+  ],
+  "allConversations": [
+    {
+      "persona": "Señora María",
+      "personaId": 1,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Hola, hola, ¿hay alguien aquí?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Bienvenido a Tienda Virtual. Soy tu asistente, acá estoy para encontrarte lo que necesitas. ¿En qué te ayudo hoy?"
+        },
+        {
+          "role": "user",
+          "content": "Es que necesito un regalo para mi nieta, pero no sé qué regalarle"
+        },
+        {
+          "role": "bot",
+          "content": "¡Dale, te entiendo perfecto! Buscar el regalo justo puede ser complicado, pero no te preocupes, te ayudo sin problema.\n\nPara poder recomendarte bien, cuéntame un poquito más, compa:\n\n*   **¿Qué edad tiene tu nieta?** Así puedo buscar algo apropiado pa' ella.\n*   **¿Cuáles son sus intereses o pasatiempos?** ¿Le gusta jugar al aire libre, leer, pintar, tecnología, o algo más?\n*   **¿Tienes algún presupuesto en mente?** ¿Cuánto estarías dispuesto a gastar?\n\nCon esa información, te tiro las mejores opciones."
+        },
+        {
+          "role": "user",
+          "content": "Ella tiene 25 años, trabaja en una oficina"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ah, ya! 25 años y trabaja en oficina, ¡chévere! Ya con eso tengo una idea.\n\n¿Qué tal si pensamos en algo que le sea útil pa' su trabajo o pa' su día a día? Podría ser algo pa' la oficina, o tal vez algo que use al ir y venir.\n\n¿Tienes algún presupuesto en mente, maña? Y, ¿hay algo que le interese mucho, como tecnología, libros, o algo más práctico? ¡Tira, cuéntame!"
+        },
+        {
+          "role": "user",
+          "content": "No, no sabe de tecnología. Es simple"
+        },
+        {
+          "role": "bot",
+          "content": "¡Entendido, compa! Algo simple y útil pa' la oficina. Ya te capto la idea.\n\n¿Qué te parece si buscamos algo como una **agenda o cuaderno bonito**, una **bolsa elegante** pa' llevar sus cosas al trabajo, o quizás algo pa' su escritorio que sea práctico pero a la vez chévere?\n\n¿Y del presupuesto? ¿Cuánto tienes pensado gastar, pa' no irnos ni muy arriba ni muy abajo? ¡Dale, dime tú!"
+        },
+        {
+          "role": "user",
+          "content": "Sí, quiero algo que le dure, que sea bonito"
+        },
+        {
+          "role": "bot",
+          "content": "¡Dale, perfecto! Duradero y bonito, eso se ve muy bien.\n\n¿Qué tal si le buscamos una **bolsa o cartera de mujer** que sea elegante y resistente? Así le sirve pa' su trabajo y pa' su día a día.\n\nAntes de que te tire algunas opciones, ¿cuál es tu presupuesto, hermano? Así me aseguro de encontrar algo que te cuadre."
+        },
+        {
+          "role": "user",
+          "content": "¿Cuánto cuesta? No quiero gastar demasiado, ¿eh?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Vea, entiendo perfectamente! No te preocupes, busquemos algo que sea bueno y no te haga gastar de más.\n\nPara tener una idea clara, compa, ¿cuál sería el rango de precio ideal pa' ti? ¿Más o menos cuánto es \"no gastar demasiado\"? ¿Unos $30, $50, $80? Así te busco opciones que se ajusten justo a eso."
+        },
+        {
+          "role": "user",
+          "content": "Mira, está bien. Si tú lo recomiendas, le hace falta"
+        },
+        {
+          "role": "bot",
+          "content": "¡Eyyy! Mira, no encontré exactamente una \"bolsa de mujer elegante para oficina\" en este momento. A veces la búsqueda es un poco específica, ¿sabes?\n\nPero no te preocupes, tira, ¿qué te parece si busco algo más general como solo \"**bolsa de mujer**\" o \"**cartera elegante**\"? Quizás así encontramos algo súper chévere que le guste un montón. ¿Te parece bien?"
+        }
+      ],
+      "success": true,
+      "messageCount": 14
+    },
+    {
+      "persona": "Carlos Empresario",
+      "personaId": 2,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Necesito una solución rápido para mi equipo"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Bienvenido a Tienda Virtual. Soy tu asistente, acá estoy para encontrarte lo que necesitas.\n\nVea, compa, cuando dices \"una solución rápida para mi equipo\", ¿a qué te refieres específicamente? ¿Es pa' software, equipos de oficina, algo de tecnología, o qué necesitas? ¡Cuéntame un poquito más pa' poder ayudarte bien!"
+        },
+        {
+          "role": "user",
+          "content": "15 personas en la oficina, tenemos presupuesto limitado"
+        },
+        {
+          "role": "bot",
+          "content": "Dale, entiendo que es para 15 personas y con presupuesto limitado. Eso me ayuda.\n\nPero cuéntame, maña, ¿qué tipo de solución necesitas? ¿Es pa' computadoras, sillas, escritorios, o algún software en particular? ¡Así te puedo buscar algo que se ajuste a lo que buscas!"
+        },
+        {
+          "role": "user",
+          "content": "¿Cuál es la opción que más ROI genera?"
+        },
+        {
+          "role": "bot",
+          "content": "Eyyy, entiendo que buscas el mejor retorno de inversión, ¡eso es clave!\n\nPero ve, como te decía, para poder recomendarte algo que de verdad te genere ROI, necesito saber qué tipo de producto o servicio estás buscando. ¿Es algo de tecnología, muebles de oficina, algo para la productividad, o qué? Una \"solución\" puede ser muchísimas cosas, y lo que da ROI en un área no es lo mismo que en otra.\n\nCuéntame qué es lo principal que quieren mejorar o resolver en la oficina, así te puedo ayudar a encontrar la mejor opción."
+        },
+        {
+          "role": "user",
+          "content": "Dale, ¿cuánto es en total?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey, compa! El carrito está vacío, así que no hay nada que sumar por ahora.\n\n¿Quieres que te ayude a buscar algún producto para tu oficina o qué te gustaría añadir?"
+        },
+        {
+          "role": "user",
+          "content": "Perfecto, proceda al checkout"
+        },
+        {
+          "role": "bot",
+          "content": "Ey, compa, como te decía hace un momentito, ¡el carrito está vacío! No hay productos para generar el checkout.\n\n¿Quieres que te ayude a buscar algo para tu equipo en la oficina, o hay algún producto que te interese añadir? ¡Así podemos empezar a armar ese carrito!"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Joven Estudiante",
+      "personaId": 3,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Oye, ¿cuál es el producto más barato que tienes?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Para poder ayudarte a encontrar el producto más barato, cuéntame, ¿hay algún tipo de producto en particular que te interese? Así te busco algo chévere y económico pa' ti."
+        },
+        {
+          "role": "user",
+          "content": "Soy estudiante, no tengo mucho dinero"
+        },
+        {
+          "role": "bot",
+          "content": "Te entiendo perfecto, compa. Buscar algo bueno y que no nos deje sin real es clave.\n\nPara poder recomendarte bien, cuéntame: ¿qué tipo de producto necesitas pa' tus estudios? ¿Quizás algo pa' la escuela, pa' llevar tus cosas, o algo más? Así te busco lo más suave y a buen precio."
+        },
+        {
+          "role": "user",
+          "content": "¿Cuál es la mejor oferta que me puedas dar?"
+        },
+        {
+          "role": "bot",
+          "content": "Dale, entiendo que buscas una buena oferta, maña. Pero pa' poder encontrar la mejor pa' ti, necesito saber qué tipo de producto te interesa. ¿Estás buscando algo específico, o tienes alguna idea en mente? Así te busco algo que se ajuste a lo que necesitas y a tu bolsillo."
+        },
+        {
+          "role": "user",
+          "content": "Hmm, ¿hay descuento si compro ahora?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Eyyy! Qué buena pregunta, compa. ¡Claro que sí, siempre tenemos cositas!\n\nMira, si compras ahora puedes usar el código **BIENVENIDO10** y te llevas un 10% de descuento en tu primer pedido. ¡Está chévere! Además, si tu compra es mayor a $999 MXN, el envío te sale gratis. Y pilas que siempre sacamos descuentos especiales en fechas importantes.\n\n¿Qué te parece? ¿Quieres que te ayude a buscar algo pa' aprovechar esa oferta?"
+        },
+        {
+          "role": "user",
+          "content": "Dale, me lo llevo"
+        },
+        {
+          "role": "bot",
+          "content": "¡Dale! Te entiendo, compa. Pero vea, el carrito está vacío en este momento.\n\n¿Qué es lo que te gustaría llevar? Dime y te ayudo a agregarlo pa' que aproveches el descuento."
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Madre Ocupada",
+      "personaId": 4,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Necesito algo para mi familia, pero tiene que ser duradero"
+        },
+        {
+          "role": "bot",
+          "content": "¡Dale, entiendo! Para poder recomendarte algo bueno y duradero pa' tu familia, cuéntame un poco más, compa.\n\n¿Qué tipo de producto estás buscando? ¿Es pa' la casa, pa' un viaje, pa' la escuela o pa' alguna actividad específica?"
+        },
+        {
+          "role": "user",
+          "content": "Tengo dos hijos, 8 y 12 años"
+        },
+        {
+          "role": "bot",
+          "content": "Ah, ¡qué bien! Dos chamos, entiendo. Pa' esos rangos de edad, hay un montón de cosas chéveres que podrían ser duraderas.\n\nPero mira, pa' darte en el clavo, ¿qué tipo de producto tienes en mente? ¿Es pa' juegos, pa' la escuela, pa' algún deporte o pa' ropa? Y, ¿tienes algún presupuesto en mente, maña?"
+        },
+        {
+          "role": "user",
+          "content": "¿Es seguro para niños? No quiero problemas"
+        },
+        {
+          "role": "bot",
+          "content": "Vea, disculpa, compa. No encontré una política específica sobre la seguridad de productos para niños con esa pregunta.\n\nPero no te preocupes, si me dices qué tipo de producto buscas, podemos ver las características de cada uno y te ayudo a elegir algo bien seguro y duradero pa' tus hijos, ¿dale?"
+        },
+        {
+          "role": "user",
+          "content": "¿Cuánto tiempo dura?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Esa es una excelente pregunta, compa. La verdad es que \"cuánto dura\" va a depender mucho del producto específico que estemos viendo. Algunos productos tienen una vida útil más larga que otros, y también depende del uso que se le dé, ¿sabes?\n\nSi quieres, podemos buscar algunos productos duraderos que puedan interesarte y así podemos ver las especificaciones de cada uno. ¿Qué te parece si empezamos buscando algo, maña?"
+        },
+        {
+          "role": "user",
+          "content": "Dale, suena bien, sigue adelante"
+        },
+        {
+          "role": "bot",
+          "content": "¡Uhm, vea! Parece que con esa búsqueda tan específica no encontré productos directamente, maña. A veces, la tienda no tiene categorías exactas para \"productos duraderos para niños de 8 y 12 años\".\n\nPero no te preocupes, ¿qué tal si buscamos algo un poquito más general que sea duradero? Por ejemplo, ¿buscas mochilas, botellas de agua, ropa resistente o algo para actividades al aire libre? Así te puedo encontrar algo que se adapte mejor a lo que necesitas pa' los chamos. ¡Tira, dime qué te parece!"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Ingeniero Técnico",
+      "personaId": 5,
+      "messages": [
+        {
+          "role": "user",
+          "content": "¿Cuáles son las especificaciones técnicas exactas?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Para poder darte las especificaciones técnicas exactas, necesito saber de qué producto estamos hablando. ¿De cuál te gustaría conocer los detalles?"
+        },
+        {
+          "role": "user",
+          "content": "¿Cuál es el voltaje, amperaje y eficiencia?"
+        },
+        {
+          "role": "bot",
+          "content": "Eyyy, maña, para poder darte esos detalles como el voltaje, amperaje y la eficiencia, necesito saber de qué producto me hablas. ¿Cuál te interesa?"
+        },
+        {
+          "role": "user",
+          "content": "¿Cómo se compara con la marca X?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Pa' poder comparar algo con la marca X, necesito que me digas de qué producto estamos hablando. ¿Cuál te interesa?\n\nPor cierto, veo que tu carrito está vacío, así que cuando quieras, podemos buscar algo chévere. ¡Tira, pregúntame!"
+        },
+        {
+          "role": "user",
+          "content": "Necesito datos concretos, no marketing"
+        },
+        {
+          "role": "bot",
+          "content": "¡Dale, entiendo perfecto, compa! Entiendo que quieres ir directo al grano con los detalles técnicos, no te preocupes.\n\nPero ey, pa' poder darte esos datos concretos como el voltaje, amperaje, eficiencia o pa' compararlo con la marca X, necesito que me digas **de qué producto estamos hablando**. Así puedo buscar la información exacta.\n\nTu carrito está vacío, así que cuando quieras, ¡tira! Dime qué producto te interesa y lo buscamos de una vez."
+        },
+        {
+          "role": "user",
+          "content": "Si los specs son esos, me interesa"
+        },
+        {
+          "role": "bot",
+          "content": "¡Dale, entiendo que te interesa, hermano! Pero ey, como te dije, necesito saber a qué producto te refieres cuando dices \"esos specs\". Dime el nombre del producto o qué estás buscando y así puedo buscar los datos concretos que quieres.\n\nTu carrito sigue vacío, así que cuando me digas qué producto, ¡lo agregamos de una vez!"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Influencer Fashion",
+      "personaId": 6,
+      "messages": [
+        {
+          "role": "user",
+          "content": "¡Hola! ¿Qué de nuevo tienen?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Bienvenido a Tienda Virtual. Soy tu asistente, acá estoy para encontrarte lo que necesitas. ¿En qué te ayudo hoy?\n"
+        },
+        {
+          "role": "user",
+          "content": "Busco algo que esté en tendencia ahora"
+        },
+        {
+          "role": "bot",
+          "content": "¡Claro! Entiendo, compa. Para poder recomendarte algo que esté en tendencia y que te sirva, cuéntame un poquito más: ¿qué tipo de producto te interesa? ¿Es pa' ropa, accesorios, algo pa' la casa, o qué? ¿Tienes alguna idea de para qué lo necesitas?"
+        },
+        {
+          "role": "user",
+          "content": "¿Qué colores tienen? Quiero algo que no todos tengan"
+        },
+        {
+          "role": "bot",
+          "content": "¡Dale! Te entiendo, maña. Quieres algo exclusivo, ¡chévere! Pero antes de buscar colores y productos que nadie más tenga, ¿me podrías decir qué tipo de producto te interesa? Así te busco algo bien específico y a tu gusto. ¿Estamos?"
+        },
+        {
+          "role": "user",
+          "content": "Ame ese color, ¿es exclusivo?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey, compa! Me alegra que te guste el color, pero la verdad no tengo contexto de cuál color me hablas ahorita. No te preocupes, te ayudo sin problema. Cuéntame, ¿a qué producto o color te refieres para ver si es algo exclusivo o qué?"
+        },
+        {
+          "role": "user",
+          "content": "¡Dale, me lo llevo!"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Me emociona tu entusiasmo, pero mira', el carrito está vacío ahorita. ¿Qué te gustaría llevarte? Dime qué producto te llamó la atención para agregarlo y hacer esa compra."
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Papá Primerizo",
+      "personaId": 7,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Hola, necesito algo para mi recién nacido"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Bienvenido a Tienda Virtual. Soy tu asistente, acá estoy para encontrarte lo que necesitas. ¡Felicidades por tu recién nacido, compa!\n\nPara poder recomendarte algo bien chévere, ¿me podrías contar un poco más? ¿Qué tipo de producto necesitas? ¿Un coche, ropa, un juguete? ¿Y cuál sería tu presupuesto, maña?"
+        },
+        {
+          "role": "user",
+          "content": "¿Es seguro para bebés? Estoy asustado"
+        },
+        {
+          "role": "bot",
+          "content": "¡Vea! Parece que no encontré una política específica sobre la seguridad general de los productos para bebés en este momento, pero no te preocupes, ¡te ayudo a buscar productos que cumplan con los estándares de seguridad!\n\nPara darte una mano, cuéntame: ¿estás buscando algo en particular, como un coche, una cuna, o ropita? Y, ¿tienes algún presupuesto en mente, maña? Así podemos encontrar algo que se adapte a lo que necesitas y te dé esa tranquilidad."
+        },
+        {
+          "role": "user",
+          "content": "¿Tiene certificaciones de seguridad?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Entiendo tu preocupación por la seguridad, compa. Es súper importante que tu recién nacido esté bien.\n\nMira, no encontré información específica en las políticas de la tienda sobre certificaciones de seguridad para todos los productos de bebé. Sin embargo, te puedo decir que en Tienda Virtual nos esforzamos por trabajar con proveedores que cumplen con estándares de calidad.\n\n¿Qué te parece si buscamos algo específico que necesites? Así podemos revisar juntos los detalles del producto y si tiene alguna certificación. ¿Qué te interesa más ahora mismo? ¿Un coche, una silla para el carro, o algo de ropa?"
+        },
+        {
+          "role": "user",
+          "content": "¿Contiene material tóxico?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Pila, compa! Entiendo perfecto tu preocupación sobre los materiales tóxicos, es algo muy importante, ¿ves? No encontré una política específica que mencione si los productos contienen o no materiales tóxicos directamente.\n\nPero no te preocupes, para que te quedes tranquilo, si tienes algún producto en mente, podemos buscarlo y ver la descripción. Generalmente, los fabricantes suelen especificar si usan materiales no tóxicos. ¿Qué tipo de producto estás buscando para el bebé? ¿Y tienes algún presupuesto pa' esto? ¡Tira, que te ayudo a encontrar lo mejor!"
+        },
+        {
+          "role": "user",
+          "content": "Dale, si es seguro, lo quiero"
+        },
+        {
+          "role": "bot",
+          "content": "¡Uy, compa! Mira que no encontré ningún producto específico para recién nacidos ahora mismo con esa búsqueda. ¡Pero no te me achicopales!\n\nParece que mi búsqueda fue muy general. ¿Qué tal si me dices algo más específico que tengas en mente? ¿Quizás ropa, un juguete, o algo para el cuidado? ¡Así podemos encontrar algo que sea seguro y te guste!"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Viajero Nómada",
+      "personaId": 8,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Estoy viajando por Latinoamérica"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Bienvenido a Tienda Virtual. Soy tu asistente, acá estoy para encontrarte lo que necesitas. ¡Chévere que andes viajando por Latinoamérica!\n\nPara poder recomendarte algo bien útil, cuéntame, compa: ¿Qué tipo de producto andas buscando para tus viajes? ¿Quizás una mochila, algo de ropa, accesorios? ¿Y para qué tipo de viaje lo necesitas? ¡Dale, te escucho!"
+        },
+        {
+          "role": "user",
+          "content": "Necesito algo ligero y portable"
+        },
+        {
+          "role": "bot",
+          "content": "¡Tranquilo! \"Ligero y portable\" suena súper bien pa' viajar, maña. Pero, ¿qué tipo de cosa ligera y portable tienes en mente?\n\n¿Buscas una mochila pequeña pa' paseos diarios, una maleta de mano, quizás algún accesorio electrónico? ¿O tal vez ropa que no abulte mucho? Cuéntame un poquito más, ¿pa' qué lo usarías? ¡Así te ayudo a encontrar lo más chévere!"
+        },
+        {
+          "role": "user",
+          "content": "¿Cabe en una mochila de 40 litros?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey, buena pregunta! Pa' saber si algo cabe en tu mochila de 40 litros, primero necesito saber qué tipo de producto te interesa, compa. ¿Es una almohada de viaje, una chamarra, un botiquín, qué andas buscando? ¡Así te puedo decir si te da la talla!"
+        },
+        {
+          "role": "user",
+          "content": "¿Aguanta los cambios de clima y golpes?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Pila! Eso de aguantar cambios de clima y golpes es clave pa' los viajes, te entiendo perfecto. Pero todavía no sé qué tipo de producto te interesa, maña.\n\nCuéntame, ¿estás pensando en una mochila, un bolso, algún accesorio electrónico, o qué exactamente? Cuando me digas qué producto, ahí sí te busco algo que sea bien resistente y que aguante lo que le tires."
+        },
+        {
+          "role": "user",
+          "content": "Perfecto, me lo llevo"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey, compa! Me alegra que ya tengas claro lo que quieres. Pero mira, veo que tu carrito está vacío. Parece que no hemos agregado ningún producto todavía.\n\n¿Cuál es ese producto que te quieres llevar? ¡Dime el nombre o descríbemelo y lo agregamos al toque!"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Ama de Casa Tradicional",
+      "personaId": 9,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Hola, quisiera algo de buena calidad"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Bienvenido a Tienda Virtual. Soy tu asistente, acá estoy para encontrarte lo que necesitas.\n\n¡Chévere que buscas buena calidad! Pero, compa, para poder recomendarte bien, cuéntame un poquito más: ¿qué tipo de producto necesitas y para qué lo vas a usar? Así te busco algo que se ajuste perfecto."
+        },
+        {
+          "role": "user",
+          "content": "Es que los que tengo no me duran"
+        },
+        {
+          "role": "bot",
+          "content": "¡Te entiendo perfecto, maña! Buscar algo que aguante es clave. Pero todavía no me has dicho qué tipo de producto es el que buscas. ¿Es ropa, accesorios, algo para el hogar, o qué? Dime qué necesitas y así te busco opciones que sí te duren."
+        },
+        {
+          "role": "user",
+          "content": "¿Vale la pena gastarse eso? Soy cuidadosa con el dinero"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey, te entiendo perfectamente! Es súper importante gastar la plata con cabeza y que valga la pena, sobre todo si eres cuidadosa. Mi objetivo es ayudarte a encontrar algo de buena calidad que realmente te dure y se ajuste a tu presupuesto.\n\nPara eso, cuéntame: ¿qué producto en específico estás buscando? Así podemos ver opciones que te den el mejor valor por tu dinero."
+        },
+        {
+          "role": "user",
+          "content": "¿Puedo pagar en partes?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Pila, compa! Entiendo tu pregunta sobre pagar en partes. De momento no encontré información específica sobre opciones de pago a plazos en la tienda.\n\nPero no te preocupes, si me dices qué producto te interesa, puedo buscarte algo que se ajuste a tu presupuesto. ¿Qué te parece?"
+        },
+        {
+          "role": "user",
+          "content": "Dale, confío en ti"
+        },
+        {
+          "role": "bot",
+          "content": "¡Chévere, maña! Te agradezco la confianza. Pero vea, para poder recomendarte algo \"de buena calidad\" que te dure y que valga la pena, necesito saber qué producto buscas específicamente.\n\n¿Es una mochila, ropa, algún accesorio, algo para la casa? Cuéntame qué tipo de cosa es la que necesitas, y con gusto te busco la mejor opción."
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Ejecutiva Moderna",
+      "personaId": 10,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Buenos días, necesito algo premium"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Buenos días, compa. ¡Bienvenido a Tienda Virtual! Soy tu asistente, acá estoy para encontrarte lo que necesitas.\n\nCuando dices \"algo premium\", ¿a qué te refieres específicamente, maña? ¿Buscas algo para un uso en particular, o tienes algún tipo de producto en mente, como una mochila, audífonos o algo de tecnología? Cuéntame un poco más pa' ayudarte a encontrar lo mejor."
+        },
+        {
+          "role": "user",
+          "content": "¿Qué servicio post-venta ofrecen?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Mira, compa, disculpa, no encontré información específica sobre un \"servicio post-venta\" como tal en nuestras políticas.\n\nPero no te preocupes, si tienes alguna duda sobre garantías, devoluciones o cualquier otra cosa después de tu compra, puedes preguntar con confianza. ¡Acá estoy pa' ayudarte!"
+        },
+        {
+          "role": "user",
+          "content": "¿Hay garantía extendida?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Eyyy! Mira, compa, disculpa, no encontré información específica sobre garantía extendida en nuestras políticas.\n\nSi te interesa algún producto en particular y quieres saber sobre su garantía estándar, házmelo saber y vemos qué podemos encontrar. ¡Tranquilo, que aquí te ayudamos!"
+        },
+        {
+          "role": "user",
+          "content": "¿Es realmente la mejor opción del mercado?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey, compa! Ahorita mismo tu carrito está vacío, así que no tengo un producto específico pa' decirte si es la mejor opción del mercado.\n\nPero no te preocupes, ¡acá estoy pa' ayudarte a encontrar algo chévere! ¿Qué tipo de producto estás buscando para que podamos empezar? ¡Tira, dime!"
+        },
+        {
+          "role": "user",
+          "content": "Perfecto, proceda"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey, compa! Vea, como tu carrito está vacío, no hay nada pa' proceder al checkout todavía.\n\n¿Qué te gustaría buscar? ¿Hay algún producto en mente que te interese? ¡Tira, dime pa' ayudarte a encontrar algo bueno!"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Señor Jubilado",
+      "personaId": 11,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Hola joven, ¿me pueden ayudar?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! ¡Claro que sí, compa! Bienvenido a Tienda Virtual. Soy tu asistente, acá estoy para encontrarte lo que necesitas. ¿En qué te ayudo hoy?"
+        },
+        {
+          "role": "user",
+          "content": "Es que no entiendo bien esto del internet"
+        },
+        {
+          "role": "bot",
+          "content": "¡Tranquilo, maña! No te preocupes, te ayudo sin problema. Ahora mismo tu carrito está vacío. ¿Quieres que busquemos algo chévere para ti? ¿Qué te gustaría encontrar?"
+        },
+        {
+          "role": "user",
+          "content": "¿Cómo sé que es seguro mandar dinero así?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey, disculpa! No encontré esa información específica en nuestras políticas directamente con esa pregunta. Pero te aseguro que en Tienda Virtual usamos métodos de pago seguros. Cuando lleguemos al momento de pagar, te explicaré bien todo el proceso para que veas que es de confianza.\n\nMientras tanto, ¿quieres que busquemos algún producto o tienes alguna otra pregunta sobre la tienda?"
+        },
+        {
+          "role": "user",
+          "content": "¿Me pueden explicar paso a paso cómo funciona?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Vea! Disculpa, maña, parece que no encuentro una respuesta paso a paso tan detallada sobre \"cómo funciona\" el proceso de compra específico que me preguntas.\n\nPero te lo explico yo, ¡suavecito! Primero, buscamos lo que necesitas. Luego, lo agregamos al carrito. Cuando ya tengas todo lo que quieres, generamos un enlace de pago seguro donde puedes meter tus datos tranquilo. ¡Todo se hace con la mayor seguridad, no te preocupes por eso!\n\n¿Qué te parece si empezamos buscando algo que te interese? ¿O tienes alguna otra pregunta en mente?"
+        },
+        {
+          "role": "user",
+          "content": "Bueno, si es así, me animo"
+        },
+        {
+          "role": "bot",
+          "content": "¡Dale, chévere! Me alegra que te animes. Ahora mismo tu carrito está vacío, así que es el momento perfecto para empezar. ¿Qué te gustaría que busquemos hoy, compa? Cuéntame, ¿qué necesitas?"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Adolescente Gamer",
+      "personaId": 12,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Ey, ¿qué onda? Necesito gear gaming"
+        },
+        {
+          "role": "bot",
+          "content": "¡Eyyy! ¿Qué tal? ¡Chévere que buscas gear gaming! Pa' poder recomendarte lo mejor, compa, cuéntame: ¿qué tipo de equipo necesitas? ¿Buscas audífonos, un mouse, teclado, o algo más específico? ¿Y tienes algún presupuesto en mente, maña?"
+        },
+        {
+          "role": "user",
+          "content": "¿Qué FPS da? Porque tengo otro en 120"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey, compa! Entiendo lo que preguntas, pero vea, los FPS (frames por segundo) usualmente son más pa' las pantallas o tarjetas de video, ¿sabes? El \"gear gaming\" que tengo acá, como audífonos, mouse o teclados, no te da FPS directamente.\n\nPa' poder ayudarte bien, ¿qué tipo de equipo gaming te interesa más? Así busco algo que se ajuste a lo que necesitas, ¡dale!"
+        },
+        {
+          "role": "user",
+          "content": "¿Es compatible con mi setup?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Eyyy, compa! Vea, como tu carrito está vacío, no sé a qué producto te refieres cuando me preguntas si es compatible con tu setup.\n\nPara poder decirte si algo te sirve, ¿qué equipo gaming te interesa? Y cuéntame un poco de tu setup, ¿qué consola o computadora tienes? ¡Así te ayudo sin problema!"
+        },
+        {
+          "role": "user",
+          "content": "¿Cómo es la latencia?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey, compa! Vea, como tu carrito está vacío, no sé a qué producto te refieres cuando me preguntas por la latencia.\n\nPa' poder darte esa info, ¿a qué producto gaming te refieres específicamente? Cuando me digas cuál es, ¡te consigo los detalles de la latencia sin problema!"
+        },
+        {
+          "role": "user",
+          "content": "Voy, me lo llevo"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey, compa! Vea, entiendo que quieres llevarte algo, ¡chévere! Pero ahorita mismo tu carrito está vacío.\n\n¿Qué producto te quieres llevar? Cuéntame, y te ayudo a buscarlo y a meterlo al carrito pa' que puedas proceder con tu compra, ¡dale!"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Regateadora Compulsiva",
+      "personaId": 13,
+      "messages": [
+        {
+          "role": "user",
+          "content": "¿Cuál es el mejor precio que tienen?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Bienvenido a Tienda Virtual. Soy tu asistente, acá estoy para encontrarte lo que necesitas. ¿A qué te refieres con \"el mejor precio\", compa? ¿Estás buscando algún producto en específico o quieres saber sobre ofertas en general? ¡Tira, cuéntame!"
+        },
+        {
+          "role": "user",
+          "content": "He visto más barato en otro lado"
+        },
+        {
+          "role": "bot",
+          "content": "¡Entiendo, maña! Te entiendo perfecto, buscar el producto justo puede ser complicado. Pa' poder ayudarte y ver si te conseguimos algo que te cuadre, ¿qué producto es el que viste más barato? ¡Cuéntame y vemos qué se puede hacer!"
+        },
+        {
+          "role": "user",
+          "content": "¿Me hacen descuento?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Claro que sí, compa! En Tienda Virtual siempre tenemos promociones chéveres. Ahora mismo puedes usar el código **BIENVENIDO10** pa' que te den un 10% de descuento en tu primera compra.\n\nAdemás, si tu compra es mayor a $999 MXN, ¡el envío te sale gratis! Y pila, que en fechas especiales como Buen Fin, Navidad y Hot Sale siempre hay descuentos especiales. Si quieres estar al día con las ofertas, te recomiendo que te suscribas a nuestro boletín. ¡Eso se ve muy bien!\n\n¿Quieres que te ayude a buscar algo o tienes alguna otra pregunta, maña?"
+        },
+        {
+          "role": "user",
+          "content": "¿Hay promoción esta semana?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Esta semana tenemos la promoción de **ENVÍO GRATIS** en compras mayores a $999 MXN. ¡Aprovecha, maña!\n\n¿Quieres que te ayude a buscar algo para que aproveches la promo?"
+        },
+        {
+          "role": "user",
+          "content": "Si me haces un descuento, me lo llevo"
+        },
+        {
+          "role": "bot",
+          "content": "¡Dale, entiendo! ¡Qué bien que estás listo pa' llevarte algo!\n\nMira, compa, como te dije, puedes usar el código **BIENVENIDO10** pa' que te den un 10% de descuento en tu primera compra. Y recuerda que el envío te sale gratis si tu compra es mayor a $999 MXN.\n\nPa' aplicar el descuento, primero tenemos que agregar los productos que te interesan al carrito, ¿va? ¿Qué te gustaría llevarte hoy, maña? ¡Tira, cuéntame!"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Emprendedor Joven",
+      "personaId": 14,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Tengo un negocio de consultoría"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Bienvenido a Tienda Virtual. Soy tu asistente, acá estoy para encontrarte lo que necesitas. ¿En qué te ayudo hoy?\n\nVea, compa, ¡qué bien lo de tu negocio de consultoría! ¿Andas buscando algo en específico pa' tu empresa? Puedo ayudarte a encontrar productos que te sirvan."
+        },
+        {
+          "role": "user",
+          "content": "¿Cómo me ayudaría esto a crecer?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Dale, maña! Te entiendo perfecto. Para poder ayudarte bien y recomendarte cosas que de verdad impulsen tu negocio de consultoría, necesito que me cuentes un poquito más.\n\n¿Qué tipo de cosas crees que te ayudarían a crecer? ¿Estás pensando en:\n*   **Material de oficina** pa' organizarte mejor?\n*   **Equipos tecnológicos** pa' ser más eficiente?\n*   O quizás, ¿en **artículos promocionales** pa' darte a conocer?\n\nCuéntame qué tienes en mente, y yo te busco lo más chévere."
+        },
+        {
+          "role": "user",
+          "content": "¿Hay casos de éxito de emprendedores?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey, compa! Vea, esa es una pregunta súper interesante, y entiendo por qué te gustaría saber eso. Pero mira, como asistente de Tienda Virtual, mi fuerte es ayudarte a encontrar los productos perfectos pa' tu negocio, no tengo acceso a historias o casos de éxito de emprendedores.\n\nPero, ¡no te preocupes! Si lo que buscas es crecer, puedo ayudarte a encontrar las herramientas o productos que te den ese empujón. ¿Qué te parece si me cuentas qué tipo de productos para tu consultoría te gustaría explorar hoy? ¡Tira, que aquí estoy pa' ayudarte!"
+        },
+        {
+          "role": "user",
+          "content": "¿Cuál es el tiempo de retorno?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Uyy, maña! Disculpa, parece que no encontré información específica sobre el \"tiempo de retorno\" con esa pregunta.\n\n¿Te refieres al tiempo para devolver un producto después de comprarlo, o a otra cosa? Si me das un poquito más de detalle, te puedo ayudar mejor."
+        },
+        {
+          "role": "user",
+          "content": "Suena bien, vamos adelante"
+        },
+        {
+          "role": "bot",
+          "content": "¡Dale, compa! Entiendo que quieres ir \"palante\" y buscar cosas chéveres. Pero mira, tu carrito ahora mismo está vacío.\n\n¿Qué te parece si empezamos a buscar algún producto para tu negocio de consultoría? Cuéntame, ¿qué tipo de producto te interesa? ¿O tienes alguna idea en mente?"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Divorciado Reciente",
+      "personaId": 15,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Hola, es que estoy pasando por un cambio"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Bienvenido a Tienda Virtual. Soy tu asistente, acá estoy para encontrarte lo que necesitas. ¿En qué te ayudo hoy?\n\nVea, mencionaste que estás pasando por un cambio, pero para poder ayudarte mejor, ¿a qué te refieres con eso? ¿Estás buscando algo en específico o quieres que te recomiende algo en particular? ¡Tira, cuéntame!"
+        },
+        {
+          "role": "user",
+          "content": "Mi presupuesto es más limitado ahora"
+        },
+        {
+          "role": "bot",
+          "content": "Entiendo perfecto, compa. No te preocupes por el presupuesto, acá te ayudamos a encontrar algo que se ajuste sin problema.\n\nPara poder buscarte algo bueno y que no te duela el bolsillo, cuéntame, ¿qué tipo de producto necesitas? ¿Es pa' ropa, pa' la casa, o qué tienes en mente?"
+        },
+        {
+          "role": "user",
+          "content": "¿Realmente lo necesito?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Esa es una pregunta importante, maña. Como tu carrito está vacío, no hay nada que te haya recomendado o que hayas agregado todavía.\n\nSi quieres, podemos buscar algo juntos que de verdad necesites y que se ajuste a tu presupuesto. ¿Qué te parece si empezamos por ahí? ¿Qué tipo de producto estás buscando o para qué lo necesitas? ¡Tira, cuéntame!"
+        },
+        {
+          "role": "user",
+          "content": "¿No hay algo más económico?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Chévere! Entiendo, compa. Como el carrito está vacío, no hay ningún producto específico que te haya mostrado para buscar una opción más económica.\n\nPara poder encontrarte algo que se ajuste a tu presupuesto y que de verdad te sirva, ¿qué tipo de producto te gustaría buscar? ¿Para qué lo necesitas? ¡Cuéntame pa' ver qué encontramos!"
+        },
+        {
+          "role": "user",
+          "content": "Dale, me animo"
+        },
+        {
+          "role": "bot",
+          "content": "¡Qué bien, me alegro que te animes, maña! Para poder ayudarte a encontrar algo que te guste y que esté dentro de tu presupuesto, cuéntame:\n\n*   **¿Qué tipo de producto estás buscando?** (¿Ropa, accesorios, cosas para la casa, o qué?)\n*   **¿Para qué lo necesitas?** (¿Es pa' un regalo, pa' ti, pa' un evento en específico?)\n*   **¿Tienes alguna idea de cuánto quieres gastar más o menos?**\n\nCon esos detalles, te busco algo chévere y económico. ¡Tira!"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Amante del Lujo",
+      "personaId": 16,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Quiero lo mejor que tengan"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! ¡Bienvenido a Tienda Virtual! Soy tu asistente, acá estoy para encontrarte lo que necesitas.\n\n¡Claro, compa! Entiendo que quieres lo mejor, ¡y aquí tenemos cosas bien chéveres! Pero pa' poder recomendarte lo mejor de lo mejor, cuéntame un poquito más: ¿qué tipo de producto necesitas? ¿Para qué lo vas a usar? Así te puedo ayudar mejor, ¿dale?"
+        },
+        {
+          "role": "user",
+          "content": "¿Es realmente lo más exclusivo?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Eyyy! Maña, tranquilo, no te he recomendado nada aún. Pero veo que andas buscando algo bien exclusivo y de lo mejor, ¿no?\n\nPa' poder mostrarte lo más top, cuéntame, ¿qué tipo de producto tienes en mente? ¿Es pa' algún uso en particular, como viaje, trabajo, o es más un gusto personal? Así buscamos justo lo que quieres, ¿dale?"
+        },
+        {
+          "role": "user",
+          "content": "¿Existe algo más premium?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Claro que sí, compa! ¡Aquí tenemos de todo, y premium es la palabra!\n\nPero pa' no fallar, necesito que me digas, ¿qué tipo de producto estás buscando? ¿Es una bolsa, unos accesorios, algo de tecnología? Cuando me digas qué, yo te busco las opciones más exclusivas y premium que tengamos, ¿dale?"
+        },
+        {
+          "role": "user",
+          "content": "¿Cuál es la línea de lujo?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Uhm, vea! Parece que con esa búsqueda de \"línea de lujo\" no me salió nada específico.\n\nPero tranquilo, no te preocupes, ¡seguimos buscando lo más premium pa' ti! ¿Qué tipo de producto te gustaría ver en esa línea de lujo? Así busco con otras palabras y te encuentro algo bien chévere, ¿dale?"
+        },
+        {
+          "role": "user",
+          "content": "Perfecto, ese es mi nivel"
+        },
+        {
+          "role": "bot",
+          "content": "¡Qué bien, compa! Me alegro que estemos en la misma página con el nivel.\n\nAhora sí, pa' encontrar ese producto premium que buscas, ¿me puedes decir qué tipo de producto es? ¿Es una bolsa, un accesorio, ropa, o algo más? Así busco lo más exclusivo que tengamos justo pa' lo que necesitas, ¿dale?"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Mamá Millennial",
+      "personaId": 17,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Me importa que sea sostenible"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Entiendo perfecto, compa, que la sostenibilidad te importa un montón, ¡y eso es chévere! Pa' poder recomendarte algo bien bueno, cuéntame: ¿qué tipo de producto estás buscando? ¿Una mochila, ropa, algo pa' la casa, o qué? Así te busco opciones que sean sostenibles y se ajusten a lo que necesitas."
+        },
+        {
+          "role": "user",
+          "content": "¿De dónde viene? ¿Prácticas éticas?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! No encontré esa información específica sobre el origen de los productos o las prácticas éticas en este momento, maña. Mil disculpas. Pero no te preocupes, puedo seguir buscando lo que necesites o si tienes alguna otra pregunta, ¡aquí estoy pa' ayudarte!"
+        },
+        {
+          "role": "user",
+          "content": "¿Cuánto plástico tiene?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Pila! Te entiendo, compa, esa es una pregunta bien importante hoy en día. Sin embargo, no tengo esa información específica sobre el porcentaje de plástico que tiene cada producto.\n\nSi quieres, puedo buscarte productos que estén etiquetados como sostenibles o amigables con el ambiente, que a veces tienen menos plástico o usan materiales reciclados. ¿Te parece? ¿Qué tipo de producto estás buscando?"
+        },
+        {
+          "role": "user",
+          "content": "¿Es hecho localmente?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Mira, no encontré información específica sobre si los productos son hechos localmente, maña. Mil disculpas por no tener ese detalle.\n\nPero no te preocupes, si quieres buscar algo más, aquí estoy. ¿Hay algún producto en particular que te interese o quieres que te ayude a encontrar algo? Como tu carrito está vacío, podemos empezar a buscar algo chévere pa' ti."
+        },
+        {
+          "role": "user",
+          "content": "Si es así, me interesa"
+        },
+        {
+          "role": "bot",
+          "content": "¡Dale! Te entiendo, compa, que te interesa mucho lo local, ¡eso es súper chévere! Pero mira, como tu carrito está vacío y no me has dicho qué producto específico te interesa, no puedo confirmarte si algo es hecho localmente.\n\nCuéntame, ¿qué producto en particular estás buscando para ver si consigo esa información pa' ti? Así te ayudo a encontrar lo que necesitas."
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Experto en Reviews",
+      "personaId": 18,
+      "messages": [
+        {
+          "role": "user",
+          "content": "He visto malas reviews de ese producto"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey, compa! Entiendo que hayas visto eso, a veces pasa. Pero mira, ¿a qué producto te refieres exactamente? Mi carrito está vacío, así que no tengo idea de cuál producto tienes en mente. Cuéntame, ¿cuál es pa' poder ayudarte?"
+        },
+        {
+          "role": "user",
+          "content": "¿Cómo se compara con la competencia?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Eyyy! Pa' poder ayudarte bien, necesito que me digas a qué producto te refieres, maña. Mi carrito está vacío, así que no sé cuál es el producto que quieres comparar con la competencia. ¡Dale, cuéntame!"
+        },
+        {
+          "role": "user",
+          "content": "¿Cuáles son los defectos conocidos?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey, compa! Entiendo tu preocupación, es bueno saber los detalles. Pero mira, mi carrito está vacío y no tengo ningún producto en mente. ¿A cuál te refieres específicamente pa' que pueda buscarte esa info y decirte si tiene algún detalle conocido? ¡Tira, cuéntame!"
+        },
+        {
+          "role": "user",
+          "content": "¿Qué dicen en Reddit/Twitter?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Eyyy, compa! Entiendo que quieres saber qué anda diciendo la gente por ahí, pero para poder buscar eso y ver si hay algo importante, necesito que me digas a qué producto te refieres, ¿dale? Mi carrito está vacío, así que no tengo ni idea de cuál es el chisme que quieres que investigue. ¡Tira, dime cuál es!"
+        },
+        {
+          "role": "user",
+          "content": "Si los datos apoyan, me lo considero"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey, maña! Entiendo, es súper importante tener buena data antes de decidir. Pero como te he dicho, mi carrito está vacío y no tengo idea de a qué producto te refieres. ¿Cuál es el producto que te interesa que investigue pa' ver si los datos lo apoyan? ¡Tira, dime cuál es!"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Comprador Impulsivo",
+      "personaId": 19,
+      "messages": [
+        {
+          "role": "user",
+          "content": "¡Ey! ¿Qué es lo más cool que tienen?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Eyyy! ¡Bienvenido a Tienda Virtual! Soy tu asistente, acá estoy para encontrarte lo que necesitas.\n\n¡Chévere que preguntas por lo más cool! Pero pa' poder recomendarte algo bien brutal, cuéntame: ¿qué tipo de producto te interesa? ¿Es pa' ti, pa' regalar, o qué uso le vas a dar? ¿Tienes algún presupuesto en mente, compa?"
+        },
+        {
+          "role": "user",
+          "content": "¿Puedo verlo ahora?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Tranquilo, maña. El carrito lo tienes vacío ahora mismo, así que no hay nada pa' mostrarte ahí.\n\nPero si te refieres a eso \"más cool\" que te mencioné, ¡claro que sí! Tira, cuéntame un poquito más, ¿qué tipo de producto te gustaría ver? ¿Unos audífonos, una mochila, un smartwatch? Dame una pista pa' poder buscarte algo chévere."
+        },
+        {
+          "role": "user",
+          "content": "¡Sí, parece genial!"
+        },
+        {
+          "role": "bot",
+          "content": "¡Dale! Me alegra que te parezca genial.\n\nPero vea, como el carrito está vacío, necesito que me digas qué tipo de producto te gustaría que buscara. ¿Qué te hace falta o qué te gustaría tener, maña? Así puedo encontrar algo que se ajuste a lo que buscas."
+        },
+        {
+          "role": "user",
+          "content": "¿Cuándo lo tengo?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey, compa! Vea, no encontré esa información específica sobre cuándo lo tendrías.\n\nPero pila, como tu carrito está vacío, no hay ningún pedido en camino todavía. Primero necesitamos encontrar algo chévere pa' ti, ¿verdad? ¿Qué te gustaría que buscara?"
+        },
+        {
+          "role": "user",
+          "content": "¡Dale, quiero ya!"
+        },
+        {
+          "role": "bot",
+          "content": "¡Dale, maña! Te entiendo que quieres algo ya, pero vea, tu carrito está vacío.\n\nPa' poder encontrar algo y que lo tengas rapidito, primero necesito que me digas qué producto es el que quieres. ¿Qué te gustaría comprar? Así puedo buscarlo y agregarlo a tu carrito."
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Indeciso Crónico",
+      "personaId": 20,
+      "messages": [
+        {
+          "role": "user",
+          "content": "No sé qué elegir"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey, compa! No te preocupes, pa' eso estoy aquí. Te entiendo perfecto, buscar el producto justo puede ser complicado.\n\nPara poder ayudarte a elegir lo mejor, cuéntame un poco más: ¿qué tipo de producto necesitas y para qué lo vas a usar? Así me das una idea y te recomiendo algo chévere. ¿Qué dices, dale?"
+        },
+        {
+          "role": "user",
+          "content": "¿Cuál es mejor entre A y B?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey, compa! Vea, pa' poder decirte cuál es mejor entre A y B, necesito que me digas qué son esos productos. Dame un poco más de detalles, ¿dale? Así te puedo ayudar a comparar y encontrar lo que te conviene."
+        },
+        {
+          "role": "user",
+          "content": "¿Seguro que esa es la mejor opción?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey, maña! Te entiendo, es bueno asegurarse. Pero mira', como tu carrito está vacío y aún no te he recomendado nada específico, no sé a qué opción te refieres.\n\nCuéntame un poco más, ¿qué tipo de producto estás buscando o qué necesitas? Dame alguna pista pa' poder encontrarte lo mejor, ¿dale?"
+        },
+        {
+          "role": "user",
+          "content": "¿No hay algo mejor?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey, compa! Tranquilo, te entiendo, siempre buscamos lo mejor. Pero mira', como tu carrito está vacío y aún no me has dicho qué tipo de producto buscas, no sé a qué te refieres con \"algo mejor\".\n\nCuéntame un poco más, ¿qué necesitas? ¿Para qué lo vas a usar? Así puedo buscarte las mejores opciones que se ajusten a lo que quieres, ¿dale?"
+        },
+        {
+          "role": "user",
+          "content": "Está bien, pero sigue dándome opciones"
+        },
+        {
+          "role": "bot",
+          "content": "¡Dale, compa! Te entiendo, es bueno tener varias opciones. Pero mira', como tu carrito está vacío y aún no me has dicho qué tipo de producto buscas, no puedo darte opciones así nomás.\n\nCuéntame, ¿qué necesitas? ¿Para qué lo vas a usar o qué te interesa? Así puedo buscarte cosas chéveres que se ajusten a lo que buscas, ¿dale?"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Papá Ahorrista",
+      "personaId": 21,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Tengo presupuesto limitado"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Entiendo perfecto, compa. No te preocupes, acá te ayudo a encontrar algo que se ajuste a tu bolsillo.\n\nPara poder buscar bien, cuéntame, ¿qué tipo de producto estás buscando y cuál sería tu presupuesto aproximado? ¿Más o menos cuánto tenías en mente gastar?"
+        },
+        {
+          "role": "user",
+          "content": "¿Es el más barato de calidad?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Vea, como tu carrito está vacío y no me has dicho qué producto te interesa, no puedo decirte si es el más barato de calidad.\n\n¿Qué tipo de producto te gustaría buscar? Y dime, ¿cuál es ese presupuesto limitado que tienes en mente pa' que no te pases? Así te busco algo bueno y a buen precio, maña."
+        },
+        {
+          "role": "user",
+          "content": "¿Cuánto tiempo va a durar?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! No te preocupes, compa. No encontré una respuesta específica a \"cuánto tiempo va a durar\" en las políticas generales de la tienda.\n\nQuizás se refiere a la durabilidad de un producto específico o a alguna garantía, ¿verdad? Para poder darte una buena respuesta, ¿me podrías decir a qué te refieres exactamente? ¿O qué producto te interesa? Así te ayudo sin problema, hermano."
+        },
+        {
+          "role": "user",
+          "content": "¿Vale la pena el precio?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey, compa! Entiendo lo que me preguntas, pero para poder decirte si \"vale la pena el precio\" necesito saber de qué producto estamos hablando, ¿sabes?\n\nComo ahorita mismo el carrito está vacío y no me has dicho qué te interesa, cuéntame un poco más: ¿qué producto te llama la atención? ¿Para qué lo necesitas? Así te ayudo a ver si ese precio es justo pa' ti, maña."
+        },
+        {
+          "role": "user",
+          "content": "Dale, pero que sea durabilidad"
+        },
+        {
+          "role": "bot",
+          "content": "¡Dale, compa! Entendido. Quieres algo que sea duradero, ¡eso es súper importante!\n\nPero cuéntame, ¿qué tipo de producto estás buscando específicamente? ¿Una mochila, una camiseta, algo para el hogar, o qué? Así te busco opciones que sean resistentes y buenas, maña."
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Fashionista Obsesionado",
+      "personaId": 22,
+      "messages": [
+        {
+          "role": "user",
+          "content": "¿Qué está trending en moda ahora?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Eyyy! Qué buena pregunta, compa. Como tu asistente de la Tienda Virtual, mi fuerte es ayudarte a encontrar productos de nuestro catálogo. No tengo información en tiempo real sobre las tendencias de moda, pero ¡pila! Si me dices qué tipo de producto te interesa, te puedo ayudar a buscar algo chévere que tengamos disponible. ¿Qué te gustaría ver hoy?"
+        },
+        {
+          "role": "user",
+          "content": "¿Es exclusivo? ¿Pocos lo usan?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey, maña! Te entiendo, es chévere tener cosas únicas. Pero para poder decirte si algo es exclusivo o si pocos lo usan, necesito saber a qué producto te refieres, ¿dale? Cuéntame, ¿hay algo en particular que te interese y quieres saber si es así de especial?"
+        },
+        {
+          "role": "user",
+          "content": "¿Qué colores están en tendencia?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Eyyy! Entiendo que quieres estar a la moda con los colores, compa. La verdad es que como tu asistente de Tienda Virtual, no tengo información sobre las últimas tendencias de colores en la moda. Mi trabajo es ayudarte a encontrar los productos que tenemos.\n\nPero ¡tranquilo! Si tienes algún color en mente que te guste, o si buscas algo específico como \"camisetas azules\" o \"bolsos rojos\", ¡tira! Dime y yo te ayudo a buscar qué tenemos en ese tono. ¿Qué te gustaría encontrar?"
+        },
+        {
+          "role": "user",
+          "content": "¿Me va a quedar bien con mis otros outfits?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Eyyy! Entiendo perfecto la duda, maña, ¡uno siempre quiere combinar bien! Pero mira, como soy un asistente virtual, no puedo darte consejos de estilo o decirte si algo te va a quedar bien con tus otros outfits, ya que no puedo \"verlos\".\n\n¡Pero pila! Lo que sí puedo hacer es ayudarte a encontrar productos si me dices qué estás buscando. ¿Qué tipo de prenda o accesorio te interesa? Así te puedo mostrar opciones y tú decides si se ajusta a tu estilo, ¿dale?"
+        },
+        {
+          "role": "user",
+          "content": "¡Sí! Me lo llevo ahora"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Me parece súper que quieras llevarte algo, compa. Pero mira, ahorita mismo el carrito está vacío. ¿Qué te parece si buscamos ese producto que te interesa para agregarlo y que te lo puedas llevar? ¡Tira! Dime qué te gustaría encontrar."
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Regalero Experto",
+      "personaId": 23,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Necesito un regalo para mi hermano"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! ¡Qué chévere que estés buscando un regalo pa' tu hermano! Para poder ayudarte bien, compa, cuéntame un poquito más:\n\n¿Qué tipo de cosas le gustan a tu hermano? ¿Tiene algún hobby, o algo que necesite? ¿Y qué presupuesto tienes en mente, más o menos?"
+        },
+        {
+          "role": "user",
+          "content": "Tiene 35 años, es abogado"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ah, ya entiendo! Un abogado de 35, ¡eso está interesante! Pa' poder darte en el clavo con el regalo, ¿cuánto tienes pensado gastar, más o menos? ¿Y hay algo en particular que creas que le vendría bien pa' su trabajo o pa' su día a día?"
+        },
+        {
+          "role": "user",
+          "content": "¿Qué crees que le va a gustar?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Dale, compa! Vea, pensando en que tu hermano es abogado y tiene 35, algo práctico y que se vea profesional siempre cae bien.\n\nTe recomiendo un buen maletín ejecutivo o una cartera elegante. Eso se ve súper bien y le es útil pal' día a día. ¿Qué te parece esa idea? ¿O tienes algo más en mente?"
+        },
+        {
+          "role": "user",
+          "content": "¿Es apropiado para un ejecutivo?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Claro que sí, maña! ¡Es súper apropiado! Un maletín ejecutivo o una cartera de buena calidad, de cuero, por ejemplo, le daría un toque bien elegante y profesional. Se ve muy bien y es útil pa' su trabajo.\n\n¿Quieres que busquemos algunas opciones de maletines o carteras pa' que veas?"
+        },
+        {
+          "role": "user",
+          "content": "Dale, confío en tu recomendación"
+        },
+        {
+          "role": "bot",
+          "content": "¡Eyyy! Mira, busqué \"maletín ejecutivo\" y no encontré ninguno ahora mismo. Parece que no tenemos de esos en stock. ¡Disculpa, maña!\n\nPero tranquilo, no te preocupes, te ayudo a encontrar algo igual de bueno. ¿Qué te parece si buscamos una cartera elegante o un buen portafolio? Eso también le quedaría nítido a un abogado. ¿Quieres que intente buscar eso?"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Técnico Paranoico",
+      "personaId": 24,
+      "messages": [
+        {
+          "role": "user",
+          "content": "¿Dónde están mis datos? ¿Encriptados?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Eyyy! Vea, disculpa, no encontré información específica sobre dónde están tus datos y si están encriptados en este momento. Es posible que esa información sea más técnica.\n\n¿Hay algo más en lo que pueda ayudarte, compa? ¡Tira, pregúntame lo que necesites!"
+        },
+        {
+          "role": "user",
+          "content": "¿Qué protocolos de seguridad usan?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Vea! Disculpa, maña, no encontré información específica sobre los protocolos de seguridad que se usan en este momento. Parece que esa pregunta es un poco técnica y no la tengo a mano.\n\nPero tranquilo, si tienes alguna otra pregunta sobre productos o necesitas ayuda con tu compra, ¡acá estoy para ayudarte sin problema!"
+        },
+        {
+          "role": "user",
+          "content": "¿Es open source?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Eyyy! Vea, compa, esa es una buena pregunta, pero no tengo información sobre si la plataforma es de código abierto (open source) o no. Es algo más técnico.\n\nPero no te preocupes, si necesitas buscar algún producto o tienes alguna otra pregunta, ¡aquí estoy para ayudarte con gusto! ¿En qué más te puedo echar una mano?"
+        },
+        {
+          "role": "user",
+          "content": "¿Cuál es la política de privacidad?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Disculpa, compa, pero no pude encontrar la política de privacidad con la información que tengo en este momento. Parece que esa pregunta es un poco más profunda y no la tengo a mano.\n\nPero mira, si tienes alguna pregunta sobre productos o necesitas ayuda con tu compra, ¡acá estoy para ayudarte sin problema! ¿Qué te gustaría que busquemos hoy?"
+        },
+        {
+          "role": "user",
+          "content": "Si está auditado, lo considero"
+        },
+        {
+          "role": "bot",
+          "content": "¡Vea, compa! Entiendo que eso es importante para ti. Sin embargo, no tengo información sobre si el sistema ha sido auditado. Esa es una pregunta más técnica que no puedo responderte directamente.\n\nPero tranquilo, si necesitas que busquemos algún producto o tienes alguna otra pregunta sobre la tienda, ¡con gusto te ayudo! ¿Qué te parece si exploramos algo que te interese?"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    },
+    {
+      "persona": "Abuela Conectada",
+      "personaId": 25,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Hola, hola, ¿hay alguien ahí?"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey! Bienvenido a Tienda Virtual. Soy tu asistente, acá estoy para encontrarte lo que necesitas. ¿En qué te ayudo hoy?\n"
+        },
+        {
+          "role": "user",
+          "content": "Es que mis nietos me dijeron que comprara por aquí"
+        },
+        {
+          "role": "bot",
+          "content": "¡Qué chévere que tus nietos te mandaron pa' acá! No te preocupes, yo te ayudo a encontrar lo que necesites.\n\nVeo que tu carrito está vacío ahorita. ¿Qué andas buscando para tus nietos o pa' ti? Cuéntame un poco, ¿qué tienes en mente?\n"
+        },
+        {
+          "role": "user",
+          "content": "Pero no sé cómo funciona esto"
+        },
+        {
+          "role": "bot",
+          "content": "¡Dale, compa! Tranquilo, es súper sencillo. Básicamente, tú me dices qué quieres y yo lo busco en la tienda. Cuando encontremos algo que te guste, lo podemos \"agregar al carrito\" (como si lo estuvieras echando en una bolsa de compras).\n\nUna vez que tengas todo lo que quieres en el carrito, me dices y te genero un link pa' que hagas el pago. ¡Facilito!\n\nEntonces, ¿qué te gustaría buscar hoy? ¿Quizás algo para tus nietos, o algo que necesites en casa?\n"
+        },
+        {
+          "role": "user",
+          "content": "¿Me explicas bien? Soy un poco lenta"
+        },
+        {
+          "role": "bot",
+          "content": "¡Ey, maña, no te preocupes! Aquí estoy pa' ayudarte, sin apuros.\n\nImagina que la Tienda Virtual es como una tienda física bien grande, pero en lugar de caminar por pasillos, tú me dices a mí qué quieres buscar.\n\n1.  **Tú me dices lo que buscas:** Por ejemplo, \"quiero una mochila\" o \"necesito unos zapatos\".\n2.  **Yo te muestro opciones:** Te digo qué productos tenemos, sus precios, y te puedo mostrar hasta fotos.\n3.  **Si te gusta algo:** Me dices \"quiero ese\" y yo lo \"echo en tu carrito de compras\". Es como si lo guardara pa' ti.\n4.  **Cuando ya tienes todo:** Me dices \"ya, quiero pagar\" y yo te doy un link pa' que termines la compra de forma segura.\n\nAhora mismo, tu carrito está vacío, como cuando llegas a la tienda sin nada. ¿Qué te gustaría que busquemos primero? ¡No hay apuro!\n"
+        },
+        {
+          "role": "user",
+          "content": "Está bien, me animo si me ayudas"
+        },
+        {
+          "role": "bot",
+          "content": "¡Eyyy, así se habla! ¡Con pila, compa! Claro que sí, aquí estoy pa' guiarte en cada paso. No te preocupes por nada.\n\nEntonces, mira, como el carrito está vacío, ¿qué te gustaría que busquemos primero? ¿Hay algo en particular que necesites, o quieres que te dé algunas ideas? ¡Tira, cuéntame!\n"
+        }
+      ],
+      "success": true,
+      "messageCount": 10
+    }
+  ]
+}
