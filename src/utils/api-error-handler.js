@@ -61,6 +61,22 @@ function categorizeError(error) {
     };
   }
 
+  // Handle "fetch failed" TypeError with error.cause containing ECONNREFUSED, etc.
+  if (error.name === 'TypeError' && error.message === 'fetch failed' && error.cause) {
+    const causeCode = error.cause.code;
+    if (causeCode === 'ECONNREFUSED' ||
+        causeCode === 'ECONNRESET' ||
+        causeCode === 'ENOTFOUND' ||
+        causeCode === 'EHOSTUNREACH') {
+      return {
+        type: ErrorType.NETWORK,
+        code: causeCode,
+        message: `Network error: ${causeCode}`,
+        details: { causeCode: causeCode, originalMessage: error.message }
+      };
+    }
+  }
+
   // Network errors
   if (error.code === 'ECONNREFUSED' ||
       error.message?.includes('ECONNREFUSED')) {

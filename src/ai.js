@@ -16,7 +16,7 @@ const {
 } = require("./session");
 const { log, logStart, logSuccess, logError, logToolExecution, logUserMessage, logBotResponse, logCartOperation, logSessionEvent, createTimer } = require('./utils/logger');
 const { handleError } = require('./utils/api-error-handler');
-const { withRetry, executeWithTimeout } = require('./utils/retry');
+const { executeWithTimeout } = require('./utils/retry');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -418,13 +418,9 @@ async function executeTool(toolName, toolInput, sessionId) {
       console.log(`${logPrefix} query: "${query}"`);
 
       try {
-        // READ operation: safe to retry on timeout
-        const result = await withRetry(
-          () => searchProducts(query),
-          2,  // maxRetries
-          8000,  // timeoutMs
-          `search_products:${query.substring(0, 30)}`
-        );
+        // READ operation: mcp-client already handles retry internally
+        // Call directly without wrapping in another withRetry
+        const result = await searchProducts(query);
 
         const productsFound = result?.products?.length || 0;
         console.log(`${logPrefix} found ${productsFound} products`);
@@ -511,13 +507,9 @@ async function executeTool(toolName, toolInput, sessionId) {
       logStart(sessionId, `executeTool[answer_policy_question]`, { query });
 
       try {
-        // READ operation: safe to retry on timeout
-        const result = await withRetry(
-          () => searchPolicies(query),
-          2,  // maxRetries
-          8000,  // timeoutMs
-          `answer_policy_question:${query.substring(0, 30)}`
-        );
+        // READ operation: mcp-client already handles retry internally
+        // Call directly without wrapping in another withRetry
+        const result = await searchPolicies(query);
         console.log(`${logPrefix} policy answer obtained`);
         logSuccess(sessionId, `executeTool[answer_policy_question]`, timer.elapsed(), { query });
         return result;
