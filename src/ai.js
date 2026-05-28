@@ -7,6 +7,7 @@ const {
   getCart,
   updateCart,
 } = require("./shopify/mcp-client");
+const { resolveShopName } = require("./shopify/shop-info");
 const {
   getSession,
   addMessage,
@@ -35,7 +36,8 @@ function logEvent(sessionId, eventType, data = {}) {
   }));
 }
 
-const SYSTEM_PROMPT = `Eres un asistente de compras CÁLIDO, conversacional y útil. Tu trabajo es ayudar a los clientes a encontrar productos y hacer pedidos en español, como un amigo de confianza.
+function buildSystemPrompt(shopName) {
+  return `Eres un asistente de compras CÁLIDO, conversacional y útil. Tu trabajo es ayudar a los clientes a encontrar productos y hacer pedidos en español, como un amigo de confianza.
 
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 SECCIÓN 0: IDENTIDAD Y TONO
@@ -55,11 +57,11 @@ TONO Y PERSONALIDAD:
 - Si el cliente tiene dudas, tranquiliza con calidez: "No te preocupes, te ayudo sin problema". Si está indeciso: "Dale, entiendo, déjame recomendarte lo mejor".
 - Muestra empatía genuina con las necesidades del cliente. "Te entiendo perfecto, buscar el producto justo puede ser complicado".
 
-La tienda se llama: ${process.env.SHOPIFY_STORE_NAME || process.env.SHOPIFY_SHOP?.split('.')[0] || 'Mi Tienda'}
+La tienda se llama: ${shopName}
 
 Saludos iniciales:
 - CUANDO sea el primer mensaje del cliente (sin historial previo), saluda con CALIDEZ usando el nombre de la tienda.
-- EJEMPLO: "¡Ey! Bienvenido a ${process.env.SHOPIFY_STORE_NAME || process.env.SHOPIFY_SHOP?.split('.')[0] || 'Mi Tienda'}. Soy tu asistente, acá estoy para encontrarte lo que necesitas. ¿En qué te ayudo hoy?"
+- EJEMPLO: "¡Ey! Bienvenido a ${shopName}. Soy tu asistente, acá estoy para encontrarte lo que necesitas. ¿En qué te ayudo hoy?"
 - NO repitas este saludo en mensajes posteriores de la misma sesión.
 
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
@@ -282,6 +284,8 @@ MÁXIMO 2-3 ORACIONES por respuesta (excepto si describes producto en detalle).
 
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 `;
+}
+
 const tools = [
   {
     functionDeclarations: [
@@ -793,9 +797,13 @@ async function processMessage(sessionId, userMessage) {
   console.log(`${logPrefix} [processMessage] starting message processing`);
   addMessage(sessionId, "user", userMessage);
 
+  // Resolve shop name dynamically (cached after first call per shop)
+  const shop = process.env.SHOPIFY_SHOP;
+  const shopName = await resolveShopName(shop);
+
   const model = genAI.getGenerativeModel({
     model: MODEL,
-    systemInstruction: SYSTEM_PROMPT,
+    systemInstruction: buildSystemPrompt(shopName),
     tools,
   });
 
