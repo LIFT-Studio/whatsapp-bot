@@ -1,3 +1,9 @@
 .DS_Store
 node_modules/
 .env
+
+# Local editors / OS metadata
+.obsidian/
+.idea/
+.vscode/
+*.log
