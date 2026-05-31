@@ -7,7 +7,7 @@ const {
   getCart,
   updateCart,
 } = require("./shopify/mcp-client");
-const { resolveShopName } = require("./shopify/shop-info");
+const { resolveShopName, resolveShop } = require("./shopify/shop-info");
 const {
   getSession,
   addMessage,
@@ -404,6 +404,8 @@ const tools = [
 
 async function executeTool(toolName, toolInput, sessionId) {
   const session = getSession(sessionId);
+  // Tenant context: el shop se fijó en la sesión al inicio de processMessage.
+  const shop = session.shop || process.env.SHOPIFY_SHOP;
   const timer = createTimer();
 
   // Log structure: [COMPONENT] [SESSION_ID] [TOOL] message
@@ -419,7 +421,7 @@ async function executeTool(toolName, toolInput, sessionId) {
       try {
         // READ operation: mcp-client already handles retry internally
         // Call directly without wrapping in another withRetry
-        const result = await searchProducts(query);
+        const result = await searchProducts(query, {}, shop);
 
         const productsFound = result?.products?.length || 0;
         console.log(`${logPrefix} found ${productsFound} products`);
@@ -452,8 +454,8 @@ async function executeTool(toolName, toolInput, sessionId) {
             values: option.values
           })) || [];
 
-          // Construir URL del producto usando la tienda Shopify
-          const shopDomain = process.env.SHOPIFY_SHOP;
+          // Construir URL del producto usando la tienda Shopify del tenant
+          const shopDomain = shop;
           const productHandle = product.handle || product.id?.split('/').pop();
           const product_url = productHandle
             ? `https://${shopDomain}/products/${productHandle}`
@@ -508,7 +510,7 @@ async function executeTool(toolName, toolInput, sessionId) {
       try {
         // READ operation: mcp-client already handles retry internally
         // Call directly without wrapping in another withRetry
-        const result = await searchPolicies(query);
+        const result = await searchPolicies(query, undefined, shop);
         console.log(`${logPrefix} policy answer obtained`);
         logSuccess(sessionId, `executeTool[answer_policy_question]`, timer.elapsed(), { query });
         return result;
@@ -540,7 +542,7 @@ async function executeTool(toolName, toolInput, sessionId) {
               quantity: toolInput.quantity,
             },
           ],
-        });
+        }, shop);
 
         // Guardar cartId y sincronizar cart
         if (mcpResult.cart) {
@@ -602,7 +604,7 @@ async function executeTool(toolName, toolInput, sessionId) {
         const mcpResult = await updateCart({
           cart_id: session.cartId,
           remove_line_ids: [item.line_id],
-        });
+        }, shop);
 
         // Sincronizar cart
         if (mcpResult.cart) {
@@ -645,7 +647,7 @@ async function executeTool(toolName, toolInput, sessionId) {
               quantity: toolInput.new_quantity,
             },
           ],
-        });
+        }, shop);
 
         // Sincronizar cart
         if (mcpResult.cart) {
@@ -694,7 +696,7 @@ async function executeTool(toolName, toolInput, sessionId) {
             await updateCart({
               cart_id: session.cartId,
               remove_line_ids: lineIds,
-            });
+            }, shop);
           }
         }
 
@@ -733,7 +735,7 @@ async function executeTool(toolName, toolInput, sessionId) {
 
         // WRITE operation: do NOT retry on timeout after request sent
         // Obtener el carrito final con checkout_url
-        const mcpResult = await getCart(session.cartId);
+        const mcpResult = await getCart(session.cartId, shop);
         const checkoutUrl = mcpResult.cart?.checkout_url;
 
         if (!checkoutUrl) {
@@ -775,10 +777,14 @@ async function executeTool(toolName, toolInput, sessionId) {
   }
 }
 
-async function processMessage(sessionId, userMessage) {
+async function processMessage(sessionId, userMessage, shop) {
   const logPrefix = `[AI] [${sessionId.substring(0, 8)}...]`;
   const session = getSession(sessionId);
   const messageTimer = createTimer();
+
+  // Fijar el tenant (shop) en la sesión: executeTool lo lee de ahí.
+  // resolveShop valida y cae a SHOPIFY_SHOP de entorno si es inválido/ausente.
+  session.shop = resolveShop(shop);
 
   // Track if this is the first message (new session)
   const isFirstMessage = session.messages.length === 0;
@@ -793,8 +799,7 @@ async function processMessage(sessionId, userMessage) {
   addMessage(sessionId, "user", userMessage);
 
   // Resolve shop name dynamically (cached after first call per shop)
-  const shop = process.env.SHOPIFY_SHOP;
-  const shopName = await resolveShopName(shop);
+  const shopName = await resolveShopName(session.shop);
 
   const model = genAI.getGenerativeModel({
     model: MODEL,
@@ -892,6 +897,7 @@ async function processMessage(sessionId, userMessage) {
       response: assistantText,
       state: updatedSession.state,
       cart: updatedSession.cart,
+      shopName,
     };
   } catch (geminiError) {
     const errorInfo = handleError(geminiError, 'processMessage', false); // Gemini is READ-like from user perspective
@@ -910,6 +916,7 @@ async function processMessage(sessionId, userMessage) {
       errorType: errorInfo.errorType,
       state: updatedSession.state,
       cart: updatedSession.cart,
+      shopName,
     };
   }
 }

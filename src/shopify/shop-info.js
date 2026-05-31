@@ -10,6 +10,29 @@ const { executeWithTimeout } = require('../utils/retry');
 const shopInfoCache = new Map();
 const FETCH_TIMEOUT_MS = 5000;
 
+// Solo dominios myshopify.com válidos. Previene SSRF: sin esto, un `shop`
+// arbitrario en el payload haría que el servidor haga fetch a hosts internos.
+const SHOP_REGEX = /^[a-z0-9][a-z0-9-]*\.myshopify\.com$/i;
+
+/**
+ * Valida que el shop sea un dominio myshopify.com legítimo.
+ * @param {*} shop
+ * @returns {boolean}
+ */
+function isValidShop(shop) {
+  return typeof shop === 'string' && SHOP_REGEX.test(shop);
+}
+
+/**
+ * Devuelve un shop válido (normalizado a minúsculas) o el default de entorno.
+ * @param {*} shop - shop candidato (del payload del request)
+ * @returns {string|null}
+ */
+function resolveShop(shop) {
+  if (isValidShop(shop)) return shop.toLowerCase();
+  return process.env.SHOPIFY_SHOP || null;
+}
+
 function decodeEntities(s) {
   return s
     .replace(/&amp;/g, '&')
@@ -51,7 +74,10 @@ function parseShopName(html) {
  * @returns {Promise<{name: string} | null>}
  */
 async function fetchShopInfo(shop) {
-  if (!shop) return null;
+  if (!isValidShop(shop)) {
+    console.warn(`[SHOP_INFO] Invalid shop domain rejected: ${shop}`);
+    return null;
+  }
   if (shopInfoCache.has(shop)) return shopInfoCache.get(shop);
 
   try {
@@ -103,5 +129,7 @@ async function resolveShopName(shop) {
 module.exports = {
   fetchShopInfo,
   resolveShopName,
+  isValidShop,
+  resolveShop,
   parseShopName, // exposed for testing
 };

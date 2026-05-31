@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asistente de compras</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      background: #ECE5DD;
+      /* Patrón sutil estilo WhatsApp */
+      background-image: radial-gradient(rgba(0,0,0,0.018) 1px, transparent 1px);
+      background-size: 16px 16px;
+    }
+
+    /* ─── Header ─── */
+    header {
+      background: #075E54;
+      color: #fff;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+      flex-shrink: 0;
+    }
+
+    header .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #25D366;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    header .avatar svg { width: 22px; height: 22px; fill: #fff; }
+
+    header .meta { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+    header .meta h1 {
+      font-size: 15px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    header .meta .status {
+      font-size: 12px;
+      color: rgba(255,255,255,0.8);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    header .meta .status::before {
+      content: "";
+      width: 7px; height: 7px;
+      background: #4ade80;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    header .restart {
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,0.85);
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 50%;
+      display: flex;
+      transition: background 0.15s;
+    }
+    header .restart:hover { background: rgba(255,255,255,0.12); }
+    header .restart svg { width: 20px; height: 20px; fill: currentColor; }
+
+    /* ─── Mensajes ─── */
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 10px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .msg {
+      max-width: 82%;
+      padding: 7px 10px 8px;
+      font-size: 14.2px;
+      line-height: 1.4;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      position: relative;
+      box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
+      animation: pop 0.18s ease-out;
+      margin-bottom: 2px;
+    }
+
+    @keyframes pop {
+      from { opacity: 0; transform: translateY(6px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .msg.user {
+      align-self: flex-end;
+      background: #DCF8C6;
+      color: #111b21;
+      border-radius: 8px 8px 2px 8px;
+    }
+
+    .msg.bot {
+      align-self: flex-start;
+      background: #fff;
+      color: #111b21;
+      border-radius: 8px 8px 8px 2px;
+    }
+
+    .msg .time {
+      font-size: 10.5px;
+      color: rgba(0,0,0,0.42);
+      float: right;
+      margin: 6px 0 -2px 8px;
+      user-select: none;
+    }
+
+    .msg.bot img {
+      margin: 6px 0 2px;
+      border-radius: 8px;
+      max-width: 180px;
+      display: block;
+    }
+
+    .msg.bot a.product-link {
+      color: #027eb5;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .msg.bot a.product-link:hover { text-decoration: underline; }
+
+    .msg .checkout-btn {
+      display: block;
+      margin-top: 9px;
+      padding: 9px 16px;
+      background: #25D366;
+      color: #fff;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13.5px;
+      transition: background 0.15s;
+    }
+    .msg .checkout-btn:hover { background: #1ebe5a; }
+
+    /* ─── Typing ─── */
+    #typing {
+      display: none;
+      align-self: flex-start;
+      padding: 10px 14px;
+      background: #fff;
+      border-radius: 8px 8px 8px 2px;
+      box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
+      margin: 2px 0;
+    }
+    #typing .dots span {
+      display: inline-block;
+      width: 7px; height: 7px;
+      margin: 0 1.5px;
+      background: #9aa0a6;
+      border-radius: 50%;
+      animation: blink 1.4s infinite both;
+    }
+    #typing .dots span:nth-child(2) { animation-delay: 0.2s; }
+    #typing .dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes blink {
+      0%, 80%, 100% { opacity: 0.3; transform: translateY(0); }
+      40% { opacity: 1; transform: translateY(-4px); }
+    }
+
+    /* ─── Input ─── */
+    .input-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      background: #F0F0F0;
+      flex-shrink: 0;
+    }
+    .input-bar input {
+      flex: 1;
+      border: none;
+      border-radius: 21px;
+      padding: 11px 16px;
+      font-size: 14.5px;
+      outline: none;
+      background: #fff;
+      box-shadow: 0 1px 1px rgba(0,0,0,0.06);
+    }
+    .input-bar button {
+      width: 44px; height: 44px;
+      flex-shrink: 0;
+      border: none;
+      border-radius: 50%;
+      background: #075E54;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .input-bar button:hover:not(:disabled) { background: #0a7d6f; }
+    .input-bar button:active:not(:disabled) { transform: scale(0.92); }
+    .input-bar button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .input-bar button svg { width: 21px; height: 21px; fill: #fff; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="avatar">
+      <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1 1 12 20zm4.4-6c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.2-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.1-.2 0-.4.1-.5l.4-.5.2-.4v-.4l-.8-1.8c-.2-.5-.4-.4-.5-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.7 11.7 0 0 0 4.5 4 5 5 0 0 0 2.3.6 2.7 2.7 0 0 0 1.8-1.3c.2-.4.2-.8.1-.9l-.5-.2z"/></svg>
+    </div>
+    <div class="meta">
+      <h1 id="shop-name">Asistente</h1>
+      <span class="status">en línea</span>
+    </div>
+    <button class="restart" id="restartBtn" title="Nueva conversación" aria-label="Nueva conversación">
+      <svg viewBox="0 0 24 24"><path d="M17.65 6.35A8 8 0 1 0 19.3 14h-2.1A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+    </button>
+    <button class="restart" id="closeBtn" title="Cerrar" aria-label="Cerrar chat">
+      <svg viewBox="0 0 24 24"><path d="M7.4 6 6 7.4l4.6 4.6L6 16.6 7.4 18l4.6-4.6 4.6 4.6 1.4-1.4-4.6-4.6L18 7.4 16.6 6 12 10.6z"/></svg>
+    </button>
+  </header>
+
+  <div id="messages">
+    <div id="typing"><span class="dots"><span></span><span></span><span></span></span></div>
+  </div>
+
+  <div class="input-bar">
+    <input type="text" id="input" placeholder="Escribe un mensaje" autocomplete="off" />
+    <button id="send" aria-label="Enviar">
+      <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+
+  <script>
+    const messagesEl = document.getElementById("messages");
+    const typingEl = document.getElementById("typing");
+    const inputEl = document.getElementById("input");
+    const sendBtn = document.getElementById("send");
+    const restartBtn = document.getElementById("restartBtn");
+    const closeBtn = document.getElementById("closeBtn");
+    const shopNameEl = document.getElementById("shop-name");
+
+    // Tenant: el shop viene como query param (?shop=cliente.myshopify.com).
+    const params = new URLSearchParams(location.search);
+    const SHOP = params.get("shop") || undefined;
+
+    // sessionId vive solo en memoria: cerrar/recargar = sesión nueva.
+    let sessionId = null;
+    let greeted = false;
+
+    function scrollToBottom() { messagesEl.scrollTop = messagesEl.scrollHeight; }
+
+    function nowTime() {
+      const d = new Date();
+      return d.getHours().toString().padStart(2, "0") + ":" + d.getMinutes().toString().padStart(2, "0");
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/&/g, "&amp;").replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    function renderTextSegment(text) {
+      // Extrae links markdown [label](url) a placeholders para que el escape
+      // HTML y la detección de URLs sueltas no los rompan.
+      const links = [];
+      let s = text.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, label, url) => {
+        links.push({ label, url });
+        return " LNK" + (links.length - 1) + " ";
+      });
+      s = escapeHtml(s);
+      // URLs sueltas → botón de checkout.
+      s = s.replace(/(https?:\/\/[^\s]+)/g, (m, url) =>
+        `<a class="checkout-btn" href="${url}" target="_blank" rel="noopener">Completar compra</a>`);
+      // Restaura links markdown como links de producto inline.
+      links.forEach((lnk, i) => {
+        const safeUrl = /^https?:\/\//.test(lnk.url) ? lnk.url : "#";
+        s = s.replace(" LNK" + i + " ",
+          `<a href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener" class="product-link">${escapeHtml(lnk.label)}</a>`);
+      });
+      return s;
+    }
+
+    function addMessage(text, role) {
+      const div = document.createElement("div");
+      div.className = "msg " + role;
+
+      if (role === "bot") {
+        const imageRegex = /!\[([^\]]*)\]\(([^)\s]+)\)/g;
+        const imgs = [];
+        let m;
+        while ((m = imageRegex.exec(text)) !== null) {
+          imgs.push({ alt: m[1], url: m[2], start: m.index, end: m.index + m[0].length });
+        }
+        let html = "";
+        let cursor = 0;
+        imgs.forEach((img) => {
+          if (cursor < img.start) html += renderTextSegment(text.substring(cursor, img.start));
+          const safeUrl = /^https?:\/\//.test(img.url) ? img.url : "";
+          html += `<img src="${escapeHtml(safeUrl)}" alt="${escapeHtml(img.alt)}">`;
+          cursor = img.end;
+        });
+        if (cursor < text.length) html += renderTextSegment(text.substring(cursor));
+        html += `<span class="time">${nowTime()}</span>`;
+        div.innerHTML = html;
+      } else {
+        div.textContent = text;
+        const t = document.createElement("span");
+        t.className = "time";
+        t.textContent = nowTime();
+        div.appendChild(t);
+      }
+
+      messagesEl.insertBefore(div, typingEl);
+      scrollToBottom();
+    }
+
+    function setLoading(loading) {
+      typingEl.style.display = loading ? "block" : "none";
+      inputEl.disabled = loading;
+      sendBtn.disabled = loading;
+      if (loading) scrollToBottom();
+    }
+
+    async function postMessage(message) {
+      const body = { sessionId, message };
+      if (SHOP) body.shop = SHOP;
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Server error");
+      if (!sessionId) sessionId = data.sessionId;
+      return data;
+    }
+
+    async function send() {
+      const message = inputEl.value.trim();
+      if (!message) return;
+      inputEl.value = "";
+      addMessage(message, "user");
+      setLoading(true);
+      try {
+        const data = await postMessage(message);
+        addMessage(data.response, "bot");
+        if (shopNameEl.textContent === "Asistente" && data.shopName) {
+          shopNameEl.textContent = data.shopName;
+        }
+      } catch (err) {
+        addMessage("Disculpa, no pude conectar. Intenta de nuevo en un momento.", "bot");
+        console.error(err);
+      } finally {
+        setLoading(false);
+        inputEl.focus();
+      }
+    }
+
+    // Saludo automático: al abrir, el asistente saluda (como un negocio en WhatsApp).
+    async function autoGreet() {
+      if (greeted) return;
+      greeted = true;
+      setLoading(true);
+      try {
+        const data = await postMessage("Hola");
+        addMessage(data.response, "bot");
+        if (data.shopName) shopNameEl.textContent = data.shopName;
+      } catch (err) {
+        addMessage("¡Hola! ¿En qué puedo ayudarte hoy?", "bot");
+        console.error(err);
+      } finally {
+        setLoading(false);
+        inputEl.focus();
+      }
+    }
+
+    function restart() {
+      sessionId = null;
+      greeted = false;
+      // Limpiar mensajes (deja el typing indicator).
+      [...messagesEl.querySelectorAll(".msg")].forEach((n) => n.remove());
+      inputEl.value = "";
+      autoGreet();
+    }
+
+    sendBtn.addEventListener("click", send);
+    inputEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") { e.preventDefault(); send(); }
+    });
+    restartBtn.addEventListener("click", restart);
+    // Cerrar: avisa al loader (widget.js) que oculte el panel.
+    closeBtn.addEventListener("click", function () {
+      if (window.parent !== window) window.parent.postMessage({ type: "lift-wa-close" }, "*");
+    });
+
+    autoGreet();
+  </script>
+</body>
+</html>

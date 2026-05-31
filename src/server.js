@@ -6,6 +6,7 @@ const express = require("express");
 const rateLimit = require("express-rate-limit");
 const { processMessage } = require("./ai");
 const { getSession, startCleanupJob } = require("./session");
+const { isValidShop } = require("./shopify/shop-info");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -38,7 +39,7 @@ app.use((req, res, next) => {
 app.post("/api/chat", chatLimiter, async (req, res) => {
   try {
     const sessionId = req.body.sessionId || crypto.randomUUID();
-    const { message } = req.body;
+    const { message, shop } = req.body;
     const logPrefix = `[SERVER] [${sessionId.substring(0, 8)}...]`;
 
     if (!message) {
@@ -46,9 +47,16 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
       return res.status(400).json({ error: "message is required" });
     }
 
-    console.log(`${logPrefix} processing message: "${message.substring(0, 50)}${message.length > 50 ? '...' : ''}"`);
+    // Multi-tenant: si el widget manda shop, debe ser un dominio myshopify válido.
+    // Si no lo manda, processMessage cae al SHOPIFY_SHOP de entorno (modo standalone).
+    if (shop !== undefined && !isValidShop(shop)) {
+      console.warn(`${logPrefix} invalid shop rejected: ${shop}`);
+      return res.status(400).json({ error: "shop inválido" });
+    }
 
-    const result = await processMessage(sessionId, message);
+    console.log(`${logPrefix} processing message: "${message.substring(0, 50)}${message.length > 50 ? '...' : ''}"${shop ? ` [shop: ${shop}]` : ''}`);
+
+    const result = await processMessage(sessionId, message, shop);
 
     console.log(`${logPrefix} response generated successfully`);
 
@@ -62,6 +70,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
         errorType: result.errorType,
         state: result.state,
         cart: result.cart,
+        shopName: result.shopName,
       });
     }
 
@@ -71,6 +80,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
       response: result.response,
       state: result.state,
       cart: result.cart,
+      shopName: result.shopName,
     });
   } catch (error) {
     console.error(`[SERVER] POST /api/chat unhandled error: ${error.message}`);

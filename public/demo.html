@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tienda Demo — LIFT</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #1a1a1a;
+      background: #fafafa;
+    }
+    .topbar {
+      background: #111;
+      color: #fff;
+      text-align: center;
+      font-size: 13px;
+      padding: 9px;
+      letter-spacing: 0.3px;
+    }
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 32px;
+      border-bottom: 1px solid #eee;
+      background: #fff;
+    }
+    nav .brand { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+    nav .links { display: flex; gap: 26px; font-size: 14px; color: #555; }
+    nav .links span { cursor: pointer; }
+    .hero {
+      padding: 64px 32px;
+      text-align: center;
+      background: linear-gradient(135deg, #f5f3ff 0%, #ecfdf5 100%);
+    }
+    .hero h1 { font-size: 40px; font-weight: 800; letter-spacing: -1px; margin-bottom: 14px; }
+    .hero p { font-size: 17px; color: #666; max-width: 540px; margin: 0 auto 26px; line-height: 1.5; }
+    .hero .cta {
+      display: inline-block;
+      background: #075E54;
+      color: #fff;
+      padding: 13px 28px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 15px;
+      text-decoration: none;
+    }
+    .grid {
+      max-width: 1080px;
+      margin: 56px auto;
+      padding: 0 32px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 26px;
+    }
+    .card { background: #fff; border-radius: 14px; overflow: hidden; border: 1px solid #eee; }
+    .card .ph {
+      height: 200px;
+      background: linear-gradient(135deg, #e9e9ef 0%, #f3f3f7 100%);
+      display: flex; align-items: center; justify-content: center;
+      color: #c0c0cc; font-size: 13px;
+    }
+    .card .body { padding: 14px 16px; }
+    .card .body h3 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .card .body .price { font-size: 14px; color: #075E54; font-weight: 700; }
+    .note {
+      max-width: 620px;
+      margin: 0 auto 70px;
+      padding: 18px 22px;
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      border-radius: 12px;
+      font-size: 14px;
+      color: #6d5200;
+      text-align: center;
+      line-height: 1.5;
+    }
+    footer { background: #111; color: #888; text-align: center; padding: 30px; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="topbar">🚚 Envío gratis en compras mayores a $50 — Solo esta semana</div>
+  <nav>
+    <div class="brand">DEMO STORE</div>
+    <div class="links"><span>Inicio</span><span>Catálogo</span><span>Moda</span><span>Tech</span><span>Contacto</span></div>
+  </nav>
+
+  <section class="hero">
+    <h1>Tu tienda, ahora conversacional</h1>
+    <p>Esta es una página de demostración. El botón verde abajo a la derecha abre el asistente
+       de compras por chat — busca productos, arma el carrito y genera el checkout, igual que en WhatsApp.</p>
+    <a class="cta" href="#" onclick="document.querySelector('.lift-wa-fab')?.click();return false;">Probar el asistente →</a>
+  </section>
+
+  <div class="grid">
+    <div class="card"><div class="ph">Producto</div><div class="body"><h3>Camiseta básica</h3><div class="price">$19.90</div></div></div>
+    <div class="card"><div class="ph">Producto</div><div class="body"><h3>Mochila urbana</h3><div class="price">$45.00</div></div></div>
+    <div class="card"><div class="ph">Producto</div><div class="body"><h3>Audífonos bluetooth</h3><div class="price">$32.50</div></div></div>
+    <div class="card"><div class="ph">Producto</div><div class="body"><h3>Cargador USB-C 20W</h3><div class="price">$15.00</div></div></div>
+  </div>
+
+  <div class="note">
+    💡 <strong>Para LIFT:</strong> esta página simula el theme de un cliente. En producción, solo pegas
+    una línea <code>&lt;script src="…/widget.js" data-shop="cliente.myshopify.com"&gt;</code> en el theme.
+  </div>
+
+  <footer>Demo de portafolio — LIFT Studio · Compras conversacionales sobre Shopify</footer>
+
+  <!-- ── Widget embebido (una sola línea en el theme del cliente) ── -->
+  <script src="/widget.js"
+          data-shop="b2b-sandbox-lift-2.myshopify.com"
+          data-greeting="¿Buscas algo? Escríbeme 👋"></script>
+</body>
+</html>

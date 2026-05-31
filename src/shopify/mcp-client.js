@@ -12,24 +12,35 @@
  */
 
 const { withRetry, executeWithTimeout } = require('../utils/retry');
-
-const SHOPIFY_SHOP = process.env.SHOPIFY_SHOP;
-// Support MCP_URL override for testing purposes
-const MCP_ENDPOINT = process.env.MCP_URL || `https://${SHOPIFY_SHOP}/api/mcp`;
+const { resolveShop } = require('./shop-info');
 
 let requestId = 0;
+
+/**
+ * Construye el endpoint MCP para una tienda dada (multi-tenant).
+ * MCP_URL override gana (para testing). Si shop es inválido/ausente,
+ * resolveShop cae al SHOPIFY_SHOP de entorno.
+ * @param {string} [shop] - dominio myshopify del tenant
+ * @returns {string} endpoint MCP
+ */
+function mcpEndpoint(shop) {
+  if (process.env.MCP_URL) return process.env.MCP_URL;
+  return `https://${resolveShop(shop)}/api/mcp`;
+}
 
 /**
  * Realiza una llamada JSON-RPC 2.0 al Storefront MCP con reintentos automáticos
  * Usa withRetry() para manejo de timeouts y errores transitorios
  * @param {string} toolName - Nombre de la herramienta
  * @param {object} toolArguments - Parámetros de la herramienta
+ * @param {string} [shop] - dominio myshopify del tenant (default: env)
  * @param {number} maxRetries - Número máximo de reintentos (default: 2)
  * @param {number} timeoutMs - Timeout per attempt in milliseconds (default: 8000)
  * @returns {Promise<object>} Resultado de la herramienta
  */
-async function callMCPTool(toolName, toolArguments, maxRetries = 2, timeoutMs = 8000) {
-  console.log(`[MCP] Llamando ${toolName}:`, JSON.stringify(toolArguments, null, 2).substring(0, 200));
+async function callMCPTool(toolName, toolArguments, shop, maxRetries = 2, timeoutMs = 8000) {
+  const endpoint = mcpEndpoint(shop);
+  console.log(`[MCP] Llamando ${toolName} @ ${endpoint}:`, JSON.stringify(toolArguments, null, 2).substring(0, 200));
 
   const mcpCall = async () => {
     const id = ++requestId;
@@ -44,7 +55,7 @@ async function callMCPTool(toolName, toolArguments, maxRetries = 2, timeoutMs = 
       },
     };
 
-    const response = await fetch(MCP_ENDPOINT, {
+    const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -89,58 +100,63 @@ async function callMCPTool(toolName, toolArguments, maxRetries = 2, timeoutMs = 
  * Busca productos en el catálogo de la tienda
  * @param {string} query - Búsqueda en lenguaje natural
  * @param {object} options - Opciones adicionales (context, filters, pagination)
+ * @param {string} [shop] - dominio myshopify del tenant
  * @returns {Promise<object>} Productos encontrados
  */
-async function searchProducts(query, options = {}) {
+async function searchProducts(query, options = {}, shop) {
   const catalogParams = {
     query,
     ...options,
   };
 
-  return callMCPTool("search_catalog", { catalog: catalogParams });
+  return callMCPTool("search_catalog", { catalog: catalogParams }, shop);
 }
 
 /**
  * Obtiene detalles de un producto por ID
  * @param {string} productId - ID del producto (ej: gid://shopify/Product/123)
  * @param {object} options - Opciones (options para variante, country, language)
+ * @param {string} [shop] - dominio myshopify del tenant
  * @returns {Promise<object>} Detalles del producto
  */
-async function getProductDetails(productId, options = {}) {
+async function getProductDetails(productId, options = {}, shop) {
   return callMCPTool("get_product_details", {
     product_id: productId,
     ...options,
-  });
+  }, shop);
 }
 
 /**
  * Obtiene el estado actual del carrito
  * @param {string} cartId - ID del carrito
+ * @param {string} [shop] - dominio myshopify del tenant
  * @returns {Promise<object>} Contenido del carrito con checkout URL
  */
-async function getCart(cartId) {
-  return callMCPTool("get_cart", { cart_id: cartId });
+async function getCart(cartId, shop) {
+  return callMCPTool("get_cart", { cart_id: cartId }, shop);
 }
 
 /**
  * Crea o actualiza un carrito
  * @param {object} options - {cartId?, addItems?, updateItems?, removeLineIds?, buyerIdentity?, etc}
+ * @param {string} [shop] - dominio myshopify del tenant
  * @returns {Promise<object>} Carrito actualizado con checkout URL
  */
-async function updateCart(options) {
-  return callMCPTool("update_cart", options);
+async function updateCart(options, shop) {
+  return callMCPTool("update_cart", options, shop);
 }
 
 /**
  * Busca información sobre políticas y FAQs de la tienda
  * @param {string} query - Pregunta en lenguaje natural
  * @param {string} context - Contexto adicional (opcional)
+ * @param {string} [shop] - dominio myshopify del tenant
  * @returns {Promise<object>} Información de políticas/FAQs
  */
-async function searchPolicies(query, context) {
+async function searchPolicies(query, context, shop) {
   const params = { query };
   if (context) params.context = context;
-  return callMCPTool("search_shop_policies_and_faqs", params);
+  return callMCPTool("search_shop_policies_and_faqs", params, shop);
 }
 
 module.exports = {
