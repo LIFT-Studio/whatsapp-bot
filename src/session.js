@@ -8,6 +8,7 @@ function getSession(sessionId) {
       state: "BROWSING",
       cart: [],
       cartId: null,
+      cartTotal: "0.00",
       messages: [],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -41,6 +42,7 @@ function syncCartFromMCP(sessionId, mcpCart) {
 
   if (!mcpCart || !mcpCart.lines) {
     session.cart = [];
+    session.cartTotal = "0.00";
   } else {
     // Map MCP lines to session.cart format
     session.cart = mcpCart.lines.map(line => {
@@ -48,17 +50,31 @@ function syncCartFromMCP(sessionId, mcpCart) {
       const variantId = line.merchandise?.id || "unknown";
       // Extract product title
       const title = line.merchandise?.product?.title || "Unknown Product";
-      // Extract price from cost structure
-      const price = line.cost?.subtotal_amount?.amount || "0.00";
+      // IMPORTANTE: el MCP devuelve cost.subtotal_amount como el SUBTOTAL DE LA LÍNEA
+      // (precio unitario × cantidad), NO el precio unitario. Guardamos el unitario
+      // (price) y el subtotal de línea (line_total) por separado para no contar la
+      // cantidad dos veces al calcular el total.
+      const qty = line.quantity || 1;
+      const lineTotal = parseFloat(line.cost?.subtotal_amount?.amount || "0");
+      const unitPrice = qty > 0 ? lineTotal / qty : lineTotal;
 
       return {
-        line_id: line.id,           // For MCP operations (remove/update)
-        variant_id: variantId,      // For display and user reference
-        quantity: line.quantity,
+        line_id: line.id,                 // For MCP operations (remove/update)
+        variant_id: variantId,            // For display and user reference
+        quantity: qty,
         title: title,
-        price: price
+        price: unitPrice.toFixed(2),      // precio UNITARIO
+        line_total: lineTotal.toFixed(2), // subtotal de la línea (exacto del MCP)
       };
     });
+
+    // Total autoritativo calculado por Shopify (no lo recalculamos a mano).
+    // Normalizamos a 2 decimales: Shopify puede devolver "299.9" en vez de "299.90".
+    // Fallback: suma de los subtotales de línea (exactos) si no viene el cost del carrito.
+    const rawTotal = mcpCart.cost?.total_amount?.amount;
+    session.cartTotal = rawTotal != null
+      ? parseFloat(rawTotal).toFixed(2)
+      : session.cart.reduce((s, i) => s + parseFloat(i.line_total), 0).toFixed(2);
   }
 
   session.updatedAt = new Date().toISOString();
@@ -111,6 +127,7 @@ function clearCart(sessionId) {
   const session = getSession(sessionId);
   session.cart = [];
   session.cartId = null;
+  session.cartTotal = "0.00";
   session.updatedAt = new Date().toISOString();
   return session;
 }

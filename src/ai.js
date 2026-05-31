@@ -252,6 +252,12 @@ MODIFICAR CANTIDAD:
 VER CARRITO:
 - Cuando el cliente pregunte qué tiene: llama view_cart.
 
+PRECIOS Y TOTAL (CRÍTICO — no inventes ni recalcules):
+- El campo "price" de cada ítem es el precio UNITARIO. "line_total" es el subtotal de esa línea (precio × cantidad).
+- El TOTAL del carrito ya viene calculado en el contexto y en el campo "total" de view_cart. ÚSALO TAL CUAL.
+- NUNCA calcules el total multiplicando precio × cantidad tú mismo: ya está hecho. Solo reporta el total que se te da.
+- Si el cliente pide el total, responde con el "total" provisto (ej: "Tu total es $499.90").
+
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 SECCIÓN 6: MANEJO DE ERRORES
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
@@ -674,7 +680,8 @@ async function executeTool(toolName, toolInput, sessionId) {
       try {
         // READ operation: returning local session cart (no external call)
         logSuccess(sessionId, `executeTool[view_cart]`, timer.elapsed(), { cartItems: session.cart.length });
-        return { cart: session.cart };
+        // total = total autoritativo de Shopify; price por ítem es UNITARIO, line_total es el subtotal de línea.
+        return { cart: session.cart, total: session.cartTotal };
       } catch (error) {
         const errorInfo = handleError(error, 'view_cart', false); // isWriteOperation = false
         console.error(`${logPrefix} [${errorInfo.errorType}] ${errorInfo.userMessage}`);
@@ -744,8 +751,11 @@ async function executeTool(toolName, toolInput, sessionId) {
           return { error: "No se pudo generar el checkout", errorType: "INVALID_RESPONSE" };
         }
 
-        // Calcular total del carrito antes de limpiar
-        const cartTotal = session.cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0).toFixed(2);
+        // Total autoritativo de Shopify, capturado ANTES de limpiar la sesión.
+        // Normalizado a 2 decimales (Shopify puede devolver "299.9").
+        const rawCheckoutTotal = mcpResult.cart?.cost?.total_amount?.amount ?? session.cartTotal;
+        const cartTotal = parseFloat(rawCheckoutTotal).toFixed(2);
+        const cartItemCount = session.cart.length;
 
         // Limpiar session después de checkout
         clearCart(sessionId);
@@ -754,12 +764,12 @@ async function executeTool(toolName, toolInput, sessionId) {
 
         // Telemetry: log checkout event (critical for conversion tracking)
         logEvent(sessionId, "CHECKOUT_CREATED", {
-          cartItems: session.cart.length,
+          cartItems: cartItemCount,
           cartTotal
         });
 
         logSuccess(sessionId, `executeTool[create_checkout]`, timer.elapsed(), {
-          cartItems: session.cart.length,
+          cartItems: cartItemCount,
           cartTotal
         });
 
@@ -816,7 +826,7 @@ async function processMessage(sessionId, userMessage, shop) {
 
   const cartContext =
     session.cart.length > 0
-      ? `\n[Estado actual del carrito: ${JSON.stringify(session.cart)}]`
+      ? `\n[Estado actual del carrito: ${JSON.stringify(session.cart)}. TOTAL del carrito (ya calculado, úsalo tal cual, NO lo recalcules): $${session.cartTotal}]`
       : "\n[El carrito está vacío]";
 
   console.log(`${logPrefix} [processMessage] sending to Gemini (history: ${history.length} msgs)`);
