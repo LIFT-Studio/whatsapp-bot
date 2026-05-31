@@ -36,6 +36,100 @@ function logEvent(sessionId, eventType, data = {}) {
   }));
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Resolución robusta de variantes (defensa contra variant_id alucinados por el LLM).
+// Flash a veces corrompe los IDs largos al copiarlos entre turnos; resolvemos el
+// producto real a partir del título contra un caché de los últimos resultados de búsqueda.
+// ─────────────────────────────────────────────────────────────────────────────
+function normalizeTitle(s) {
+  return (s || "")
+    .toLowerCase()
+    .normalize("NFD").replace(/[̀-ͯ]/g, "") // quita acentos
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+// Disponibilidad de una variante del Storefront MCP.
+// El MCP devuelve availability como objeto { available: true } (NO el campo
+// available_for_sale, que es undefined). Soportamos varias formas por robustez.
+function isVariantAvailable(v) {
+  if (!v) return false;
+  const a = v.availability;
+  if (a && typeof a === "object") return a.available !== false;       // { available: true|false }
+  if (typeof a === "boolean") return a;                                // booleano directo
+  if (typeof a === "string") return /avail|in.?stock|sale|true/i.test(a);
+  if (typeof v.available_for_sale === "boolean") return v.available_for_sale; // fallback campo viejo
+  return true; // sin señal → no bloquear; el carrito confirma al agregar
+}
+
+// Guarda/actualiza el caché de productos buscados en la sesión.
+function cacheSearchResults(session, products) {
+  if (!Array.isArray(products) || products.length === 0) return;
+  const cache = session.productCache || [];
+  for (const p of products) {
+    if (!p || !p.variant_id) continue;
+    const variantIds = Array.isArray(p.variants)
+      ? p.variants.map(v => v.id).filter(Boolean)
+      : [p.variant_id];
+    const norm = normalizeTitle(p.title);
+    const entry = {
+      norm,
+      title: p.title,
+      default_variant_id: p.variant_id,
+      variant_ids: variantIds,
+      price: p.variant_price,
+      available: p.available,
+    };
+    const idx = cache.findIndex(c => c.norm === norm);
+    if (idx >= 0) cache[idx] = entry; else cache.push(entry);
+  }
+  session.productCache = cache.slice(-40); // cap para no crecer sin límite
+}
+
+// Puntaje de similitud por tokens entre un título objetivo y uno candidato.
+// Devuelve la fracción de tokens compartidos sobre el máximo de tokens (0..1).
+// Tolerante a palabras de más/menos (ej: Flash añade "de", omite unidades).
+function titleSimilarity(target, candidate) {
+  const a = target.split(" ").filter(Boolean);
+  const b = candidate.split(" ").filter(Boolean);
+  if (a.length === 0 || b.length === 0) return 0;
+  const setA = new Set(a);
+  let shared = 0;
+  for (const w of new Set(b)) if (setA.has(w)) shared++;
+  return shared / Math.max(setA.size, new Set(b).size);
+}
+
+// Resuelve el variant_id real a partir del id/título que pasó el modelo.
+// Flash casi siempre corrompe el variant_id largo, así que el título es la señal
+// principal. Devuelve { variant_id, title, available } o null si no hay match.
+function resolveVariant(session, passedId, passedTitle) {
+  const cache = session.productCache || [];
+  if (cache.length === 0) return null;
+  // 1) Si el id pasado coincide EXACTO con alguna variante cacheada, confiamos en él.
+  if (passedId) {
+    const hit = cache.find(c => c.variant_ids.includes(passedId));
+    if (hit) return { variant_id: passedId, title: hit.title, available: hit.available };
+  }
+  // 2) Resolver por título.
+  if (passedTitle) {
+    const target = normalizeTitle(passedTitle);
+    // 2a) Match exacto o por inclusión (rápido).
+    let hit = cache.find(c => c.norm === target)
+           || cache.find(c => c.norm.includes(target) || target.includes(c.norm));
+    if (hit) return { variant_id: hit.default_variant_id, title: hit.title, available: hit.available };
+    // 2b) Match difuso por tokens (tolera palabras de más/menos del modelo).
+    let best = null, bestScore = 0;
+    for (const c of cache) {
+      const score = titleSimilarity(target, c.norm);
+      if (score > bestScore) { bestScore = score; best = c; }
+    }
+    if (best && bestScore >= 0.6) {
+      return { variant_id: best.default_variant_id, title: best.title, available: best.available };
+    }
+  }
+  return null;
+}
+
 function buildSystemPrompt(shopName) {
   return `Eres un asistente de compras CÁLIDO, conversacional y útil. Tu trabajo es ayudar a los clientes a encontrar productos y hacer pedidos en español, como un amigo de confianza.
 
@@ -189,12 +283,19 @@ REGLA CRÍTICA: CHECKOUT LINK SOLO EN ESTA FASE, DESPUÉS DE CONFIRMACIÓN DEL C
 SECCIÓN 2: REGLAS CRÍTICAS SOBRE TOOLS
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
+REGLA DE ORO — ACTÚA, NO NARRES:
+- NUNCA respondas con "un momento", "déjame buscar", "estoy buscando", "permíteme" como respuesta final. Eso NO ejecuta nada.
+- Si necesitas una herramienta (buscar, agregar, etc.), LLÁMALA EN ESTE MISMO TURNO y responde con el RESULTADO. No anuncies que vas a hacer algo: hazlo y muestra el resultado.
+
 - SIEMPRE usa search_products para buscar. NUNCA inventes productos, precios, disponibilidad.
 - El parámetro "query" es lenguaje natural que refleja la intención del cliente.
-- IMPORTANTE para add_to_cart: variant_id DEBE ser exacto del campo "id" en variant (ej: "gid://shopify/ProductVariant/12345"). NO cambies. Extrae price.amount como string.
+- IMPORTANTE para add_to_cart: pasa el campo "title" EXACTAMENTE como apareció en search_products (el sistema identifica el producto por ese título). Pasa también variant_id tal cual lo diste en los resultados. NUNCA inventes ni modifiques el variant_id.
+- REFERENCIAS A PRODUCTOS YA MOSTRADOS: si el cliente dice "agrega el primero", "ese", "ese mismo", "el de antes", "agrégalo", "lo quiero" refiriéndose a un producto que YA mostraste, llama add_to_cart DIRECTAMENTE con ese producto (su title exacto). NO vuelvas a buscar ni a re-describirlo: eso frustra al cliente.
+- PRESUPUESTO ("barato", "económico", "que no pase de X"): NO pongas "barato" en la query (no es un producto). Busca por el TIPO de producto (ej: "vino tinto") y de los resultados recomienda el de MENOR precio o el que entre en el rango. Si pusiste "barato" y no hubo resultados, vuelve a buscar solo el tipo.
 - SIEMPRE usa answer_policy_question para preguntas sobre políticas, devoluciones, envíos, FAQs, garantías. No inventes políticas.
 - SIEMPRE usa create_checkout cuando el cliente confirma compra. NUNCA generes URLs manualmente. Incluye checkout_url completo.
 - Verifica SIEMPRE field "available" en resultados. SI available=false: NUNCA llames add_to_cart. Ofrece alternativas.
+- Si add_to_cart devuelve error (errorType "ADD_FAILED"): NO digas que lo agregaste. Discúlpate y ofrece buscar una alternativa.
 - Verifica SIEMPRE image_url e image_alt en productos. SI existen: DEBES incluir imagen en markdown format: ![image_alt](image_url)
 - Verifica SIEMPRE product_url. SI existe: incluye link markdown: [Ver en la tienda](product_url)
 
@@ -449,7 +550,7 @@ async function executeTool(toolName, toolInput, sessionId) {
           const image_alt = firstImage?.alt_text || product.title;
 
           // Determinar disponibilidad del producto (si alguna variante está disponible)
-          const available = product.variants?.some(v => v.available_for_sale) || false;
+          const available = product.variants?.some(isVariantAvailable) || false;
 
           // Detectar si hay múltiples variantes/opciones
           const has_variants = product.variants && product.variants.length > 1;
@@ -497,6 +598,9 @@ async function executeTool(toolName, toolInput, sessionId) {
           console.log(`${logPrefix} first variant_id: ${simplifiedProducts[0].variant_id.substring(0, 50)}...`);
         }
 
+        // Cachear resultados para resolver add_to_cart por título (anti-alucinación de IDs).
+        cacheSearchResults(session, simplifiedProducts);
+
         return { products: simplifiedProducts };
       } catch (error) {
         const errorInfo = handleError(error, 'search_products', false); // isWriteOperation = false
@@ -530,11 +634,18 @@ async function executeTool(toolName, toolInput, sessionId) {
 
     case "add_to_cart": {
       logStart(sessionId, `executeTool[add_to_cart]`, { title: toolInput.title, quantity: toolInput.quantity });
-      console.log(`${logPrefix} adding variant_id: ${toolInput.variant_id.substring(0, 50)}..., quantity: ${toolInput.quantity}`);
+
+      // Resolver el variant_id real contra el caché de búsqueda (defensa anti-alucinación de IDs).
+      const resolved = resolveVariant(session, toolInput.variant_id, toolInput.title);
+      const variantToAdd = (resolved && resolved.variant_id) || toolInput.variant_id;
+      const titleToAdd = (resolved && resolved.title) || toolInput.title;
+      const quantity = toolInput.quantity || 1;
+      if (resolved && resolved.variant_id !== toolInput.variant_id) {
+        console.log(`${logPrefix} variant_id corregido por título: "${toolInput.variant_id}" → "${variantToAdd}" (${titleToAdd})`);
+      }
+      console.log(`${logPrefix} adding "${titleToAdd}" variant: ${String(variantToAdd).substring(0, 50)}..., qty: ${quantity}`);
 
       try {
-        // WRITE operation: do NOT retry on timeout after request sent
-        // Just call updateCart directly (mcp-client has its own retry for connection errors)
         if (!session.cartId) {
           console.log(`${logPrefix} creating new cart...`);
         }
@@ -544,8 +655,8 @@ async function executeTool(toolName, toolInput, sessionId) {
           cart_id: session.cartId || undefined,
           add_items: [
             {
-              product_variant_id: toolInput.variant_id,
-              quantity: toolInput.quantity,
+              product_variant_id: variantToAdd,
+              quantity,
             },
           ],
         }, shop);
@@ -560,29 +671,42 @@ async function executeTool(toolName, toolInput, sessionId) {
         }
 
         const updatedSession = getSession(sessionId);
-        console.log(`${logPrefix} cart now has ${updatedSession.cart.length} items`);
+
+        // VERIFICACIÓN HONESTA: ¿el producto realmente quedó en el carrito?
+        // Si el MCP recibió un variant inválido (o sin stock), no agrega y NO debemos mentir.
+        const added = updatedSession.cart.some(i => i.variant_id === variantToAdd);
+        if (!added) {
+          console.warn(`${logPrefix} add FALLÓ — "${titleToAdd}" no quedó en el carrito (variant inválido o sin stock)`);
+          logEvent(sessionId, "ADD_FAILED", { title: titleToAdd, variant_id: variantToAdd });
+          logError(sessionId, `executeTool[add_to_cart]`, "producto no quedó en el carrito", { title: titleToAdd });
+          return {
+            error: `No pude agregar "${titleToAdd}" al carrito; puede que ya no esté disponible. ¿Quieres que busque una alternativa?`,
+            errorType: "ADD_FAILED",
+            cart: updatedSession.cart,
+            total: updatedSession.cartTotal,
+          };
+        }
+
+        console.log(`${logPrefix} cart now has ${updatedSession.cart.length} items, total ${updatedSession.cartTotal}`);
 
         logCartOperation(sessionId, "add", {
-          title: toolInput.title,
-          price: toolInput.price,
-          quantity: toolInput.quantity,
-          cartTotal: updatedSession.cart.length
+          title: titleToAdd,
+          quantity,
+          cartItems: updatedSession.cart.length
         }, true);
 
-        // Telemetry: log add to cart event
         logEvent(sessionId, "ADD_TO_CART", {
-          title: toolInput.title,
-          price: toolInput.price,
-          quantity: toolInput.quantity,
-          cartTotal: updatedSession.cart.length
+          title: titleToAdd,
+          quantity,
+          cartItems: updatedSession.cart.length
         });
 
         logSuccess(sessionId, `executeTool[add_to_cart]`, timer.elapsed(), {
-          title: toolInput.title,
-          cartTotal: updatedSession.cart.length
+          title: titleToAdd,
+          cartItems: updatedSession.cart.length
         });
 
-        return { success: true, cart: updatedSession.cart };
+        return { success: true, cart: updatedSession.cart, total: updatedSession.cartTotal };
       } catch (error) {
         const errorInfo = handleError(error, 'add_to_cart', true); // isWriteOperation = true
         console.error(`${logPrefix} [${errorInfo.errorType}] ${errorInfo.userMessage}`);

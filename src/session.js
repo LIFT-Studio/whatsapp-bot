@@ -9,6 +9,7 @@ function getSession(sessionId) {
       cart: [],
       cartId: null,
       cartTotal: "0.00",
+      productCache: [],   // resultados de búsqueda recientes (para resolver adds por título)
       messages: [],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
