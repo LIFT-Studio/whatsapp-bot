@@ -6,6 +6,7 @@ const {
   searchPolicies,
   getCart,
   updateCart,
+  getProductDetails,
 } = require("./shopify/mcp-client");
 const { resolveShopName, resolveShop } = require("./shopify/shop-info");
 const {
@@ -18,6 +19,12 @@ const {
 const { log, logStart, logSuccess, logError, logToolExecution, logUserMessage, logBotResponse, logCartOperation, logSessionEvent, createTimer } = require('./utils/logger');
 const { handleError } = require('./utils/api-error-handler');
 const { executeWithTimeout } = require('./utils/retry');
+const { recordEvent } = require('./metrics');
+
+if (!process.env.GEMINI_API_KEY) {
+  console.error("[BOOT] Falta GEMINI_API_KEY en el entorno — el bot no puede responder sin ella.");
+  process.exit(1);
+}
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -34,6 +41,14 @@ function logEvent(sessionId, eventType, data = {}) {
     eventType,
     ...data
   }));
+  // Alimenta GET /api/metrics. sessionId completo (el truncado a 8 chars colisiona)
+  // y shop para poder segmentar por tenant.
+  recordEvent({
+    timestamp,
+    sessionId,
+    shop: getSession(sessionId).shop,
+    eventType,
+  });
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -79,6 +94,10 @@ function cacheSearchResults(session, products) {
       variant_ids: variantIds,
       price: p.variant_price,
       available: p.available,
+      product_id: p.id,
+      image_url: p.image_url,
+      image_alt: p.image_alt,
+      product_url: p.product_url,
     };
     const idx = cache.findIndex(c => c.norm === norm);
     if (idx >= 0) cache[idx] = entry; else cache.push(entry);
@@ -126,6 +145,31 @@ function resolveVariant(session, passedId, passedTitle) {
     if (best && bestScore >= 0.6) {
       return { variant_id: best.default_variant_id, title: best.title, available: best.available };
     }
+  }
+  return null;
+}
+
+// Resuelve la ENTRY completa del caché (con image_url y product_id) por título/id.
+// Mismo criterio difuso que resolveVariant, pero para get_product_details, que
+// necesita la imagen y el link, no solo el variant_id.
+function resolveCachedProduct(session, passedTitle, passedId) {
+  const cache = session.productCache || [];
+  if (cache.length === 0) return null;
+  if (passedId) {
+    const hit = cache.find(c => c.product_id === passedId || c.variant_ids.includes(passedId));
+    if (hit) return hit;
+  }
+  if (passedTitle) {
+    const target = normalizeTitle(passedTitle);
+    const hit = cache.find(c => c.norm === target)
+             || cache.find(c => c.norm.includes(target) || target.includes(c.norm));
+    if (hit) return hit;
+    let best = null, bestScore = 0;
+    for (const c of cache) {
+      const score = titleSimilarity(target, c.norm);
+      if (score > bestScore) { bestScore = score; best = c; }
+    }
+    if (best && bestScore >= 0.6) return best;
   }
   return null;
 }
@@ -226,9 +270,10 @@ CUÁNDO ACTIVAR:
 - El producto recomendado tiene has_variants = true
 - El cliente NO especificó qué variante quiere (ej: "agrega la mochila" sin decir color)
 
-CUÁNDO SALTAR (ir directo a add_to_cart):
+CUÁNDO SALTAR (ir directo a add_to_cart — SOLO si el producto YA fue mostrado con su precio en esta conversación):
 - El producto tiene UNA SOLA variante (no hay opciones)
-- El cliente YA especificó todo (ej: "quiero la camiseta azul talla M")
+- El cliente YA especificó todo de un producto que ya viste en los resultados (ej: "quiero la camiseta azul talla M" después de mostrarla)
+- Si el producto AÚN NO fue mostrado: primero search_products y confirma precio (ver SECCIÓN 2)
 
 ACCIONES EN FASE 3:
 1. Detecta cuántas variantes tiene el producto (color, talla, etc.)
@@ -290,20 +335,23 @@ REGLA DE ORO — ACTÚA, NO NARRES:
 - SIEMPRE usa search_products para buscar. NUNCA inventes productos, precios, disponibilidad.
 - El parámetro "query" es lenguaje natural que refleja la intención del cliente.
 - IMPORTANTE para add_to_cart: pasa el campo "title" EXACTAMENTE como apareció en search_products (el sistema identifica el producto por ese título). Pasa también variant_id tal cual lo diste en los resultados. NUNCA inventes ni modifiques el variant_id.
-- REFERENCIAS A PRODUCTOS YA MOSTRADOS: si el cliente dice "agrega el primero", "ese", "ese mismo", "el de antes", "agrégalo", "lo quiero" refiriéndose a un producto que YA mostraste, llama add_to_cart DIRECTAMENTE con ese producto (su title exacto). NO vuelvas a buscar ni a re-describirlo: eso frustra al cliente.
+- REFERENCIAS A PRODUCTOS YA MOSTRADOS: si el cliente dice "agrega el primero", "ese", "ese mismo", "el de antes", "agrégalo", "lo quiero" refiriéndose a un producto que YA mostraste (con su precio), llama add_to_cart DIRECTAMENTE con ese producto (su title exacto). NO vuelvas a buscar ni a re-describirlo: eso frustra al cliente.
+- PRODUCTO QUE AÚN NO MOSTRASTE: si el cliente pide agregar un producto por nombre que NO has mostrado en esta conversación ("dame la mochila X", "agrégame unos audífonos Y"), NO llames add_to_cart en ese turno. Primero search_products, muestra nombre + precio + imagen y pregunta "¿Te lo agrego al carrito?". El cliente SIEMPRE debe ver el precio antes de que algo entre a su carrito. Llama add_to_cart solo cuando confirme ("sí", "dale", "agrégalo").
 - PRESUPUESTO ("barato", "económico", "que no pase de X"): NO pongas "barato" en la query (no es un producto). Busca por el TIPO de producto (ej: "vino tinto") y de los resultados recomienda el de MENOR precio o el que entre en el rango. Si pusiste "barato" y no hubo resultados, vuelve a buscar solo el tipo.
+- SIN RESULTADOS: si search_products devuelve 0 productos, reintenta EN EL MISMO TURNO con la query simplificada a solo el TIPO de producto (sin adjetivos de uso, ocasión o color: "camiseta básica negra para diario" → "camiseta"). Solo si el reintento tampoco da resultados, dilo honestamente y ofrece alternativas.
 - SIEMPRE usa answer_policy_question para preguntas sobre políticas, devoluciones, envíos, FAQs, garantías. No inventes políticas.
 - SIEMPRE usa create_checkout cuando el cliente confirma compra. NUNCA generes URLs manualmente. Incluye checkout_url completo.
 - Verifica SIEMPRE field "available" en resultados. SI available=false: NUNCA llames add_to_cart. Ofrece alternativas.
 - Si add_to_cart devuelve error (errorType "ADD_FAILED"): NO digas que lo agregaste. Discúlpate y ofrece buscar una alternativa.
 - Verifica SIEMPRE image_url e image_alt en productos. SI existen: DEBES incluir imagen en markdown format: ![image_alt](image_url)
 - Verifica SIEMPRE product_url. SI existe: incluye link markdown: [Ver en la tienda](product_url)
+- FOTOS A PEDIDO: si el cliente pide "foto", "imagen", "muéstramelo" o "cómo se ve" de un producto que YA mostraste o agregaste, llama get_product_details con el title EXACTO de ese producto. NO vuelvas a llamar search_products. Tu respuesta DEBE incluir ![image_alt](image_url) con los datos que devuelva la tool. Si la tool devuelve error, dilo honestamente y ofrece buscar de nuevo.
 
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 SECCIÓN 3: MANEJO DE VARIANTES (DETALLADO)
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
-ÁRBOL DE DECISIÓN PARA VARIANTES:
+ÁRBOL DE DECISIÓN PARA VARIANTES (aplica a productos que YA mostraste con su precio):
 
 1. ¿El producto tiene múltiples variantes? (has_variants = true)
 
@@ -318,9 +366,10 @@ SECCIÓN 3: MANEJO DE VARIANTES (DETALLADO)
                  Espera confirmación antes de preguntar la siguiente.
 
 EJEMPLOS:
-✅ Producto: 1 variante (no hay opciones) + Cliente: "agrega una mochila" → add_to_cart sin preguntar
-✅ Producto: múltiples tallas/colores + Cliente: "quiero la camiseta M azul" → add_to_cart directo
-✅ Producto: múltiples tallas/colores + Cliente: "agrega una camiseta" → Pregunta Fase 3: "¿Qué talla?" (una sola pregunta, no 2+)
+✅ Producto YA mostrado con precio, 1 variante + Cliente: "agrégala" → add_to_cart sin preguntar
+✅ Producto YA mostrado, múltiples tallas/colores + Cliente: "quiero la camiseta M azul" → add_to_cart directo
+✅ Producto YA mostrado, múltiples tallas/colores + Cliente: "agrega una camiseta" → Pregunta Fase 3: "¿Qué talla?" (una sola pregunta, no 2+)
+✅ Producto NO mostrado aún + Cliente: "dame la camiseta básica" → search_products, muestra precio y pregunta "¿Te la agrego?"
 ❌ Producto: múltiples variantes + Cliente: "agrega" → bot pregunta "¿talla Y color?" (dos cosas a la vez causa parálisis)
 
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
@@ -379,7 +428,7 @@ MÁXIMO 2-3 ORACIONES por respuesta (excepto si describes producto en detalle).
 - NO hagas párrafos largos. Divide en párrafos naturales.
 - EJEMPLOS correctos:
   * "¡Perfecto! Te recomiendo la Mochila Urban Explorer, es resistente y perfecta para viaje. ¿Te interesa?"
-  * "Entendido, busco algo más económico. Un momento..."
+  * "Encontré la Mochila Basic por $29.99, más económica que la anterior. ¿Te la agrego?" (tras llamar search_products en el MISMO turno)
   * "Listo, agregué la Mochila Urban Explorer a tu carrito. ¿Quieres seguir viendo o ya estás listo para terminar?"
 - EVITA bloques de texto, listas de 5+ líneas.
 - Cuando describas producto EN DETALLE (si cliente pide): está bien ser más extenso, pero en párrafos cortos.
@@ -419,6 +468,25 @@ const tools = [
             },
           },
           required: ["query"],
+        },
+      },
+      {
+        name: "get_product_details",
+        description:
+          "Devuelve la imagen y detalles (precio, link) de un producto YA mostrado en la conversación. Úsala cuando el cliente pida foto, imagen o cómo se ve un producto.",
+        parameters: {
+          type: "OBJECT",
+          properties: {
+            title: {
+              type: "STRING",
+              description: "Title EXACTO del producto como apareció en search_products (ej: 'Mochila Urban Explorer')",
+            },
+            product_id: {
+              type: "STRING",
+              description: "ID del producto si lo tienes (ej: 'gid://shopify/Product/123'). Opcional.",
+            },
+          },
+          required: ["title"],
         },
       },
       {
@@ -601,6 +669,17 @@ async function executeTool(toolName, toolInput, sessionId) {
         // Cachear resultados para resolver add_to_cart por título (anti-alucinación de IDs).
         cacheSearchResults(session, simplifiedProducts);
 
+        // 0 resultados con query multi-palabra: el MCP busca casi literal, así que
+        // los adjetivos de uso/ocasión suelen vaciar el resultado. Instruir el
+        // reintento dentro del MISMO turno (Flash narra "permíteme buscar" si solo
+        // se lo pide el system prompt; la instrucción en el tool result sí la ejecuta).
+        if (simplifiedProducts.length === 0 && query.trim().split(/\s+/).length > 1) {
+          return {
+            products: [],
+            retry_hint: "0 resultados. LLAMA search_products OTRA VEZ AHORA MISMO (en este mismo turno, sin anunciarlo al cliente) con la query reducida a solo el tipo de producto, una o dos palabras (ej: 'camiseta'). Si ese reintento también da 0, recién ahí dile honestamente al cliente que no hay.",
+          };
+        }
+
         return { products: simplifiedProducts };
       } catch (error) {
         const errorInfo = handleError(error, 'search_products', false); // isWriteOperation = false
@@ -623,6 +702,7 @@ async function executeTool(toolName, toolInput, sessionId) {
         const result = await searchPolicies(query, undefined, shop);
         console.log(`${logPrefix} policy answer obtained`);
         logSuccess(sessionId, `executeTool[answer_policy_question]`, timer.elapsed(), { query });
+        logEvent(sessionId, "POLICY_ASKED", { query });
         return result;
       } catch (error) {
         const errorInfo = handleError(error, 'answer_policy_question', false); // isWriteOperation = false
@@ -630,6 +710,68 @@ async function executeTool(toolName, toolInput, sessionId) {
         logError(sessionId, `executeTool[answer_policy_question]`, error, { query, errorType: errorInfo.errorType });
         return { error: errorInfo.userMessage, errorType: errorInfo.errorType, answer: "No pude obtener información sobre esa política." };
       }
+    }
+
+    case "get_product_details": {
+      logStart(sessionId, `executeTool[get_product_details]`, { title: toolInput.title });
+      console.log(`${logPrefix} title: "${toolInput.title}"`);
+
+      // Resolver contra el caché de búsquedas (anti-alucinación de IDs, igual que add_to_cart).
+      const hit = resolveCachedProduct(session, toolInput.title, toolInput.product_id);
+      const productId = (hit && hit.product_id) || toolInput.product_id;
+
+      // Camino principal: MCP get_product_details — trae TODAS las imágenes del producto.
+      if (productId) {
+        try {
+          const result = await getProductDetails(productId, {}, shop);
+          const product = result?.product;
+          const variant = product?.selectedOrFirstAvailableVariant;
+          if (product) {
+            const images = (product.images || [])
+              .map(img => ({ url: img.url, alt: img.alt_text || product.title }))
+              .filter(img => img.url);
+            const image_url = product.image_url || variant?.image_url || images[0]?.url;
+            logSuccess(sessionId, `executeTool[get_product_details]`, timer.elapsed(), {
+              title: product.title,
+              images: images.length,
+            });
+            return {
+              title: product.title,
+              // OJO: get_product_details devuelve precio en dólares ("49.99"),
+              // a diferencia de search_catalog que lo da en centavos.
+              price: variant?.price || product.price_range?.min,
+              available: variant?.available !== false,
+              image_url,
+              image_alt: images[0]?.alt || product.title,
+              images,
+              product_url: (hit && hit.product_url) || undefined,
+              description: product.description,
+            };
+          }
+        } catch (error) {
+          const errorInfo = handleError(error, 'get_product_details', false); // isWriteOperation = false
+          console.error(`${logPrefix} [${errorInfo.errorType}] ${errorInfo.userMessage} — intentando caché`);
+          logError(sessionId, `executeTool[get_product_details]`, error, { title: toolInput.title, errorType: errorInfo.errorType });
+        }
+      }
+
+      // Fallback: servir la imagen cacheada del último search_products.
+      if (hit && hit.image_url) {
+        logSuccess(sessionId, `executeTool[get_product_details]`, timer.elapsed(), { title: hit.title, source: "cache" });
+        return {
+          title: hit.title,
+          price: hit.price,
+          available: hit.available,
+          image_url: hit.image_url,
+          image_alt: hit.image_alt || hit.title,
+          product_url: hit.product_url,
+        };
+      }
+
+      return {
+        error: "No encuentro ese producto en los resultados recientes. Vuelve a buscarlo con search_products.",
+        errorType: "NOT_FOUND",
+      };
     }
 
     case "add_to_cart": {
@@ -964,9 +1106,12 @@ async function processMessage(sessionId, userMessage, shop) {
     );
     let response = result.response;
     let toolCallCount = 0;
+    let toolLoops = 0;
+    const MAX_TOOL_LOOPS = 8; // corta encadenamientos infinitos de tools del modelo
 
     while (
-      response?.candidates?.[0]?.content?.parts?.some((p) => p.functionCall)
+      response?.candidates?.[0]?.content?.parts?.some((p) => p.functionCall) &&
+      ++toolLoops <= MAX_TOOL_LOOPS
     ) {
       const functionCalls = response.candidates[0].content.parts.filter(
         (p) => p.functionCall
@@ -1010,8 +1155,13 @@ async function processMessage(sessionId, userMessage, shop) {
       response = result.response;
     }
 
+    if (toolLoops > MAX_TOOL_LOOPS) {
+      console.warn(`${logPrefix} [processMessage] tool loop cap alcanzado (${MAX_TOOL_LOOPS})`);
+    }
+
     // Success case: extract assistant text and return response
-    const assistantText = response?.text?.() || "";
+    const assistantText = response?.text?.() ||
+      "Disculpa, me enredé procesando tu pedido. ¿Me lo repites en otras palabras?";
 
     addMessage(sessionId, "assistant", assistantText);
 

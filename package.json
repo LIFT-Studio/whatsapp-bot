@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/server.js",
     "eval": "node eval/run.js",
-    "eval:watch": "nodemon eval/run.js"
+    "eval:watch": "nodemon eval/run.js",
+    "test:e2e": "node test-e2e.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

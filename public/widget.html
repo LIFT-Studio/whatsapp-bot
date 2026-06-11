@@ -292,8 +292,12 @@
       });
       s = escapeHtml(s);
       // URLs sueltas → botón de checkout.
-      s = s.replace(/(https?:\/\/[^\s]+)/g, (m, url) =>
-        `<a class="checkout-btn" href="${url}" target="_blank" rel="noopener">Completar compra</a>`);
+      s = s.replace(/(https?:\/\/[^\s]+)/g, (m, url) => {
+        // La puntuación final ("link.", "link),") es texto, no parte del href.
+        const trailing = (url.match(/[.,;:!?)\]]+$/) || [""])[0];
+        const clean = trailing ? url.slice(0, -trailing.length) : url;
+        return `<a class="checkout-btn" href="${clean}" target="_blank" rel="noopener">Completar compra</a>${trailing}`;
+      });
       // Restaura links markdown como links de producto inline.
       links.forEach((lnk, i) => {
         const safeUrl = /^https?:\/\//.test(lnk.url) ? lnk.url : "#";
@@ -319,7 +323,7 @@
         imgs.forEach((img) => {
           if (cursor < img.start) html += renderTextSegment(text.substring(cursor, img.start));
           const safeUrl = /^https?:\/\//.test(img.url) ? img.url : "";
-          html += `<img src="${escapeHtml(safeUrl)}" alt="${escapeHtml(img.alt)}">`;
+          html += `<img src="${escapeHtml(safeUrl)}" alt="${escapeHtml(img.alt)}" onerror="this.style.display='none'">`;
           cursor = img.end;
         });
         if (cursor < text.length) html += renderTextSegment(text.substring(cursor));

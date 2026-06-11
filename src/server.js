@@ -7,6 +7,7 @@ const rateLimit = require("express-rate-limit");
 const { processMessage } = require("./ai");
 const { getSession, startCleanupJob } = require("./session");
 const { isValidShop } = require("./shopify/shop-info");
+const { getMetrics } = require("./metrics");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -38,7 +39,12 @@ app.use((req, res, next) => {
 
 app.post("/api/chat", chatLimiter, async (req, res) => {
   try {
-    const sessionId = req.body.sessionId || crypto.randomUUID();
+    // Solo UUIDs (lo que genera este server): acota la memoria que un sessionId
+    // arbitrario retendría en sesiones y métricas. Cualquier otra cosa → uno nuevo.
+    const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const sessionId = (typeof req.body.sessionId === "string" && UUID_RE.test(req.body.sessionId))
+      ? req.body.sessionId
+      : crypto.randomUUID();
     const { message, shop } = req.body;
     const logPrefix = `[SERVER] [${sessionId.substring(0, 8)}...]`;
 
@@ -92,6 +98,49 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
 app.get("/api/session/:sessionId", (req, res) => {
   const session = getSession(req.params.sessionId);
   res.json({ id: session.id, state: session.state, cart: session.cart });
+});
+
+// Rate limit propio para métricas: requests anónimos baratos pero acotados.
+const metricsLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) => {
+    res.status(429).json({ error: "Demasiadas solicitudes, espera un momento." });
+  },
+});
+
+// Agregados de telemetría de los últimos 7 días (Fase 1).
+// Sin METRICS_TOKEN configurado solo se sirven totales globales; el desglose
+// por tenant (by_shop, ?shop=) exige el token — la lista de clientes y sus
+// KPIs no quedan expuestos a cualquiera. Auth real por tenant llega en Fase 3.
+app.get("/api/metrics", metricsLimiter, (req, res) => {
+  let authed = false;
+  if (process.env.METRICS_TOKEN) {
+    // Comparación timing-safe: hashear ambos lados normaliza longitudes.
+    const a = crypto.createHash("sha256").update(req.headers.authorization || "").digest();
+    const b = crypto.createHash("sha256").update(`Bearer ${process.env.METRICS_TOKEN}`).digest();
+    if (!crypto.timingSafeEqual(a, b)) {
+      return res.status(401).json({ error: "No autorizado" });
+    }
+    authed = true;
+  }
+
+  const { shop, days } = req.query;
+  if (shop !== undefined) {
+    if (!authed) {
+      return res.status(401).json({ error: "El filtro por shop requiere METRICS_TOKEN configurado" });
+    }
+    if (!isValidShop(shop)) {
+      return res.status(400).json({ error: "shop inválido" });
+    }
+  }
+
+  // Los eventos guardan el shop en minúsculas (resolveShop normaliza).
+  const metrics = getMetrics({ days, shop: shop && String(shop).toLowerCase() });
+  if (!authed) delete metrics.by_shop;
+  res.json(metrics);
 });
 
 app.get("/health", (req, res) => {
