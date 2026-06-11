@@ -1,5 +1,7 @@
 # WhatsApp Bot - Carrito Conversacional con Shopify
 
+> ⚠️ **Este documento tiene secciones históricas (abril 2026).** El estado actual y vigente del proyecto está en **[docs/ESTADO.md](docs/ESTADO.md)** — empezar por ahí.
+
 Bot conversacional integrado con Shopify para búsqueda de productos, gestión de carrito y checkout via WhatsApp. Powered by Google Gemini Flash.
 
 ---
