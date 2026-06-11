@@ -9,6 +9,7 @@ const {
   getProductDetails,
 } = require("./shopify/mcp-client");
 const { resolveShopName, resolveShop } = require("./shopify/shop-info");
+const { resolveProductUrl } = require("./shopify/admin-link");
 const {
   getSession,
   addMessage,
@@ -631,11 +632,10 @@ async function executeTool(toolName, toolInput, sessionId) {
             values: option.values
           })) || [];
 
-          // Link del producto: search_catalog NO devuelve handle, y el ID
-          // numérico no es un handle válido (/products/<id> → 404). Usar la
-          // url del MCP si viene; si no, link de búsqueda por título.
-          const product_url = product.url
-            || `https://${shop}/search?q=${encodeURIComponent(product.title)}`;
+          // Link del producto: url del MCP si viene (tiendas publicadas la
+          // traen). Si no, queda null y se resuelve abajo vía Admin read-only
+          // (dev stores) o, en último caso, link de búsqueda por título.
+          const product_url = product.url || null;
 
           return {
             id: product.id,
@@ -665,6 +665,15 @@ async function executeTool(toolName, toolInput, sessionId) {
 
         if (simplifiedProducts.length > 0 && simplifiedProducts[0].variant_id) {
           console.log(`${logPrefix} first variant_id: ${simplifiedProducts[0].variant_id.substring(0, 50)}...`);
+        }
+
+        // Links directos donde el MCP no dio url: handle vía Admin read-only
+        // (solo tienda propia, con caché). Último recurso: link de búsqueda.
+        await Promise.all(simplifiedProducts.slice(0, 6).map(async (p) => {
+          if (!p.product_url) p.product_url = await resolveProductUrl(p.id, shop);
+        }));
+        for (const p of simplifiedProducts) {
+          if (!p.product_url) p.product_url = `https://${shop}/search?q=${encodeURIComponent(p.title)}`;
         }
 
         // Cachear resultados para resolver add_to_cart por título (anti-alucinación de IDs).
@@ -745,7 +754,7 @@ async function executeTool(toolName, toolInput, sessionId) {
               image_url,
               image_alt: images[0]?.alt || product.title,
               images,
-              product_url: product.url || (hit && hit.product_url) || undefined,
+              product_url: product.url || (hit && hit.product_url) || (await resolveProductUrl(productId, shop)) || undefined,
               description: product.description,
             };
           }
