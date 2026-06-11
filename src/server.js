@@ -8,6 +8,7 @@ const { processMessage } = require("./ai");
 const { getSession, startCleanupJob } = require("./session");
 const { isValidShop } = require("./shopify/shop-info");
 const { getMetrics } = require("./metrics");
+const whatsapp = require("./channels/whatsapp");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,7 +27,11 @@ const chatLimiter = rateLimit({
   },
 });
 
-app.use(express.json());
+// rawBody se necesita para verificar la firma HMAC de los webhooks de Meta
+// (la firma es sobre los bytes crudos, no sobre el JSON re-serializado).
+app.use(express.json({
+  verify: (req, res, buf) => { req.rawBody = buf; },
+}));
 app.use(express.static(path.join(__dirname, "..", "public")));
 
 app.use((req, res, next) => {
@@ -42,9 +47,8 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
     // Solo UUIDs (lo que genera este server): acota la memoria que un sessionId
     // arbitrario retendría en sesiones y métricas. Cualquier otra cosa → uno nuevo.
     const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    const sessionId = (typeof req.body.sessionId === "string" && UUID_RE.test(req.body.sessionId))
-      ? req.body.sessionId
-      : crypto.randomUUID();
+    const clientSentId = typeof req.body.sessionId === "string" && UUID_RE.test(req.body.sessionId);
+    const sessionId = clientSentId ? req.body.sessionId : crypto.randomUUID();
     const { message, shop } = req.body;
     const logPrefix = `[SERVER] [${sessionId.substring(0, 8)}...]`;
 
@@ -62,7 +66,9 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
 
     console.log(`${logPrefix} processing message: "${message.substring(0, 50)}${message.length > 50 ? '...' : ''}"${shop ? ` [shop: ${shop}]` : ''}`);
 
-    const result = await processMessage(sessionId, message, shop);
+    // skipHydrate: si el UUID lo acabamos de acuñar, el GET a Redis sería
+    // un miss garantizado — ahorrarse esa latencia.
+    const result = await processMessage(sessionId, message, shop, { skipHydrate: !clientSentId });
 
     console.log(`${logPrefix} response generated successfully`);
 
@@ -141,6 +147,109 @@ app.get("/api/metrics", metricsLimiter, (req, res) => {
   const metrics = getMetrics({ days, shop: shop && String(shop).toLowerCase() });
   if (!authed) delete metrics.by_shop;
   res.json(metrics);
+});
+
+// ── Webhook de WhatsApp (Meta Cloud API) ────────────────────────────────────
+
+// Verificación inicial: Meta llama GET con hub.verify_token al registrar el webhook.
+app.get("/webhooks/whatsapp", (req, res) => {
+  const challenge = whatsapp.verifyChallenge(req.query);
+  if (challenge) {
+    console.log("[WA] webhook verificado por Meta");
+    return res.status(200).send(challenge);
+  }
+  console.warn("[WA] intento de verificación con token inválido");
+  res.sendStatus(403);
+});
+
+// Dedup de entregas: Meta reintenta si no respondemos rápido; sin esto un
+// mensaje lento (Gemini tarda segundos) se procesaría dos veces.
+const processedMessages = new Set();
+const PROCESSED_CAP = 500;
+function alreadyProcessed(messageId) {
+  if (processedMessages.has(messageId)) return true;
+  processedMessages.add(messageId);
+  if (processedMessages.size > PROCESSED_CAP) {
+    // Set itera en orden de inserción: borrar el más viejo.
+    processedMessages.delete(processedMessages.values().next().value);
+  }
+  return false;
+}
+
+// Cola por sesión: dos mensajes rápidos del mismo usuario deben procesarse
+// EN ORDEN (en paralelo, ambos verían historial vacío y saludarían dos veces).
+const sessionQueues = new Map();
+function enqueueForSession(sessionId, job) {
+  const prev = sessionQueues.get(sessionId) || Promise.resolve();
+  const next = prev.then(job, job); // el job corre aunque el anterior falle
+  sessionQueues.set(sessionId, next);
+  // Limpieza: si nadie encoló mientras corría, soltar la referencia.
+  next.finally(() => {
+    if (sessionQueues.get(sessionId) === next) sessionQueues.delete(sessionId);
+  });
+  return next;
+}
+
+// Rate limit del webhook: Meta real manda ráfagas modestas; esto acota el
+// trabajo (parse + HMAC) que un atacante sin firma puede provocar.
+const webhookLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) => res.sendStatus(429),
+});
+
+// PII: nunca loguear el número completo del cliente — los últimos 4 dígitos
+// bastan para correlacionar en debugging.
+const maskPhone = (p) => `…${String(p).slice(-4)}`;
+
+app.post("/webhooks/whatsapp", webhookLimiter, (req, res) => {
+  // 403 también cuando el canal no está configurado: misma respuesta que una
+  // firma inválida, no revelar el estado de configuración a un caller anónimo.
+  if (!whatsapp.isConfigured()) {
+    return res.sendStatus(403);
+  }
+  if (!whatsapp.isValidSignature(req.rawBody, req.headers["x-hub-signature-256"])) {
+    console.warn("[WA] firma HMAC inválida — payload rechazado");
+    return res.sendStatus(403);
+  }
+
+  // Ack inmediato: Meta exige respuesta en segundos; Gemini tarda más.
+  res.sendStatus(200);
+
+  const messages = whatsapp.parseIncoming(req.body);
+  for (const msg of messages) {
+    if (alreadyProcessed(msg.messageId)) continue;
+
+    // Eventos que no son contenido del cliente (👍 a un mensaje, cambio de
+    // número, efímeros): ignorar en silencio, no merecen disculpa.
+    if (msg.type === "reaction" || msg.type === "system" || msg.type === "ephemeral") continue;
+
+    if (msg.type !== "text" || !msg.text) {
+      // Audios/imágenes entrantes son Fase 4 — responder algo amable, no silencio.
+      whatsapp
+        .sendText(msg.from, "Por ahora solo puedo leer mensajes de texto 🙏 ¿Me escribes qué estás buscando?")
+        .catch((err) => console.error(`[WA] respuesta a tipo no soportado falló: ${err.message}`));
+      continue;
+    }
+
+    const sessionId = `wa:${msg.from}`;
+    console.log(`[WA] [${maskPhone(msg.from)}] mensaje entrante: "${msg.text.substring(0, 60)}"`);
+    whatsapp.markAsRead(msg.messageId);
+
+    enqueueForSession(sessionId, () =>
+      processMessage(sessionId, msg.text, undefined)
+        .then((result) => whatsapp.sendOutgoing(msg.from, result.response))
+        .then(() => console.log(`[WA] [${maskPhone(msg.from)}] respuesta enviada`))
+        .catch((err) => {
+          console.error(`[WA] [${maskPhone(msg.from)}] error procesando: ${err.message}`);
+          whatsapp
+            .sendText(msg.from, "Disculpa, tuve un problema técnico. ¿Me lo repites en un momento?")
+            .catch(() => {});
+        })
+    );
+  }
 });
 
 app.get("/health", (req, res) => {

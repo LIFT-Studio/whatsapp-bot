@@ -7,7 +7,9 @@
     "start": "node src/server.js",
     "eval": "node eval/run.js",
     "eval:watch": "nodemon eval/run.js",
-    "test:e2e": "node test-e2e.js"
+    "test:e2e": "node test-e2e.js",
+    "test:webhook": "node test-whatsapp-webhook.js",
+    "setup:whatsapp": "node scripts/setup-whatsapp.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

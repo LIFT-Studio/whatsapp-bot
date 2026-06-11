@@ -1,5 +1,65 @@
 // Session Store module
+//
+// El Map en memoria sigue siendo el working store (toda la API pública es
+// síncrona, igual que siempre). Con Upstash configurado, processMessage
+// hidrata la sesión desde Redis al entrar (hydrateSession) y la persiste al
+// salir (persistSession) — write-through. Sin Upstash, ambos son no-op.
+const redis = require("./redis");
+
 const sessions = new Map();
+
+// Cap de historial almacenado: WhatsApp mantiene conversaciones por días y
+// sin tope el payload de Redis (y el costo de Gemini) crece sin límite.
+const MAX_STORED_MESSAGES = 80;
+
+function redisKey(sessionId) {
+  return `session:${sessionId}`;
+}
+
+function ttlSeconds() {
+  return parseInt(process.env.SESSION_TTL_HOURS || "24", 10) * 3600;
+}
+
+/**
+ * Carga la sesión desde Redis al Map si no está en memoria (tras un
+ * reinicio del servidor). Llamar UNA vez al inicio de processMessage;
+ * después, todos los getSession síncronos trabajan sobre el Map.
+ */
+async function hydrateSession(sessionId) {
+  if (sessions.has(sessionId)) return sessions.get(sessionId);
+  if (!redis.isEnabled()) return null;
+  try {
+    const raw = await redis.get(redisKey(sessionId));
+    // Re-check tras el await: otro request concurrente pudo crear/mutar la
+    // sesión mientras esperábamos el GET — no pisarla con la copia de Redis.
+    if (sessions.has(sessionId)) return sessions.get(sessionId);
+    if (raw) {
+      const session = JSON.parse(raw);
+      sessions.set(sessionId, session);
+      console.log(`[SESSION] ${sessionId.substring(0, 12)}... hidratada desde Redis (${session.messages?.length || 0} msgs)`);
+      return session;
+    }
+  } catch (err) {
+    // Redis caído no debe tumbar el chat: se sigue solo en memoria.
+    console.error(`[SESSION] hydrate falló (${err.message}) — continúo en memoria`);
+  }
+  return null;
+}
+
+/**
+ * Persiste la sesión actual a Redis con TTL. Nunca lanza: un fallo de
+ * persistencia no debe romper la respuesta al cliente.
+ */
+async function persistSession(sessionId) {
+  if (!redis.isEnabled()) return;
+  const session = sessions.get(sessionId);
+  if (!session) return;
+  try {
+    await redis.setex(redisKey(sessionId), ttlSeconds(), JSON.stringify(session));
+  } catch (err) {
+    console.error(`[SESSION] persist falló (${err.message}) — la sesión sigue en memoria`);
+  }
+}
 
 function getSession(sessionId) {
   if (!sessions.has(sessionId)) {
@@ -27,6 +87,9 @@ function updateSession(sessionId, updates) {
 function addMessage(sessionId, role, content) {
   const session = getSession(sessionId);
   session.messages.push({ role, content, timestamp: new Date().toISOString() });
+  if (session.messages.length > MAX_STORED_MESSAGES) {
+    session.messages.splice(0, session.messages.length - MAX_STORED_MESSAGES);
+  }
   session.updatedAt = new Date().toISOString();
   return session;
 }
@@ -135,6 +198,8 @@ function clearCart(sessionId) {
 
 function deleteSession(sessionId) {
   sessions.delete(sessionId);
+  // Fire-and-forget: si Redis falla, el TTL la expira igual.
+  redis.del(redisKey(sessionId)).catch(() => {});
 }
 
 /**
@@ -201,4 +266,6 @@ module.exports = {
   deleteSession,
   cleanExpiredSessions,
   startCleanupJob,
+  hydrateSession,
+  persistSession,
 };

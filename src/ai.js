@@ -15,6 +15,8 @@ const {
   syncCartFromMCP,
   setCartId,
   clearCart,
+  hydrateSession,
+  persistSession,
 } = require("./session");
 const { log, logStart, logSuccess, logError, logToolExecution, logUserMessage, logBotResponse, logCartOperation, logSessionEvent, createTimer } = require('./utils/logger');
 const { handleError } = require('./utils/api-error-handler');
@@ -1052,8 +1054,12 @@ async function executeTool(toolName, toolInput, sessionId) {
   }
 }
 
-async function processMessage(sessionId, userMessage, shop) {
+async function processMessage(sessionId, userMessage, shop, { skipHydrate = false } = {}) {
   const logPrefix = `[AI] [${sessionId.substring(0, 8)}...]`;
+  // Recuperar la sesión desde Redis si el servidor se reinició a mitad de
+  // conversación (no-op sin Upstash configurado). skipHydrate evita un GET
+  // garantizado-miss cuando el server acaba de acuñar el sessionId.
+  if (!skipHydrate) await hydrateSession(sessionId);
   const session = getSession(sessionId);
   const messageTimer = createTimer();
 
@@ -1082,12 +1088,22 @@ async function processMessage(sessionId, userMessage, shop) {
     tools,
   });
 
-  const history = session.messages.slice(0, -1).map((m) => ({
+  // Ventana de historial SOLO para WhatsApp (sesiones "wa:"): esas
+  // conversaciones duran días y el historial completo dispara costo y
+  // latencia. El chat web conserva el comportamiento previo (historial
+  // completo, ya acotado por MAX_STORED_MESSAGES en session.js). El
+  // carrito viaja aparte en cartContext — no se pierde nada de la compra.
+  const HISTORY_WINDOW = 24;
+  const windowed = sessionId.startsWith("wa:")
+    ? session.messages.slice(0, -1).slice(-HISTORY_WINDOW)
+    : session.messages.slice(0, -1);
+  // Gemini exige que history[0] sea 'user': si la ventana corta en medio de
+  // un turno, descartar el prefijo hasta el primer mensaje user.
+  while (windowed.length > 0 && windowed[0].role !== "user") windowed.shift();
+  const history = windowed.map((m) => ({
     role: m.role === "assistant" ? "model" : "user",
     parts: [{ text: m.content }],
   }));
-
-  const chat = model.startChat({ history });
 
   const cartContext =
     session.cart.length > 0
@@ -1097,6 +1113,10 @@ async function processMessage(sessionId, userMessage, shop) {
   console.log(`${logPrefix} [processMessage] sending to Gemini (history: ${history.length} msgs)`);
 
   try {
+    // startChat valida el historial y puede lanzar: dentro del try para que
+    // un historial inválido devuelva el JSON de error, no un 500.
+    const chat = model.startChat({ history });
+
     // Wrap Gemini call with timeout to handle unresponsive API
     let result = await executeWithTimeout(
       () => chat.sendMessage(userMessage + cartContext),
@@ -1201,6 +1221,11 @@ async function processMessage(sessionId, userMessage, shop) {
       cart: updatedSession.cart,
       shopName,
     };
+  } finally {
+    // Write-through a Redis (no-op sin Upstash). Fire-and-forget: la
+    // respuesta HTTP no espera el roundtrip a Upstash — el Map en memoria
+    // sigue siendo la fuente de verdad y persistSession nunca lanza.
+    persistSession(sessionId).catch(() => {});
   }
 }
 
