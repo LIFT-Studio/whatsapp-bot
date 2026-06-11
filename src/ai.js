@@ -629,12 +629,11 @@ async function executeTool(toolName, toolInput, sessionId) {
             values: option.values
           })) || [];
 
-          // Construir URL del producto usando la tienda Shopify del tenant
-          const shopDomain = shop;
-          const productHandle = product.handle || product.id?.split('/').pop();
-          const product_url = productHandle
-            ? `https://${shopDomain}/products/${productHandle}`
-            : null;
+          // Link del producto: search_catalog NO devuelve handle, y el ID
+          // numérico no es un handle válido (/products/<id> → 404). Usar la
+          // url del MCP si viene; si no, link de búsqueda por título.
+          const product_url = product.url
+            || `https://${shop}/search?q=${encodeURIComponent(product.title)}`;
 
           return {
             id: product.id,
@@ -744,7 +743,7 @@ async function executeTool(toolName, toolInput, sessionId) {
               image_url,
               image_alt: images[0]?.alt || product.title,
               images,
-              product_url: (hit && hit.product_url) || undefined,
+              product_url: product.url || (hit && hit.product_url) || undefined,
               description: product.description,
             };
           }
