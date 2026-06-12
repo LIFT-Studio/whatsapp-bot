@@ -46,6 +46,10 @@ Endpoints: `GET /health` · `GET /api/metrics` (agregados 7 días, en memoria; c
 - [public/widget.js](../public/widget.js) + [widget.html](../public/widget.html) — widget embebible ([guía de instalación](install-widget.md)).
 - Principio rector: **todo dato sale de Shopify** (Storefront MCP — conforme UCP). Nada hardcodeado, no Admin API en runtime.
 
+## Trabajo parqueado (ramas aparte)
+
+- **`feature/order-status-whatsapp`** — consulta de estado de pedidos por WhatsApp ("¿dónde está mi pedido 1010?") con verificación de identidad por teléfono (E.164 estricto vía libphonenumber-js, solo canal WhatsApp donde Meta verifica el remitente). Pasó un review adversarial (15 agentes, 10 hallazgos corregidos, incluida una fuga de PII por match de sufijo). **No está en `main`** porque requiere dos pasos de admin antes de validarse en vivo: (1) scope `read_orders` en la app del token Admin del sandbox, (2) un pedido de prueba con el teléfono del comprador. Para retomar: `git checkout feature/order-status-whatsapp`, completar los dos pasos, probar por WhatsApp, y merge a main. Tarea en Notion (Tasks Tracker, Fase 3).
+
 ## Pendientes
 
 1. **Rotar `WHATSAPP_TOKEN`** — quedó expuesto en un log de error del CLI de Railway (2026-06-11). Regenerar en liftwabot → `.env` → Railway. *Prioridad alta, 5 min.*
