@@ -18,7 +18,6 @@ const EVENT_NAMES = {
   ADD_TO_CART: "add_to_cart",
   ADD_FAILED: "add_failed",
   POLICY_ASKED: "policy_asked",
-  ORDER_STATUS_ASKED: "order_status_asked",
   CHECKOUT_CREATED: "checkout_started",
   ERROR: "errors",
 };

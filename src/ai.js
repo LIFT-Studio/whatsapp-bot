@@ -10,7 +10,6 @@ const {
 } = require("./shopify/mcp-client");
 const { resolveShopName, resolveShop } = require("./shopify/shop-info");
 const { resolveProductUrl } = require("./shopify/admin-link");
-const { getOrderStatusForPhone } = require("./shopify/admin-orders");
 const {
   getSession,
   addMessage,
@@ -345,8 +344,6 @@ REGLA DE ORO — ACTÚA, NO NARRES:
 - PRESUPUESTO ("barato", "económico", "que no pase de X"): NO pongas "barato" en la query (no es un producto). Busca por el TIPO de producto (ej: "vino tinto") y de los resultados recomienda el de MENOR precio o el que entre en el rango. Si pusiste "barato" y no hubo resultados, vuelve a buscar solo el tipo.
 - SIN RESULTADOS: si search_products devuelve 0 productos, reintenta EN EL MISMO TURNO con la query simplificada a solo el TIPO de producto (sin adjetivos de uso, ocasión o color: "camiseta básica negra para diario" → "camiseta"). Solo si el reintento tampoco da resultados, dilo honestamente y ofrece alternativas.
 - SIEMPRE usa answer_policy_question para preguntas sobre políticas, devoluciones, envíos, FAQs, garantías. No inventes políticas.
-- PEDIDOS PASADOS vs COMPRA ACTUAL: get_order_status es SOLO para pedidos YA COMPRADOS en una compra anterior ("¿dónde está mi pedido?", "estado de mi compra #1010", "¿ya enviaron lo que pedí la semana pasada?"). NO la uses para el carrito de la conversación actual (eso es view_cart) ni para finalizar una compra en curso (eso es create_checkout). Si el cliente dice "mi pedido" en medio de una compra que están armando ahora, se refiere al carrito → view_cart.
-- Para get_order_status pide el número de pedido si no lo dio, y llámala. NUNCA inventes estados de envío, fechas ni números de tracking. Si la tool devuelve error, transmite su mensaje con amabilidad — los errores de identidad y seguridad NO se negocian: no insistas ni sugieras trucos para saltarlos.
 - SIEMPRE usa create_checkout cuando el cliente confirma compra. NUNCA generes URLs manualmente. Incluye checkout_url completo.
 - Verifica SIEMPRE field "available" en resultados. SI available=false: NUNCA llames add_to_cart. Y distingue los dos casos al responder:
   * Producto EXISTE pero sin stock (available=false): "Sí tenemos harina de maíz, pero justo está agotada en este momento. ¿Quieres que te recomiende una alternativa?" — deja claro que LO MANEJAN; no digas "no tenemos".
@@ -497,21 +494,6 @@ const tools = [
             },
           },
           required: ["title"],
-        },
-      },
-      {
-        name: "get_order_status",
-        description:
-          "Consulta el estado de un pedido PASADO (ya comprado): envío, pago, tracking. Úsala cuando el cliente pregunte por una compra anterior ('¿dónde está mi pedido?', 'estado de mi compra #1010'). Requiere el número de pedido.",
-        parameters: {
-          type: "OBJECT",
-          properties: {
-            order_number: {
-              type: "STRING",
-              description: "Número del pedido tal como lo dio el cliente (ej: '1010' o '#1010')",
-            },
-          },
-          required: ["order_number"],
         },
       },
       {
@@ -804,43 +786,6 @@ async function executeTool(toolName, toolInput, sessionId) {
         error: "No encuentro ese producto en los resultados recientes. Vuelve a buscarlo con search_products.",
         errorType: "NOT_FOUND",
       };
-    }
-
-    case "get_order_status": {
-      logStart(sessionId, `executeTool[get_order_status]`, { orderNumber: toolInput.order_number });
-      logEvent(sessionId, "ORDER_STATUS_ASKED", { orderNumber: String(toolInput.order_number || "").substring(0, 20) });
-
-      // Identidad: SOLO WhatsApp — el remitente viene verificado por Meta.
-      // En web cualquiera puede escribir; jamás entregar datos de pedidos ahí.
-      if (!sessionId.startsWith("wa:")) {
-        return {
-          error: "Por seguridad, el estado de pedidos solo se consulta escribiendo por WhatsApp desde el número asociado a la compra.",
-          errorType: "CHANNEL_NOT_ALLOWED",
-        };
-      }
-
-      const requesterPhone = sessionId.slice(3);
-      const result = await getOrderStatusForPhone(toolInput.order_number, requesterPhone, shop);
-
-      switch (result.status) {
-        case "ok":
-          logSuccess(sessionId, `executeTool[get_order_status]`, timer.elapsed(), { order: result.order.name });
-          return { order: result.order };
-        // Mensaje IDÉNTICO para "no existe" y "no es tu número": distinguirlos
-        // crearía un oráculo (un extraño sabría si un pedido existe probando
-        // números). Los logs internos sí los separan (en admin-orders.js).
-        case "phone_mismatch":
-        case "not_found":
-          return {
-            error: `No encontré un pedido con el número ${String(toolInput.order_number || "").substring(0, 20)} asociado a este WhatsApp. Verifica el número (aparece en tu correo de confirmación) y escribe desde el mismo número con el que compraste. Si necesitas ayuda, contacta a soporte.`,
-            errorType: "ORDER_NOT_AVAILABLE",
-          };
-        default:
-          return {
-            error: "No pude consultar el pedido en este momento. Intenta de nuevo en unos minutos o contacta a soporte.",
-            errorType: "UNAVAILABLE",
-          };
-      }
     }
 
     case "add_to_cart": {
