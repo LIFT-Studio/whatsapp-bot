@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Propuesta Likershop — Bot de ventas WhatsApp | LIFT</title>
+<style>
+  :root{
+    --green:#075E54; --green2:#25D366; --bg:#f4f6f5; --card:#fff; --ink:#10221f;
+    --muted:#6b7c78; --line:#e2e8e6; --good:#0a8f5b; --amber:#c98a00;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  .wrap{max-width:860px;margin:0 auto;padding:32px 20px 60px}
+  .pill{display:inline-block;background:var(--green);color:#fff;font-size:11px;font-weight:700;padding:2px 9px;border-radius:6px;vertical-align:middle}
+  header h1{font-size:26px;font-weight:800;letter-spacing:-.5px}
+  header p{color:var(--muted);font-size:14.5px;margin-top:6px;max-width:560px}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px}
+  @media(max-width:700px){.cols{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;position:relative}
+  .card.pilot{border-top:5px solid var(--green2)}
+  .card.full{border-top:5px solid var(--green)}
+  .tag{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px}
+  .pilot .tag{color:var(--good)} .full .tag{color:var(--green)}
+  .card h2{font-size:19px;font-weight:800;margin:6px 0 2px}
+  .card .when{font-size:12.5px;color:var(--muted);margin-bottom:14px}
+  .price{font-size:38px;font-weight:800;letter-spacing:-1px}
+  .price small{font-size:14px;font-weight:600;color:var(--muted)}
+  .price-note{font-size:12px;color:var(--muted);margin:2px 0 16px}
+  ul.inc{list-style:none}
+  ul.inc li{padding:7px 0;border-bottom:1px dashed var(--line);font-size:13.5px;display:flex;justify-content:space-between;gap:10px}
+  ul.inc li:last-child{border-bottom:none}
+  ul.inc .amt{font-weight:700;white-space:nowrap}
+  ul.inc .free{color:var(--good);font-weight:700;white-space:nowrap}
+  .gift{margin-top:14px;background:#e3f6ec;border:1px solid #b6e6cc;border-radius:10px;padding:10px 13px;font-size:12.5px}
+  .gift b{font-weight:800}
+  .note{margin-top:14px;background:#fdf2dc;border:1px solid #f0deb0;border-radius:10px;padding:10px 13px;font-size:12.5px;color:#6b5500}
+  .ctx{margin-top:22px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px}
+  .ctx h3{font-size:13px;text-transform:uppercase;letter-spacing:.5px;color:var(--green);font-weight:700;margin-bottom:10px}
+  .ctx p{font-size:13.5px;margin-bottom:8px}
+  .ctx p:last-child{margin-bottom:0}
+  .foot{font-size:11.5px;color:var(--muted);margin-top:22px;line-height:1.55}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🤖 Bot de ventas por WhatsApp <span class="pill">LIFT</span></h1>
+    <p>Propuesta de costos para <b>Likershop</b> — basada en su operación actual: ~800 conversaciones/mes y ticket promedio de $90.70.</p>
+  </header>
+
+  <div class="cols">
+    <!-- PILOTO -->
+    <div class="card pilot">
+      <span class="tag">Fase 1 · Piloto</span>
+      <h2>Plan piloto — a costo</h2>
+      <p class="when">Desde el arranque hasta que el bot esté estable y validado. Sin fecha fija: lo definimos juntos.</p>
+      <div class="price">$49<small> /mes</small></div>
+      <p class="price-note">Solo costos directos de operación. LIFT no gana nada en esta fase.</p>
+      <ul class="inc">
+        <li><span>Inteligencia artificial (procesa cada conversación)</span><span class="amt">$16</span></li>
+        <li><span>Servidores y base de datos (el bot vive aquí, 24/7)</span><span class="amt">$30</span></li>
+        <li><span>Soporte y ajustes de LIFT (~5 h/mes)</span><span class="free">Incluido</span></li>
+        <li><span>Configuración inicial y conexión con Shopify</span><span class="free">Incluido</span></li>
+      </ul>
+      <div class="gift">🎁 Durante el piloto, LIFT aporta sin costo el soporte y los ajustes (valor real: <b>$100/mes</b>). Lo asumimos nosotros porque queremos validar el producto con ustedes.</div>
+    </div>
+
+    <!-- POST-PILOTO -->
+    <div class="card full">
+      <span class="tag">Fase 2 · Plan estable</span>
+      <h2>Plan mensual completo</h2>
+      <p class="when">Cuando el bot ya esté estable y vendiendo. Se activa solo con acuerdo previo de ambas partes.</p>
+      <div class="price">$249<small> /mes</small></div>
+      <p class="price-note">Tarifa plana, todo incluido. Sin sorpresas ni cobros por venta.</p>
+      <ul class="inc">
+        <li><span>Inteligencia artificial</span><span class="free">Incluido</span></li>
+        <li><span>Servidores y base de datos 24/7</span><span class="free">Incluido</span></li>
+        <li><span>Soporte, monitoreo y ajustes (~5 h/mes)</span><span class="free">Incluido</span></li>
+        <li><span>Mejoras continuas del bot</span><span class="free">Incluido</span></li>
+      </ul>
+      <div class="note">⚖️ La tarifa cubre hasta ~800 conversaciones/mes. Si el volumen crece bastante más, lo conversamos — crecer es buena noticia para ambos.</div>
+    </div>
+  </div>
+
+  <div class="ctx">
+    <h3>¿Por qué tiene sentido?</h3>
+    <p>Con sus números actuales (800 conversaciones, 1.21% de conversión, ticket $90.70), el canal genera ~<b>$878/mes en ventas</b>. El plan estable representa cerca del 28% de eso — y el objetivo del piloto es justamente <b>subir esa conversión</b>: un bot que responde al instante, 24/7, suele convertir bastante más que el 1.21% actual.</p>
+    <p>Si el piloto lleva la conversión chat→pedido a niveles típicos de bots de venta (5–12%), las ventas del canal pasarían a <b>$3,600–$8,700/mes</b>, y los $249 serían una fracción mínima.</p>
+  </div>
+
+  <p class="foot">
+    Notas: los $49 del piloto cubren el costo directo real (IA + servidores, ~$46 a volumen actual) con un margen mínimo por variaciones de uso. Meta/WhatsApp no cobra las conversaciones que inicia el cliente (servicio); solo cobraría mensajes promocionales salientes si decidiéramos usarlos — ese costo es aparte y se aprueba antes. Precios en USD.
+  </p>
+</div>
+</body>
+</html>

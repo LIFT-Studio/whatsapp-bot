@@ -36,7 +36,7 @@ async function resolveProductUrl(productId, shop) {
   try {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 1500);
-    const res = await fetch(`https://${domain}/admin/api/2024-10/graphql.json`, {
+    const res = await fetch(`https://${domain}/admin/api/2025-01/graphql.json`, {
       method: "POST",
       headers: {
         "X-Shopify-Access-Token": process.env.SHOPIFY_ACCESS_TOKEN,

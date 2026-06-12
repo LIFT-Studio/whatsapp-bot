@@ -5,7 +5,7 @@ const crypto = require("crypto");
 const express = require("express");
 const rateLimit = require("express-rate-limit");
 const { processMessage } = require("./ai");
-const { getSession, startCleanupJob } = require("./session");
+const { startCleanupJob } = require("./session");
 const { isValidShop } = require("./shopify/shop-info");
 const { getMetrics } = require("./metrics");
 const whatsapp = require("./channels/whatsapp");
@@ -101,10 +101,9 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
   }
 });
 
-app.get("/api/session/:sessionId", (req, res) => {
-  const session = getSession(req.params.sessionId);
-  res.json({ id: session.id, state: session.state, cart: session.cart });
-});
+// GET /api/session/:sessionId eliminado: ningún frontend lo usaba, creaba
+// sesiones fantasma, y con el canal WhatsApp se volvió una fuga — el ID de
+// esas sesiones es "wa:<teléfono>", adivinable, y exponía el carrito ajeno.
 
 // Rate limit propio para métricas: requests anónimos baratos pero acotados.
 const metricsLimiter = rateLimit({

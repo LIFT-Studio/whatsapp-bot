@@ -63,6 +63,15 @@
     <p>Meté tus números. La tabla te dice, por cada nivel de modelo, si <b>ganás o perdés margen</b> según tu forma de cobrar.</p>
   </header>
 
+  <div class="card" style="margin-top:18px">
+    <h2>Preset · Likershop <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">(800 conv/mes · AOV $90.70 · conversión 1.21%)</span></h2>
+    <div class="seg" id="presetSeg">
+      <button data-preset="cost">Escenario 1 — A costo (primeros meses)</button>
+      <button data-preset="stable">Escenario 2 — Precio estable</button>
+    </div>
+    <p class="hint" id="presetHint">Escenario 1: cobras solo el costo duro ($46/mes = $16 IA + $30 infra), margen $0 — el soporte lo regalas. Escenario 2: plana $249/mes con soporte incluido ($130 infra+soporte), margen ~$103.</p>
+  </div>
+
   <div class="grid">
     <!-- CONTROLES -->
     <div class="card">
@@ -239,6 +248,33 @@ $('pricingSeg').addEventListener('click',e=>{
   $('fld-flat').style.display = pricing==='flat'?'':'none';
   $('fld-perconv').style.display = pricing==='perconv'?'':'none';
   $('fld-revshare').style.display = pricing==='revshare'?'':'none';
+  calc();
+});
+
+// ===== Preset Likershop =====
+const PRESETS = {
+  cost:   {conv:800, rate:1.21, aov:90.70, pricing:'flat', pFlat:49,  infra:30,
+           hint:'Escenario 1 — A costo: cobras $49/mes (≈ $16 IA Flash + $30 infra Railway/Redis + colchón mínimo). Margen LIFT ~$3. Tus ~5h de soporte ($100) quedan como valor regalado: déjalo explícito en la presentación.'},
+  stable: {conv:800, rate:1.21, aov:90.70, pricing:'flat', pFlat:249, infra:130,
+           hint:'Escenario 2 — Precio estable: plana $249/mes (~28% del GMV de ~$878 que genera el bot). Incluye infra + 5h de soporte ($130). Margen LIFT ~$103/mes. Si la conversión chat→pedido sube del 1.21%, el precio se justifica solo.'}
+};
+
+function setPricing(p){
+  pricing = p;
+  [...$('pricingSeg').children].forEach(x=>x.classList.toggle('on', x.dataset.p===p));
+  $('fld-flat').style.display = p==='flat'?'':'none';
+  $('fld-perconv').style.display = p==='perconv'?'':'none';
+  $('fld-revshare').style.display = p==='revshare'?'':'none';
+}
+
+$('presetSeg').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  const ps = PRESETS[b.dataset.preset];
+  [...$('presetSeg').children].forEach(x=>x.classList.toggle('on',x===b));
+  $('conv').value = ps.conv; $('rate').value = ps.rate; $('aov').value = ps.aov;
+  $('pFlat').value = ps.pFlat; $('infra').value = ps.infra;
+  setPricing(ps.pricing);
+  $('presetHint').textContent = ps.hint;
   calc();
 });
 
