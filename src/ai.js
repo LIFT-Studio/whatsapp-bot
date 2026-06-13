@@ -1046,8 +1046,8 @@ async function executeTool(toolName, toolInput, sessionId) {
         if (sessionId.startsWith("wa:")) {
           const waPhone = sessionId.slice(3); // "+15551234567"
           try {
-            await updateCart({ cartId: session.cartId, buyerIdentity: { phone: waPhone } }, shop);
-            console.log(`${logPrefix} buyerIdentity.phone set: ${waPhone}`);
+            await updateCart({ cart_id: session.cartId, buyer_identity: { phone: waPhone } }, shop);
+            console.log(`${logPrefix} buyer_identity.phone set: ${waPhone}`);
           } catch (e) {
             // No bloquear el checkout si esto falla — el campo quedará vacío.
             console.warn(`${logPrefix} buyerIdentity update failed (non-fatal):`, e.message);
