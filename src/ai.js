@@ -1038,6 +1038,19 @@ async function executeTool(toolName, toolInput, sessionId) {
           return { error: "El carrito está vacío", errorType: "NOT_FOUND" };
         }
 
+        // Pre-llenar teléfono en el checkout si el canal es WhatsApp.
+        // sessionId tiene formato "wa:+15551234567" — el número ya fue verificado por Meta.
+        if (sessionId.startsWith("wa:")) {
+          const waPhone = sessionId.slice(3); // "+15551234567"
+          try {
+            await updateCart({ cartId: session.cartId, buyerIdentity: { phone: waPhone } }, shop);
+            console.log(`${logPrefix} buyerIdentity.phone set: ${waPhone}`);
+          } catch (e) {
+            // No bloquear el checkout si esto falla — el campo quedará vacío.
+            console.warn(`${logPrefix} buyerIdentity update failed (non-fatal):`, e.message);
+          }
+        }
+
         // WRITE operation: do NOT retry on timeout after request sent
         // Obtener el carrito final con checkout_url
         const mcpResult = await getCart(session.cartId, shop);
