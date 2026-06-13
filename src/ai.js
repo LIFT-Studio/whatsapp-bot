@@ -54,6 +54,24 @@ function logEvent(sessionId, eventType, data = {}) {
   });
 }
 
+// Añade parámetros UTM al link de checkout para atribuir la venta al bot en
+// las analíticas de Shopify (paridad con Agentic Storefronts: "atribución de
+// dónde se originó el pedido"). El canal se deduce del sessionId: las sesiones
+// de WhatsApp llevan prefijo "wa:". Usa la API URL para no romper el `key` que
+// ya trae el checkout_url.
+function withCheckoutAttribution(checkoutUrl, sessionId) {
+  try {
+    const url = new URL(checkoutUrl);
+    url.searchParams.set("utm_source", sessionId.startsWith("wa:") ? "whatsapp" : "web_chat");
+    url.searchParams.set("utm_medium", "chatbot");
+    url.searchParams.set("utm_campaign", "lift_assistant");
+    return url.toString();
+  } catch {
+    // checkout_url malformado: devolver tal cual antes que romper el cierre de venta.
+    return checkoutUrl;
+  }
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Resolución robusta de variantes (defensa contra variant_id alucinados por el LLM).
 // Flash a veces corrompe los IDs largos al copiarlos entre turnos; resolvemos el
@@ -1023,13 +1041,16 @@ async function executeTool(toolName, toolInput, sessionId) {
         // WRITE operation: do NOT retry on timeout after request sent
         // Obtener el carrito final con checkout_url
         const mcpResult = await getCart(session.cartId, shop);
-        const checkoutUrl = mcpResult.cart?.checkout_url;
+        const rawCheckoutUrl = mcpResult.cart?.checkout_url;
 
-        if (!checkoutUrl) {
+        if (!rawCheckoutUrl) {
           console.error(`${logPrefix} checkout_url not found in response`);
           logError(sessionId, `executeTool[create_checkout]`, "Checkout URL not found", {});
           return { error: "No se pudo generar el checkout", errorType: "INVALID_RESPONSE" };
         }
+
+        // Atribución: marca el origen (whatsapp/web) para las analíticas de Shopify.
+        const checkoutUrl = withCheckoutAttribution(rawCheckoutUrl, sessionId);
 
         // Total autoritativo de Shopify, capturado ANTES de limpiar la sesión.
         // Normalizado a 2 decimales (Shopify puede devolver "299.9").
