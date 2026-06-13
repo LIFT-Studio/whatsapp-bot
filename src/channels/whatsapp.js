@@ -183,6 +183,23 @@ async function markAsRead(messageId) {
   }
 }
 
+// Muestra el indicador "escribiendo..." al cliente mientras el bot procesa.
+// Se apaga solo cuando se envía el siguiente mensaje; no hace falta typing_off.
+// No crítico: si falla (permisos, API), la respuesta llega igual.
+async function sendTyping(to) {
+  try {
+    await graphPost({
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to,
+      type: "action",
+      action: { type: "typing_on" },
+    });
+  } catch (err) {
+    console.warn(`[WA] sendTyping falló (no crítico): ${err.message}`);
+  }
+}
+
 /**
  * Envía la respuesta completa del bot: imágenes primero (el producto se VE),
  * luego el texto. Las imágenes vienen del CDN de Shopify — URLs públicas que
@@ -210,4 +227,5 @@ module.exports = {
   sendImage,
   sendOutgoing,
   markAsRead,
+  sendTyping,
 };

@@ -236,6 +236,7 @@ app.post("/webhooks/whatsapp", webhookLimiter, (req, res) => {
     const sessionId = `wa:${msg.from}`;
     console.log(`[WA] [${maskPhone(msg.from)}] mensaje entrante: "${msg.text.substring(0, 60)}"`);
     whatsapp.markAsRead(msg.messageId);
+    whatsapp.sendTyping(msg.from);
 
     enqueueForSession(sessionId, () =>
       processMessage(sessionId, msg.text, undefined)
