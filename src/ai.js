@@ -654,10 +654,12 @@ async function executeTool(toolName, toolInput, sessionId) {
             values: option.values
           })) || [];
 
-          // Link del producto: url del MCP si viene (tiendas publicadas la
-          // traen). Si no, queda null y se resuelve abajo vía Admin read-only
-          // (dev stores) o, en último caso, link de búsqueda por título.
-          const product_url = product.url || null;
+          // Link del producto: 3 niveles de resolución, de más a menos confiable:
+          // 1. product.url del MCP (tiendas publicadas con dominio propio)
+          // 2. product.handle del MCP → /products/{handle} sin llamada extra
+          // 3. Admin API (fallback con caché, ver resolveProductUrl)
+          const product_url = product.url
+            || (product.handle ? `https://${shop}/products/${product.handle}` : null);
 
           return {
             id: product.id,
@@ -679,6 +681,7 @@ async function executeTool(toolName, toolInput, sessionId) {
             image_alt: image_alt,
             // Link del producto
             product_url: product_url,
+            handle: product.handle || null,
             variants: product.variants,
             options: product.options,
             media: product.media
@@ -689,14 +692,14 @@ async function executeTool(toolName, toolInput, sessionId) {
           console.log(`${logPrefix} first variant_id: ${simplifiedProducts[0].variant_id.substring(0, 50)}...`);
         }
 
-        // Links directos donde el MCP no dio url: handle vía Admin read-only
-        // (solo tienda propia, con caché). Último recurso: link de búsqueda.
-        await Promise.all(simplifiedProducts.slice(0, 6).map(async (p) => {
+        // Para productos sin URL (handle no retornado por el MCP): Admin API con caché.
+        // Cubre todos los productos, no solo los primeros 6.
+        await Promise.all(simplifiedProducts.map(async (p) => {
           if (!p.product_url) p.product_url = await resolveProductUrl(p.id, shop);
         }));
-        for (const p of simplifiedProducts) {
-          if (!p.product_url) p.product_url = `https://${shop}/search?q=${encodeURIComponent(p.title)}`;
-        }
+        // Último recurso: si Admin API también falla, no mostrar link antes que mostrar
+        // un link de búsqueda que confunde al cliente. El bot puede referenciar el
+        // producto por nombre sin link.
 
         // Cachear resultados para resolver add_to_cart por título (anti-alucinación de IDs).
         cacheSearchResults(session, simplifiedProducts);

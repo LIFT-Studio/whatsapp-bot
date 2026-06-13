@@ -35,7 +35,7 @@ async function resolveProductUrl(productId, shop) {
 
   try {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 1500);
+    const timer = setTimeout(() => controller.abort(), 3500);
     const res = await fetch(`https://${domain}/admin/api/2025-01/graphql.json`, {
       method: "POST",
       headers: {
