@@ -10,6 +10,7 @@ const {
 } = require("./shopify/mcp-client");
 const { resolveShopName, resolveShop } = require("./shopify/shop-info");
 const { resolveProductUrl } = require("./shopify/admin-link");
+const { getOrderStatusForPhone } = require("./shopify/admin-orders");
 const {
   getSession,
   addMessage,
@@ -427,6 +428,10 @@ MODIFICAR CANTIDAD:
 VER CARRITO:
 - Cuando el cliente pregunte qué tiene: llama view_cart.
 
+ESTADO DE PEDIDOS PASADOS:
+- PEDIDOS PASADOS vs COMPRA ACTUAL: get_order_status es SOLO para pedidos YA COMPRADOS en una compra anterior ("¿dónde está mi pedido?", "estado de mi compra #1010", "¿ya enviaron lo que pedí la semana pasada?"). NO la uses para el carrito de la conversación actual (eso es view_cart) ni para finalizar una compra en curso (eso es create_checkout). Si el cliente dice "mi pedido" en medio de una compra que están armando ahora, se refiere al carrito → view_cart.
+- Para get_order_status pide el número de pedido si no lo dio, y llámala. NUNCA inventes estados de envío, fechas ni números de tracking. Si la tool devuelve error, transmite su mensaje con amabilidad — los errores de identidad y seguridad NO se negocian: no insistas ni sugieras trucos para saltarlos.
+
 PRECIOS Y TOTAL (CRÍTICO — no inventes ni recalcules):
 - El campo "price" de cada ítem es el precio UNITARIO. "line_total" es el subtotal de esa línea (precio × cantidad).
 - El TOTAL del carrito ya viene calculado en el contexto y en el campo "total" de view_cart. ÚSALO TAL CUAL.
@@ -596,6 +601,21 @@ const tools = [
         parameters: {
           type: "OBJECT",
           properties: {},
+        },
+      },
+      {
+        name: "get_order_status",
+        description:
+          "Consulta el estado de un pedido PASADO (ya comprado): envío, pago, tracking. Úsala cuando el cliente pregunte por una compra anterior ('¿dónde está mi pedido?', 'estado de mi compra #1010'). Requiere el número de pedido.",
+        parameters: {
+          type: "OBJECT",
+          properties: {
+            order_number: {
+              type: "STRING",
+              description: "Número del pedido tal como lo dio el cliente (ej: '1010' o '#1010')",
+            },
+          },
+          required: ["order_number"],
         },
       },
     ],
@@ -1096,6 +1116,42 @@ async function executeTool(toolName, toolInput, sessionId) {
         console.error(`${logPrefix} [${errorInfo.errorType}] ${errorInfo.userMessage}`);
         logError(sessionId, `executeTool[create_checkout]`, error, { errorType: errorInfo.errorType });
         return { error: errorInfo.userMessage, errorType: errorInfo.errorType };
+      }
+    }
+
+    case "get_order_status": {
+      logStart(sessionId, `executeTool[get_order_status]`, { orderNumber: toolInput.order_number });
+      logEvent(sessionId, "ORDER_STATUS_ASKED", { orderNumber: String(toolInput.order_number || "").substring(0, 20) });
+
+      // Identidad: SOLO WhatsApp — el remitente viene verificado por Meta.
+      // En web cualquiera puede escribir; jamás entregar datos de pedidos ahí.
+      if (!sessionId.startsWith("wa:")) {
+        return {
+          error: "Por seguridad, el estado de pedidos solo se consulta escribiendo por WhatsApp desde el número asociado a la compra.",
+          errorType: "CHANNEL_NOT_ALLOWED",
+        };
+      }
+
+      const requesterPhone = sessionId.slice(3);
+      const result = await getOrderStatusForPhone(toolInput.order_number, requesterPhone, shop);
+
+      switch (result.status) {
+        case "ok":
+          logSuccess(sessionId, `executeTool[get_order_status]`, timer.elapsed(), { order: result.order.name });
+          return { order: result.order };
+        // Mensaje IDÉNTICO para "no existe" y "no es tu número": distinguirlos
+        // crearía un oráculo (un extraño sabría si un pedido existe probando números).
+        case "phone_mismatch":
+        case "not_found":
+          return {
+            error: `No encontré un pedido con el número ${String(toolInput.order_number || "").substring(0, 20)} asociado a este WhatsApp. Verifica el número (aparece en tu correo de confirmación) y escribe desde el mismo número con el que compraste. Si necesitas ayuda, contacta a soporte.`,
+            errorType: "ORDER_NOT_AVAILABLE",
+          };
+        default:
+          return {
+            error: "No pude consultar el pedido en este momento. Intenta de nuevo en unos minutos o contacta a soporte.",
+            errorType: "UNAVAILABLE",
+          };
       }
     }
 
